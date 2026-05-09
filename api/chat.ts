@@ -107,7 +107,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!apiKey) {
     return res.status(503).json({
       error: 'Chat is not configured on this deployment.',
-      fallback: true,
     })
   }
 

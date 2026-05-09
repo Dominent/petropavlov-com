@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Send, Sparkles } from 'lucide-react'
+import { Send, Sparkles, AlertCircle } from 'lucide-react'
 import { SectionLabel } from './SectionLabel'
 
 const SAMPLE_PROMPTS = [
@@ -11,33 +11,18 @@ const SAMPLE_PROMPTS = [
   'How does he use Claude Code & Cursor?',
 ]
 
-// Stub answers used as a fallback when /api/chat is not reachable
-// (e.g. during local Vite dev where Vercel functions don't run, or
-// when OPENAI_API_KEY isn't configured on the deployment).
-const STUB_ANSWERS: Record<string, string> = {
-  'What kind of engagements does he take?':
-    'Two flavours. (1) Consulting — architecture reviews, AI strategy, code reviews, fractional senior engineering for fast-moving teams. (2) Project work — end-to-end builds where he owns the stack from API → AI service → UI. Insight Draft (solo SaaS) and the Cursor-style SQL copilot inside Data Virtuality (solo feature in an enterprise platform) are recent examples. Strongest fit: AI products that need someone who can ship from prompt to production, plus the identity / payments / integrations layer to make them sellable. Open to EU and US clients.',
-  'What models has he shipped with?':
-    'Production work spans Claude (4.x at Insight Draft, TestGorilla, CData Virtuality), GPT-4o/GPT-5 (Insight Draft, TestGorilla, CData Virtuality), Whisper (Insight Draft transcription), and ElevenLabs for voice. He’s also fine-tuned Qwen3 with legal adapters and used Llama and DeepSeek in self-hosted setups. Comfortable both calling hosted APIs and self-hosting on Apple Silicon via MLX/llama.cpp.',
-  'Tell me about CData Virtuality work':
-    'Petro worked at Data Virtuality, the enterprise data-virtualization platform, and stayed through the April 2024 acquisition by CData. He was part of the AI research team and shipped two features into the Q3 2025 platform release. First — and authored solo — a Cursor-style SQL AI copilot built into the Data Virtuality Platform itself: users can author, edit, and steer SQL through natural language across federated sources. Second — co-built with one other engineer — "Talk to your Data": a natural-language → governed-SQL system that combines an LLM with a semantic vector DB and the platform’s Virtual SQL engine. CData demoed the platform at Gartner D&A Summit 2025.',
-  'Tell me about Insight Draft':
-    'Insight Draft is Petro’s solo-built AI meeting platform — live at app.insightdraft.com. Real-time speaker-attributed transcription via Deepgram, AI summaries with topic chapters, a RAG-powered Q&A assistant grounded in the transcript with verified citations, AI Quick Actions for decisions and action items, conversation analytics (speaking time, interruptions, turn-taking), and a custom prompt framework that runs as Hangfire background jobs. Multi-provider LLM orchestration in a dedicated Node.js service: GPT-5-mini primary, Claude 3.5 secondary, with separate RAG / zero-shot / moderation endpoints. .NET 8 + PostgreSQL backend, Angular 21 client, Jenkins CI/CD across 3 environments, Stripe billing, S3 storage.',
-  'How does he use Claude Code & Cursor?':
-    'Daily. Claude Code for repo-level work — multi-file refactors, feature scaffolds, debugging across services. Cursor for inline editing and quick exploration. He treats the Anthropic + OpenAI SDKs as a first-class part of his stack: prompt caching, streaming, structured outputs, tool use. This portfolio site itself was built with Claude Code.',
-  'Has he led teams?':
-    'Yes. At VMware he ran 20+ technical interviews for mid/senior Angular roles and introduced NGRX patterns adopted across the team. At TestGorilla he established state-management standards across a micro-frontend codebase. He leads embedded — through code, reviews, mentoring, and architectural decisions — rather than from above.',
+type Message = {
+  role: 'user' | 'assistant' | 'error'
+  text: string
 }
 
-type Mode = 'unknown' | 'live' | 'stub'
-
-type Message = { role: 'user' | 'assistant'; text: string }
+const GENERIC_ERROR =
+  "Sorry — I couldn't reach the AI just now. Please try again in a moment, or email Petro directly at petromilpavlov@gmail.com."
 
 export function AskPetro() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
-  const [mode, setMode] = useState<Mode>('unknown')
 
   async function send(prompt: string) {
     const trimmed = prompt.trim()
@@ -55,7 +40,9 @@ export function AskPetro() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: trimmed,
-          history: messages.slice(-6),
+          history: messages
+            .filter((m) => m.role !== 'error')
+            .slice(-6),
         }),
       })
 
@@ -64,19 +51,22 @@ export function AskPetro() {
         const text = data.text?.trim()
         if (text) {
           setMessages([...newMessages, { role: 'assistant', text }])
-          setMode('live')
           return
         }
-        throw new Error('empty')
+        setMessages([...newMessages, { role: 'error', text: GENERIC_ERROR }])
+        return
       }
-      // Non-OK: fall through to stub
-      throw new Error('not ok')
+
+      // Non-OK — try to surface a useful message
+      const data = (await res.json().catch(() => ({}))) as { error?: string }
+      const errText =
+        res.status === 429
+          ? data.error ||
+            "You've hit the hourly limit. Try again later or email Petro at petromilpavlov@gmail.com."
+          : GENERIC_ERROR
+      setMessages([...newMessages, { role: 'error', text: errText }])
     } catch {
-      const fallback =
-        STUB_ANSWERS[trimmed] ??
-        'I don\'t have that on hand — best to email Petro directly at petromilpavlov@gmail.com.'
-      setMessages([...newMessages, { role: 'assistant', text: fallback }])
-      setMode('stub')
+      setMessages([...newMessages, { role: 'error', text: GENERIC_ERROR }])
     } finally {
       setLoading(false)
     }
@@ -100,7 +90,7 @@ export function AskPetro() {
         <div className="flex items-center gap-2 border-b border-zinc-800/60 px-6 py-3">
           <Sparkles className="h-4 w-4 text-amber-400" />
           <span className="font-mono text-xs tracking-wide text-zinc-400">
-            ask-petro · v0.1{mode === 'live' ? ' · live' : ''}
+            ask-petro · v0.1
           </span>
           <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-zinc-600">
             grounded in CV + project docs
@@ -122,6 +112,11 @@ export function AskPetro() {
               {m.role === 'user' ? (
                 <div className="ml-auto max-w-[85%] rounded-lg bg-amber-400/10 px-4 py-2.5 text-zinc-200">
                   {m.text}
+                </div>
+              ) : m.role === 'error' ? (
+                <div className="flex max-w-[90%] items-start gap-2 rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3 leading-relaxed text-red-300/90">
+                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
+                  <span>{m.text}</span>
                 </div>
               ) : (
                 <div className="max-w-[90%] rounded-lg bg-zinc-900/60 px-4 py-3 leading-relaxed text-zinc-300">
@@ -186,9 +181,7 @@ export function AskPetro() {
             </button>
           </form>
           <p className="mt-2 text-[11px] text-zinc-600">
-            {mode === 'stub'
-              ? 'Live API unreachable — using grounded canned answers.'
-              : 'Powered by GPT-5-mini, grounded in Petro\'s CV + projects. Rate-limited per IP.'}
+            Powered by GPT-5-mini, grounded in Petro&rsquo;s CV + projects. Rate-limited per IP.
           </p>
         </div>
       </motion.div>

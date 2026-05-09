@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# AI scraper opt-in (helps Ask Petro / future RAG indexing).
+# Adjust if you want to block specific bots.
+
+Sitemap: https://petropavlov.com/sitemap.xml

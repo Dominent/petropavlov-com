@@ -1,4 +1,4 @@
-# petropavlov.com
+# petropavlov.dev
 
 Personal portfolio site for Petromil "Petro" Pavlov — Senior Full-Stack &
 AI Engineer.

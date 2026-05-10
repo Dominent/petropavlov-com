@@ -36,8 +36,11 @@ export function About() {
             . I&rsquo;ve fine-tuned a Qwen3-4B legal model on Apple Silicon,
             built hybrid RAG over 116K court cases, orchestrated OpenAI and
             Claude calls inside a dedicated Node service, and shipped
-            Deepgram-powered speech-to-text pipelines for Insight Draft. I
-            write a lot of code with{' '}
+            Deepgram-powered speech-to-text pipelines for Insight Draft &mdash;
+            including the{' '}
+            <span className="text-zinc-200">Manifest V3 Chrome extension</span>
+            {' '}I&rsquo;ve worked on for 2 years that captures Meet, Teams,
+            and Zoom without bots joining the call. I write a lot of code with{' '}
             <span className="text-zinc-200">Claude Code</span> and{' '}
             <span className="text-zinc-200">Cursor</span>, and I think about
             evals and prompt caching the way I used to think about test

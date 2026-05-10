@@ -146,7 +146,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         })),
         { role: 'user', content: message.trim() },
       ],
-      max_completion_tokens: 500,
+      // GPT-5 models count internal reasoning tokens against this cap.
+      // 500 was too tight after the system prompt grew — the model spent
+      // its whole budget reasoning and emitted no output. 2000 leaves
+      // room for both, plus we cap reasoning at "minimal" because this
+      // is a CV Q&A bot, not a math/agent task that needs deep thinking.
+      max_completion_tokens: 2000,
+      reasoning_effort: 'minimal',
     })
 
     const text = completion.choices[0]?.message?.content?.trim() ?? ''

@@ -58,7 +58,7 @@ Shipping AI products end-to-end: foundation models → fine-tuned adapters → p
 - **Data**: PostgreSQL, MSSQL, Redis
 
 # Leadership
-Has led teams. Mentors mid/senior engineers. 20+ technical interviews at VMware. Established team-wide patterns (NGRX at VMware, state management at TestGorilla). Leads embedded — through code, reviews, architectural decisions — not from above.
+Has led teams. Mentors mid/senior engineers. 20+ technical interviews at VMware. Established team-wide patterns (NGRX at VMware, state management at TestGorilla). Leads embedded — through code, reviews, architectural decisions — not from above. Certified Scrum Master (Scrum Alliance) since December 2023.
 
 # Engagement types he takes
 - **Consulting**: architecture reviews, AI strategy, code reviews, fractional senior engineering

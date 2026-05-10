@@ -151,4 +151,5 @@ export const skills = {
   Mobile: ['React Native', 'Expo', 'BLE protocols'],
   'Browser Extensions': ['Manifest V3', 'Service workers', 'Content scripts (MAIN world)', 'tabCapture / desktopCapture', 'externally_connectable', 'Chrome Web Store'],
   Data: ['PostgreSQL', 'MSSQL', 'Redis'],
+  Certifications: ['Scrum Alliance · Certified Scrum Master (Dec 2023)'],
 }

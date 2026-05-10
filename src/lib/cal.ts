@@ -12,8 +12,11 @@ export async function initCal() {
   cal('ui', {
     theme: 'dark',
     cssVarsPerTheme: {
-      dark: {
+      light: {
         'cal-brand': '#fbbf24', // amber-400 — matches portfolio accent
+      },
+      dark: {
+        'cal-brand': '#fbbf24',
       },
     },
     hideEventTypeDetails: false,

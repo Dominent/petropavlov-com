@@ -8,6 +8,7 @@ export type Project = {
   links?: { label: string; url: string }[]
   github?: string
   featured?: boolean
+  caseStudyUrl?: string
 }
 
 export const projects: Project[] = [
@@ -43,6 +44,7 @@ export const projects: Project[] = [
     tech: ['TypeScript', 'ASP.NET Core 10', 'Duende IdentityServer', 'Angular', 'Analog.js', 'OID4VP/VCI', 'PostgreSQL'],
     links: [{ label: 'gramota.eu', url: 'https://gramota.eu' }],
     featured: true,
+    caseStudyUrl: '/case-studies/gramota',
   },
 ]
 

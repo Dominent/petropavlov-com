@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import type { Project } from '../data/work'
 import { ArchDiagram } from './ArchDiagram'
 
@@ -40,9 +41,19 @@ export function ProjectCard({ project, index }: Props) {
             ))}
           </h3>
 
-          <p className="mb-8 max-w-2xl text-base leading-relaxed text-zinc-400">
+          <p className="mb-6 max-w-2xl text-base leading-relaxed text-zinc-400">
             {project.description}
           </p>
+
+          {project.caseStudyUrl && (
+            <Link
+              to={project.caseStudyUrl}
+              className="group/cta mb-8 inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/5 px-4 py-2 text-sm font-medium text-amber-200 transition-colors hover:border-amber-500/70 hover:bg-amber-500/10 hover:text-amber-100"
+            >
+              Read the case study
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/cta:translate-x-0.5" />
+            </Link>
+          )}
 
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {project.metrics.map((m) => (

@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { Quote } from 'lucide-react'
 import { testimonials } from '../data/testimonials'
 import { SectionLabel } from './SectionLabel'
-import { LinkedinIcon } from './BrandIcons'
 
 export function Testimonials() {
   if (testimonials.length === 0) return null
@@ -40,18 +39,6 @@ export function Testimonials() {
               <span className="text-sm font-medium text-zinc-100">{t.name}</span>
               <span className="text-zinc-600">·</span>
               <span className="text-sm text-zinc-400">{t.title}</span>
-              {t.source === 'linkedin' && (
-                <a
-                  href="https://www.linkedin.com/in/petro-p-insight-draft/details/recommendations/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="ml-auto inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-500 transition-colors hover:text-amber-400"
-                  aria-label={`View ${t.name}'s recommendation on LinkedIn (opens in a new tab)`}
-                >
-                  <LinkedinIcon className="h-3 w-3" />
-                  LinkedIn
-                </a>
-              )}
               {(t.context || t.date) && (
                 <span className="mt-1 basis-full text-xs text-zinc-500">
                   {[t.context, t.date].filter(Boolean).join(' · ')}

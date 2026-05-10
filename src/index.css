@@ -18,6 +18,10 @@
 html {
   scroll-behavior: smooth;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  /* Drives form-control colors and (importantly) the Cal.com embed's
+     auto-detected color scheme — its modal wrapper polls
+     getComputedStyle(body).colorScheme to pick light vs dark. */
+  color-scheme: dark;
 }
 
 body {

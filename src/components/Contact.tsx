@@ -50,7 +50,7 @@ export function Contact() {
             type="button"
             data-cal-link="petropavlov/intro"
             data-cal-namespace=""
-            data-cal-config='{"theme":"dark"}'
+            data-cal-config='{"theme":"dark","ui.color-scheme":"dark"}'
             className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/5 px-5 py-3 text-sm font-medium text-amber-200 transition-colors hover:border-amber-500/70 hover:bg-amber-500/10 hover:text-amber-100"
           >
             <Calendar className="h-4 w-4" />

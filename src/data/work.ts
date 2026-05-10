@@ -5,7 +5,7 @@ export type Project = {
   description: string
   metrics: { value: string; label: string }[]
   tech: string[]
-  link?: { label: string; url: string }
+  links?: { label: string; url: string }[]
   github?: string
   featured?: boolean
 }
@@ -23,7 +23,10 @@ export const projects: Project[] = [
       { value: 'Solo', label: 'extension · API · LLM service · UI · CI/CD · live in production' },
     ],
     tech: ['Chrome Extension MV3', 'tabCapture', 'desktopCapture', '.NET 8', 'Node.js', 'Angular 21', 'OpenAI', 'Claude', 'Deepgram', 'RAG', 'Vector stores', 'PostgreSQL', 'Stripe', 'AWS S3', 'Jenkins', 'Playwright'],
-    link: { label: 'app.insightdraft.com', url: 'https://app.insightdraft.com' },
+    links: [
+      { label: 'app.insightdraft.com', url: 'https://app.insightdraft.com' },
+      { label: 'Chrome Web Store', url: 'https://chromewebstore.google.com/detail/insight-draft-ai-meeting/ljdgclmpndcckebbncgafkcnnnallbnm' },
+    ],
     featured: true,
   },
   {
@@ -38,7 +41,7 @@ export const projects: Project[] = [
       { value: '5 repos', label: 'gateway · SaaS · identity · demo · site' },
     ],
     tech: ['TypeScript', 'ASP.NET Core 10', 'Duende IdentityServer', 'Angular', 'Analog.js', 'OID4VP/VCI', 'PostgreSQL'],
-    link: { label: 'gramota.eu', url: 'https://gramota.eu' },
+    links: [{ label: 'gramota.eu', url: 'https://gramota.eu' }],
     featured: true,
   },
 ]

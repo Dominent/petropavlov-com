@@ -24,19 +24,20 @@ export function ProjectCard({ project, index }: Props) {
             <span>{project.tagline}</span>
           </div>
 
-          <h3 className="mb-4 flex items-baseline gap-3 text-3xl font-medium tracking-tight text-zinc-50 md:text-4xl">
+          <h3 className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-3xl font-medium tracking-tight text-zinc-50 md:text-4xl">
             {project.title}
-            {project.link && (
+            {project.links?.map((l) => (
               <a
-                href={project.link.url}
+                key={l.url}
+                href={l.url}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-1 text-sm font-normal text-amber-400/80 transition-colors hover:text-amber-300"
               >
-                {project.link.label}
+                {l.label}
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
-            )}
+            ))}
           </h3>
 
           <p className="mb-8 max-w-2xl text-base leading-relaxed text-zinc-400">

@@ -18,7 +18,7 @@ Shipping AI products end-to-end: foundation models → fine-tuned adapters → p
 # Selected products
 
 ## Insight Draft (app.insightdraft.com) — solo-built production AI SaaS for meetings
-- Chrome extension (Manifest V3, 2 years' work, published on the Chrome Web Store) — records Google Meet, Microsoft Teams, and Zoom WITHOUT bots joining the call. Uses tabCapture for browser-based meetings and desktopCapture for desktop clients. Multi-package monorepo (content scripts, tooltip overlay, Next.js popup, shared utilities) with E2E test suite. Bidirectional messaging with the web app via externally_connectable. MAIN-world content script for Google Meet interception.
+- Chrome extension (Manifest V3, 2 years' work) — published on the Chrome Web Store: https://chromewebstore.google.com/detail/insight-draft-ai-meeting/ljdgclmpndcckebbncgafkcnnnallbnm — records Google Meet, Microsoft Teams, and Zoom WITHOUT bots joining the call. Uses tabCapture for browser-based meetings and desktopCapture for desktop clients. Multi-package monorepo (content scripts, tooltip overlay, Next.js popup, shared utilities) with E2E test suite. Bidirectional messaging with the web app via externally_connectable. MAIN-world content script for Google Meet interception.
 - Real-time speaker-attributed transcription via Deepgram
 - AI summaries with topic chapters
 - RAG-powered Q&A assistant grounded in transcript with verified citations

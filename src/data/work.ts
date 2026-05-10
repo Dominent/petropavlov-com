@@ -152,4 +152,5 @@ export const skills = {
   'Browser Extensions': ['Manifest V3', 'Service workers', 'Content scripts (MAIN world)', 'tabCapture / desktopCapture', 'externally_connectable', 'Chrome Web Store'],
   Data: ['PostgreSQL', 'MSSQL', 'Redis'],
   Certifications: ['Scrum Alliance · Certified Scrum Master (Dec 2023)'],
+  Education: ['Technical University of Sofia · BSc Industrial Engineering', 'Telerik Academy · Software Engineering'],
 }

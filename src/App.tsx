@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { SideNav, TopBar } from './components/SideNav'
 import { Hero } from './components/Hero'
 import { SelectedWork } from './components/SelectedWork'
@@ -6,8 +7,13 @@ import { Experience } from './components/Experience'
 import { About } from './components/About'
 import { AskPetro } from './components/AskPetro'
 import { Contact } from './components/Contact'
+import { initCal } from './lib/cal'
 
 function App() {
+  useEffect(() => {
+    initCal()
+  }, [])
+
   return (
     <div className="relative min-h-screen">
       <TopBar />

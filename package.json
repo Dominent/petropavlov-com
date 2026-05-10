@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",
+    "@calcom/embed-react": "^1.5.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/node": "^5.7.16",
     "clsx": "^2.1.1",

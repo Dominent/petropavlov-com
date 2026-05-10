@@ -17,15 +17,17 @@ Shipping AI products end-to-end: foundation models → fine-tuned adapters → p
 
 # Selected products
 
-## Insight Draft (app.insightdraft.com) — solo-built production AI SaaS for meetings
+## Insight Draft (app.insightdraft.com) — production AI SaaS for meetings (engineering led solo within a two-person founding team)
+- Case study: https://petropavlov.dev/case-studies/insight-draft
 - Chrome extension (Manifest V3, 2 years' work) — published on the Chrome Web Store: https://chromewebstore.google.com/detail/insight-draft-ai-meeting/ljdgclmpndcckebbncgafkcnnnallbnm — records Google Meet, Microsoft Teams, and Zoom WITHOUT bots joining the call. Uses tabCapture for browser-based meetings and desktopCapture for desktop clients. Multi-package monorepo (content scripts, tooltip overlay, Next.js popup, shared utilities) with E2E test suite. Bidirectional messaging with the web app via externally_connectable. MAIN-world content script for Google Meet interception.
-- Real-time speaker-attributed transcription via Deepgram
-- AI summaries with topic chapters
-- RAG-powered Q&A assistant grounded in transcript with verified citations
-- AI Quick Actions (extract decisions, action items)
-- Conversation analytics (speaking time, interruptions, turn-taking, phrase frequency)
-- Custom prompt framework runs in Hangfire background jobs
-- Stack: .NET 8 + PostgreSQL backend, dedicated Node.js LLM service orchestrating GPT-5-mini + Claude 3.5 across RAG / zero-shot / moderation endpoints, Angular 21 client. Stripe billing, S3 storage, Jenkins CI/CD across 3 envs, Playwright E2E.
+- Separate Slack Huddle bot (Playwright + stealth) for meetings where tab capture doesn't apply.
+- Speaker-attributed transcription via Deepgram (Nova-3 multilingual, post-call) plus live Google Meet caption scraping for speaker attribution.
+- AI summaries with topic chapters, RAG-powered Q&A grounded in transcript with verifiable citations (OpenAI Responses API + file_search vector stores).
+- AI Quick Actions (extract decisions, action items, custom user-defined prompts).
+- Conversation analytics (speaking time, interruptions, turn-taking, phrase frequency, value tracking).
+- Multi-model OpenAI orchestration: PostMeetingAnalysisBackgroundJob fans out to 6+ parallel LLM calls (summary, chapters, highlights, tags, behaviour mentions, classification) all with strict JSON schemas; the architecture supports multi-provider (Strategy + enum scaffold for Anthropic) but currently routes to OpenAI exclusively.
+- Custom Hangfire fan-out/fan-in coordinator built from scratch on top of Postgres atomic UPDATE...RETURNING (avoiding paid Hangfire Pro).
+- Stack: .NET 8 + PostgreSQL backend (two databases — main app + a separate transcript DB for high-write Word/Caption tables), dedicated Node.js LLM service (Express + tsoa), Angular 17 client. Stripe billing with Strategy-pattern subscription change handlers. S3 storage. Jenkins CI/CD. Playwright E2E.
 
 ## Gramota (gramota.eu) — EU Digital Identity Wallet SDK · eIDAS 2
 - 12+ published npm packages with provenance

@@ -34,8 +34,8 @@ export function About() {
               shipping AI products end-to-end
             </span>
             . I&rsquo;ve fine-tuned a Qwen3-4B legal model on Apple Silicon,
-            built hybrid RAG over 116K court cases, orchestrated OpenAI and
-            Claude calls inside a dedicated Node service, and shipped
+            built hybrid RAG over 116K court cases, orchestrated multi-model
+            OpenAI calls through a dedicated Node service, and shipped
             Deepgram-powered speech-to-text pipelines for Insight Draft &mdash;
             including the{' '}
             <span className="text-zinc-200">Manifest V3 Chrome extension</span>

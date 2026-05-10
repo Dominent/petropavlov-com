@@ -17,18 +17,19 @@ export const projects: Project[] = [
     title: 'Insight Draft',
     tagline: 'Production AI SaaS for meetings',
     description:
-      'Insight Draft turns meeting recordings into searchable team knowledge — instant summaries, action items, and a Q&A assistant grounded in the transcript with verified citations. The Chrome extension (Manifest V3, 2 years\' work, published on the Chrome Web Store) records Google Meet, Microsoft Teams, and Zoom without bots joining the call — uses tabCapture for browser-based meetings and desktopCapture for desktop clients, plus manual recording. Real-time speaker-attributed transcription via Deepgram feeds AI summaries with topic chapters, RAG-powered Q&A, AI Quick Actions for decisions, and conversation analytics (speaking time, interruptions, turn-taking). Built solo from API to UI: .NET 8 backend, dedicated Node.js LLM service orchestrating GPT-5-mini + Claude 3.5 across RAG, zero-shot, and moderation endpoints, Angular 21 client. Multi-environment Jenkins CI/CD, Stripe billing, S3 storage, Playwright E2E.',
+      'Insight Draft turns meeting recordings into searchable team knowledge — instant summaries, action items, and a Q&A assistant grounded in the transcript with verifiable citations. The Chrome extension (Manifest V3, 2 years\' work, published on the Chrome Web Store) records Google Meet, Microsoft Teams, and Zoom without bots joining the call — uses tabCapture for browser-based meetings and desktopCapture for desktop clients, plus manual recording. A separate Slack Huddle bot covers the case where tab capture doesn\'t apply. Speaker-attributed transcription via Deepgram (Nova-3 multilingual) feeds AI summaries with topic chapters, RAG-powered Q&A, AI Quick Actions for decisions, and conversation analytics (speaking time, interruptions, turn-taking). Engineered end-to-end (engineering led solo within a two-person founding team): .NET 8 backend, dedicated Node.js LLM service orchestrating multiple OpenAI models via the Responses API with strict structured outputs, Angular 17 client. Multi-environment Jenkins CI/CD, Stripe billing, S3 storage, Playwright E2E.',
     metrics: [
       { value: '2 yrs', label: 'on the Manifest V3 Chrome extension — bot-free Meet/Teams/Zoom recording' },
-      { value: '2 LLMs', label: 'multi-provider — GPT-5-mini primary, Claude 3.5 secondary' },
-      { value: 'Solo', label: 'extension · API · LLM service · UI · CI/CD · live in production' },
+      { value: '12+', label: 'parallel LLM calls per meeting (summary, chapters, highlights, tags, behaviour mentions, classification)' },
+      { value: 'Solo eng', label: 'extension · API · LLM service · UI · CI/CD · live in production' },
     ],
-    tech: ['Chrome Extension MV3', 'tabCapture', 'desktopCapture', '.NET 8', 'Node.js', 'Angular 21', 'OpenAI', 'Claude', 'Deepgram', 'RAG', 'Vector stores', 'PostgreSQL', 'Stripe', 'AWS S3', 'Jenkins', 'Playwright'],
+    tech: ['Chrome Extension MV3', 'tabCapture', 'desktopCapture', '.NET 8', 'Node.js', 'Angular 17', 'OpenAI Responses API', 'Deepgram', 'RAG', 'PostgreSQL', 'Stripe', 'Hangfire', 'AWS S3', 'Jenkins', 'Playwright'],
     links: [
       { label: 'app.insightdraft.com', url: 'https://app.insightdraft.com' },
       { label: 'Chrome Web Store', url: 'https://chromewebstore.google.com/detail/insight-draft-ai-meeting/ljdgclmpndcckebbncgafkcnnnallbnm' },
     ],
     featured: true,
+    caseStudyUrl: '/case-studies/insight-draft',
   },
   {
     id: 'gramota',

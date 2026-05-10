@@ -10,7 +10,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="mx-auto max-w-5xl px-6 py-24 lg:px-0">
-      <SectionLabel num="06" title="Get in touch" />
+      <SectionLabel num="07" title="Get in touch" />
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}

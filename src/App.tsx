@@ -6,6 +6,7 @@ import { AIEngineering } from './components/AIEngineering'
 import { Experience } from './components/Experience'
 import { About } from './components/About'
 import { AskPetro } from './components/AskPetro'
+import { Testimonials } from './components/Testimonials'
 import { Contact } from './components/Contact'
 import { initCal } from './lib/cal'
 
@@ -27,6 +28,7 @@ function App() {
         <Experience />
         <About />
         <AskPetro />
+        <Testimonials />
         <Contact />
       </main>
     </div>

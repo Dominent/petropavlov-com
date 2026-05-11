@@ -41,16 +41,16 @@ export function SideNav() {
               className={clsx(
                 'group flex items-center gap-3 font-mono text-xs uppercase tracking-wider transition-all',
                 active === id
-                  ? 'text-amber-400'
-                  : 'text-zinc-500 hover:text-zinc-200'
+                  ? 'text-accent'
+                  : 'text-faint hover:text-muted'
               )}
             >
               <span
                 className={clsx(
                   'h-px transition-all',
                   active === id
-                    ? 'w-12 bg-amber-400'
-                    : 'w-6 bg-zinc-700 group-hover:w-10 group-hover:bg-zinc-400'
+                    ? 'w-12 bg-accent'
+                    : 'w-6 bg-border-strong group-hover:w-10 group-hover:bg-dim'
                 )}
               />
               <span>
@@ -67,16 +67,16 @@ export function SideNav() {
 
 export function TopBar() {
   return (
-    <header className="fixed top-0 right-0 left-0 z-30 border-b border-zinc-900/50 bg-zinc-950/70 backdrop-blur-md">
+    <header className="fixed top-0 right-0 left-0 z-30 border-b border-border-subtle/50 bg-background/70 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6 lg:pl-72">
         <a href="#hero" className="font-mono text-sm font-medium tracking-tight">
-          <span className="text-amber-400">$</span>{' '}
-          <span className="text-zinc-100">petro.pavlov</span>
-          <span className="ml-1 inline-block h-3 w-1.5 animate-pulse bg-amber-400 align-middle" />
+          <span className="text-accent">$</span>{' '}
+          <span className="text-foreground">petro.pavlov</span>
+          <span className="ml-1 inline-block h-3 w-1.5 animate-pulse bg-accent align-middle" />
         </a>
         <a
           href="#contact"
-          className="font-mono text-xs uppercase tracking-wider text-zinc-400 transition-colors hover:text-amber-400"
+          className="font-mono text-xs uppercase tracking-wider text-dim transition-colors hover:text-accent"
         >
           Get in touch &rarr;
         </a>

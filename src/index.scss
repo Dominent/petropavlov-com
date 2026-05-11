@@ -1,0 +1,100 @@
+// =============================================================================
+// SCSS layer — everything that ISN'T Tailwind utility generation.
+// Tokens + @import "tailwindcss" + @plugin live in src/theme.css (processed
+// by @tailwindcss/vite plugin, which needs a plain .css file). This file
+// references those tokens via var(--color-X) and adds SCSS features:
+// nested rules, mixins, and SCSS-only constants.
+// =============================================================================
+
+// SCSS-only constants — values that don't need to drive Tailwind utilities
+$bg-gradient-amber: rgba(245, 158, 11, 0.08);
+$selection-bg: rgba(245, 158, 11, 0.25);
+$grid-line: rgba(255, 255, 255, 0.03);
+
+// =============================================================================
+// Base
+// =============================================================================
+html {
+  scroll-behavior: smooth;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  // Drives form-control colors and the Cal.com embed's auto-detected color
+  // scheme — its modal wrapper polls getComputedStyle(body).colorScheme.
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, $bg-gradient-amber, transparent),
+    var(--color-background);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+::selection {
+  background: $selection-bg;
+  color: var(--color-foreground);
+}
+
+// =============================================================================
+// Scrollbar (WebKit) — nested rules courtesy of SCSS
+// =============================================================================
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--color-border-strong);
+  }
+}
+
+// =============================================================================
+// Animations
+// =============================================================================
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); }
+}
+.float-soft {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--color-foreground) 0%,
+    var(--color-foreground) 40%,
+    var(--color-accent-soft) 50%,
+    var(--color-foreground) 60%,
+    var(--color-foreground) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 8s linear infinite;
+}
+
+// =============================================================================
+// Utilities
+// =============================================================================
+section {
+  scroll-margin-top: 64px;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right,  $grid-line 1px, transparent 1px),
+    linear-gradient(to bottom, $grid-line 1px, transparent 1px);
+  background-size: 32px 32px;
+}

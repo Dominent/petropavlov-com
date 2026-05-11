@@ -68,7 +68,7 @@ export const aiSystems: AISystem[] = [
 ]
 
 export const statusColors: Record<AISystem['status'], string> = {
-  production: 'border-emerald-500/30 bg-emerald-500/5 text-emerald-400',
+  production: 'border-success/30 bg-success/5 text-success',
   showcased: 'border-violet-500/30 bg-violet-500/5 text-violet-400',
   internal: 'border-sky-500/30 bg-sky-500/5 text-sky-400',
 }

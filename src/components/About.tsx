@@ -8,7 +8,7 @@ export function About() {
       <SectionLabel num="04" title="About" />
 
       <div className="grid gap-12 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5 text-lg leading-relaxed text-zinc-300">
+        <div className="space-y-5 text-lg leading-relaxed text-muted">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -16,7 +16,7 @@ export function About() {
             transition={{ duration: 0.6 }}
           >
             I&rsquo;ve been a senior engineer for{' '}
-            <span className="text-amber-400">10+ years</span> &mdash; deepest
+            <span className="text-accent">10+ years</span> &mdash; deepest
             on the frontend (Angular 8&ndash;18, TypeScript, RxJS, NGRX),
             always paired with the backend (C#/.NET and Node.js). At VMware I
             built Workspace ONE features from scratch; at TestGorilla I
@@ -30,7 +30,7 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             For the last few years I&rsquo;ve focused on{' '}
-            <span className="font-serif italic text-amber-200/90">
+            <span className="font-serif italic text-accent-bright/90">
               shipping AI products end-to-end
             </span>
             . I&rsquo;ve fine-tuned a Qwen3-4B legal model on Apple Silicon,
@@ -38,11 +38,11 @@ export function About() {
             OpenAI calls through a dedicated Node service, and shipped
             Deepgram-powered speech-to-text pipelines for Insight Draft &mdash;
             including the{' '}
-            <span className="text-zinc-200">Manifest V3 Chrome extension</span>
+            <span className="text-muted">Manifest V3 Chrome extension</span>
             {' '}I&rsquo;ve worked on for 2 years that captures Meet, Teams,
             and Zoom without bots joining the call. I write a lot of code with{' '}
-            <span className="text-zinc-200">Claude Code</span> and{' '}
-            <span className="text-zinc-200">Cursor</span>, and I think about
+            <span className="text-muted">Claude Code</span> and{' '}
+            <span className="text-muted">Cursor</span>, and I think about
             evals and prompt caching the way I used to think about test
             coverage and bundle size.
           </motion.p>
@@ -53,12 +53,12 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             Outside of AI I have deep work in{' '}
-            <span className="text-zinc-200">identity</span> &mdash; Duende
+            <span className="text-muted">identity</span> &mdash; Duende
             IdentityServer, OAuth/OIDC, the EU&rsquo;s OID4VP/VCI standards,
             and X.509 PKI &mdash;{' '}
-            <span className="text-zinc-200">Stripe</span> billing across
+            <span className="text-muted">Stripe</span> billing across
             multiple SaaS products, and{' '}
-            <span className="text-zinc-200">fintech / regulatory</span> work
+            <span className="text-muted">fintech / regulatory</span> work
             (billing systems for Octopus Energy DE serving 40K+ users).
           </motion.p>
           <motion.p
@@ -68,13 +68,13 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             I&rsquo;ve{' '}
-            <span className="text-zinc-200">led teams</span> &mdash;
+            <span className="text-muted">led teams</span> &mdash;
             mentoring mid and senior engineers, owning architectural
             decisions, and conducting 20+ technical interviews for senior
             Angular roles at VMware. I lead embedded in the work: through
             code, reviews, and patterns the team adopts &mdash; not from
             above. Open to{' '}
-            <span className="font-serif italic text-amber-200/90">
+            <span className="font-serif italic text-accent-bright/90">
               EU and US clients
             </span>
             ; comfortable across timezones.
@@ -82,19 +82,19 @@ export function About() {
         </div>
 
         <div className="space-y-5">
-          <h3 className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+          <h3 className="font-mono text-[11px] uppercase tracking-wider text-faint">
             What I work with
           </h3>
           {Object.entries(skills).map(([group, items]) => (
             <div key={group}>
-              <div className="mb-1.5 text-[11px] font-medium tracking-wider text-amber-400/90 uppercase">
+              <div className="mb-1.5 text-[11px] font-medium tracking-wider text-accent/90 uppercase">
                 {group}
               </div>
               <div className="flex flex-wrap gap-1">
                 {items.map((s) => (
                   <span
                     key={s}
-                    className="rounded border border-zinc-800/70 bg-zinc-900/40 px-2 py-0.5 font-mono text-[11px] text-zinc-400"
+                    className="rounded border border-border/70 bg-surface/40 px-2 py-0.5 font-mono text-[11px] text-dim"
                   >
                     {s}
                   </span>

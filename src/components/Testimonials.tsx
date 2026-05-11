@@ -22,25 +22,25 @@ export function Testimonials() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.6, delay: i * 0.06 }}
-            className="relative overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/30 p-6 md:p-8"
+            className="relative overflow-hidden rounded-2xl border border-border/80 bg-surface/30 p-6 md:p-8"
           >
             <Quote
-              className="absolute top-6 right-6 h-10 w-10 text-amber-400/15"
+              className="absolute top-6 right-6 h-10 w-10 text-accent/15"
               aria-hidden="true"
             />
 
-            <blockquote className="space-y-4 font-serif text-base leading-relaxed text-zinc-200 italic md:text-lg">
+            <blockquote className="space-y-4 font-serif text-base leading-relaxed text-muted italic md:text-lg">
               {t.quote.split('\n\n').map((para, pi) => (
                 <p key={pi}>{para}</p>
               ))}
             </blockquote>
 
             <figcaption className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="text-sm font-medium text-zinc-100">{t.name}</span>
-              <span className="text-zinc-600">·</span>
-              <span className="text-sm text-zinc-400">{t.title}</span>
+              <span className="text-sm font-medium text-foreground">{t.name}</span>
+              <span className="text-ghost">·</span>
+              <span className="text-sm text-dim">{t.title}</span>
               {(t.context || t.date) && (
-                <span className="mt-1 basis-full text-xs text-zinc-500">
+                <span className="mt-1 basis-full text-xs text-faint">
                   {[t.context, t.date].filter(Boolean).join(' · ')}
                 </span>
               )}

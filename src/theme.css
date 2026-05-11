@@ -1,0 +1,50 @@
+/* ============================================================================
+   Tailwind v4 entry + theme tokens
+   ----------------------------------------------------------------------------
+   This file is processed by the @tailwindcss/vite plugin, which needs to see
+   @import "tailwindcss" and @theme in a plain CSS file (not SCSS) to generate
+   utility classes from our semantic tokens.
+
+   Everything else — animations, base styles, scrollbar, custom utilities —
+   lives in src/index.scss and uses these tokens via var(--color-X).
+
+   Future light mode: override these values inside `:root.light`
+   (or `:root:not(.dark)`) and the whole site flips. Today dark-only.
+   ============================================================================ */
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* ---- Fonts ---- */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  /* ---- Surfaces ---- */
+  --color-background: #09090b;       /* page bg */
+  --color-surface: #18181b;          /* card bg base */
+  --color-surface-elevated: #27272a; /* elevated/hover bg */
+
+  /* ---- Text ---- */
+  --color-foreground: #fafafa;       /* primary text */
+  --color-muted: #d4d4d8;            /* secondary text */
+  --color-dim: #a1a1aa;              /* tertiary text */
+  --color-faint: #71717a;            /* faint text */
+  --color-ghost: #52525b;            /* ghost text (lowest visible tier) */
+
+  /* ---- Borders ---- */
+  --color-border: #27272a;           /* default border */
+  --color-border-subtle: #1f1f23;    /* subtle border */
+  --color-border-strong: #3f3f46;    /* strong (hover) border */
+
+  /* ---- Accent (amber) ---- */
+  --color-accent: #fbbf24;           /* primary accent */
+  --color-accent-bright: #fcd34d;    /* hover accent */
+  --color-accent-soft: #f59e0b;      /* darker accent */
+  --color-accent-foreground: #09090b;/* text on accent bg */
+
+  /* ---- Semantic ---- */
+  --color-success: #34d399;          /* "available" pulse, success states */
+  --color-error: #f87171;            /* error states */
+}

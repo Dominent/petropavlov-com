@@ -19,8 +19,8 @@ const InsightDraftCaseStudy = lazy(() =>
 
 function CaseStudyFallback() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-      <div className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="font-mono text-xs uppercase tracking-wider text-faint">
         Loading case study…
       </div>
     </div>

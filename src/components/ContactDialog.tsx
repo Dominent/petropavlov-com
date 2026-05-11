@@ -110,22 +110,22 @@ export function ContactDialog({ open, onClose }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl shadow-black/60"
+            className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-background shadow-2xl shadow-black/60"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800/60 px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border/60 px-6 py-4">
               <h2
                 id="contact-dialog-title"
-                className="flex items-center gap-2 text-base font-medium text-zinc-100"
+                className="flex items-center gap-2 text-base font-medium text-foreground"
               >
-                <Sparkles className="h-4 w-4 text-amber-400" />
+                <Sparkles className="h-4 w-4 text-accent" />
                 Send me a message
               </h2>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="rounded p-1 text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-zinc-100"
+                className="rounded p-1 text-faint transition-colors hover:bg-surface hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -133,27 +133,27 @@ export function ContactDialog({ open, onClose }: Props) {
 
             {status === 'success' ? (
               <div className="flex flex-col items-center px-6 py-12 text-center">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10">
-                  <Check className="h-5 w-5 text-emerald-400" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-success/30 bg-success/10">
+                  <Check className="h-5 w-5 text-success" />
                 </div>
-                <h3 className="mb-2 text-lg font-medium text-zinc-100">
+                <h3 className="mb-2 text-lg font-medium text-foreground">
                   Message sent
                 </h3>
-                <p className="max-w-sm text-sm text-zinc-400">
+                <p className="max-w-sm text-sm text-dim">
                   I typically reply within a day &mdash; you&rsquo;ll hear
                   back on the email you provided.
                 </p>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="mt-6 rounded-full bg-amber-400 px-5 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-amber-300"
+                  className="mt-6 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-bright"
                 >
                   Done
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-dim">
                   Tell me what you&rsquo;re working on and how I can help.
                   I&rsquo;ll reply within a day.
                 </p>
@@ -168,7 +168,7 @@ export function ContactDialog({ open, onClose }: Props) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     autoComplete="name"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-amber-400/50 focus:bg-zinc-900/70 focus:outline-none"
+                    className="w-full rounded-lg border border-border bg-surface/40 px-3 py-2 text-sm text-foreground placeholder:text-ghost focus:border-accent/50 focus:bg-surface/70 focus:outline-none"
                     placeholder="Jane Cooper"
                   />
                 </Field>
@@ -181,7 +181,7 @@ export function ContactDialog({ open, onClose }: Props) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-amber-400/50 focus:bg-zinc-900/70 focus:outline-none"
+                    className="w-full rounded-lg border border-border bg-surface/40 px-3 py-2 text-sm text-foreground placeholder:text-ghost focus:border-accent/50 focus:bg-surface/70 focus:outline-none"
                     placeholder="jane@company.com"
                   />
                 </Field>
@@ -194,31 +194,31 @@ export function ContactDialog({ open, onClose }: Props) {
                     rows={5}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="w-full resize-y rounded-lg border border-zinc-800 bg-zinc-900/40 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-amber-400/50 focus:bg-zinc-900/70 focus:outline-none"
+                    className="w-full resize-y rounded-lg border border-border bg-surface/40 px-3 py-2 text-sm text-foreground placeholder:text-ghost focus:border-accent/50 focus:bg-surface/70 focus:outline-none"
                     placeholder="Building an AI feature into our SaaS — looking for someone to lead the architecture and ship a working slice in 4 weeks..."
                   />
                 </Field>
 
                 {status === 'error' && errorMessage && (
-                  <div className="flex items-start gap-2 rounded-lg border border-rose-500/30 bg-rose-500/5 p-3 text-sm text-rose-300">
+                  <div className="flex items-start gap-2 rounded-lg border border-error/30 bg-error/5 p-3 text-sm text-error">
                     <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                     <span>{errorMessage}</span>
                   </div>
                 )}
 
                 <div className="flex items-center justify-between gap-4 pt-2">
-                  <p className="text-[11px] text-zinc-600">
+                  <p className="text-[11px] text-ghost">
                     By sending you agree your email is used to reply. Nothing
                     else is stored.
                   </p>
                   <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-amber-400 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-bright disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {status === 'submitting' ? (
                       <>
-                        <span className="inline-block h-3 w-3 animate-spin rounded-full border border-zinc-950 border-t-transparent" />
+                        <span className="inline-block h-3 w-3 animate-spin rounded-full border border-accent-foreground border-t-transparent" />
                         Sending
                       </>
                     ) : (
@@ -247,7 +247,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-amber-400/80">
+      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wider text-accent/80">
         {label}
       </span>
       {children}

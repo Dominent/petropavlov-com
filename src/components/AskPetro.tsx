@@ -85,22 +85,22 @@ export function AskPetro() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.7 }}
-        className="overflow-hidden rounded-2xl border border-zinc-800/80 bg-gradient-to-b from-zinc-900/60 to-zinc-900/20"
+        className="overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-surface/60 to-surface/20"
       >
-        <div className="flex items-center gap-2 border-b border-zinc-800/60 px-6 py-3">
-          <Sparkles className="h-4 w-4 text-amber-400" />
-          <span className="font-mono text-xs tracking-wide text-zinc-400">
+        <div className="flex items-center gap-2 border-b border-border/60 px-6 py-3">
+          <Sparkles className="h-4 w-4 text-accent" />
+          <span className="font-mono text-xs tracking-wide text-dim">
             ask-petro · v0.1
           </span>
-          <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+          <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-ghost">
             grounded in CV + project docs
           </span>
         </div>
 
         <div className="min-h-72 space-y-4 p-6">
           {messages.length === 0 && (
-            <div className="rounded-lg bg-zinc-900/40 px-4 py-3 text-sm text-zinc-400">
-              <span className="font-mono text-amber-400">petro:</span> Hi.
+            <div className="rounded-lg bg-surface/40 px-4 py-3 text-sm text-dim">
+              <span className="font-mono text-accent">petro:</span> Hi.
               I&rsquo;m Petro&rsquo;s AI assistant, grounded in his CV,
               project READMEs, and recent work. Ask me anything &mdash; I&rsquo;ll
               answer with what I actually know and tell you when I don&rsquo;t.
@@ -110,7 +110,7 @@ export function AskPetro() {
           {messages.map((m, i) => (
             <div key={i} className="text-sm">
               {m.role === 'user' ? (
-                <div className="ml-auto max-w-[85%] rounded-lg bg-amber-400/10 px-4 py-2.5 text-zinc-200">
+                <div className="ml-auto max-w-[85%] rounded-lg bg-accent/10 px-4 py-2.5 text-muted">
                   {m.text}
                 </div>
               ) : m.role === 'error' ? (
@@ -119,8 +119,8 @@ export function AskPetro() {
                   <span>{m.text}</span>
                 </div>
               ) : (
-                <div className="max-w-[90%] rounded-lg bg-zinc-900/60 px-4 py-3 leading-relaxed text-zinc-300">
-                  <span className="mr-2 font-mono text-amber-400">petro:</span>
+                <div className="max-w-[90%] rounded-lg bg-surface/60 px-4 py-3 leading-relaxed text-muted">
+                  <span className="mr-2 font-mono text-accent">petro:</span>
                   {m.text}
                 </div>
               )}
@@ -129,19 +129,19 @@ export function AskPetro() {
 
           {loading && (
             <div className="text-sm">
-              <div className="inline-flex items-center gap-2 rounded-lg bg-zinc-900/60 px-4 py-3 text-zinc-400">
-                <span className="font-mono text-amber-400">petro:</span>
+              <div className="inline-flex items-center gap-2 rounded-lg bg-surface/60 px-4 py-3 text-dim">
+                <span className="font-mono text-accent">petro:</span>
                 <span className="inline-flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-500 [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-500 [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-500" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint" />
                 </span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="border-t border-zinc-800/60 px-6 py-3">
+        <div className="border-t border-border/60 px-6 py-3">
           <div className="mb-3 flex flex-wrap gap-2">
             {SAMPLE_PROMPTS.map((p) => (
               <button
@@ -149,7 +149,7 @@ export function AskPetro() {
                 type="button"
                 onClick={() => send(p)}
                 disabled={loading}
-                className="rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1 font-mono text-[11px] text-zinc-400 transition-colors hover:border-amber-500/30 hover:text-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-full border border-border bg-surface/40 px-3 py-1 font-mono text-[11px] text-dim transition-colors hover:border-accent-soft/30 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {p}
               </button>
@@ -161,7 +161,7 @@ export function AskPetro() {
               e.preventDefault()
               send(input)
             }}
-            className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-950/60 px-3 py-2"
+            className="flex items-center gap-2 rounded-lg border border-border bg-background/60 px-3 py-2"
           >
             <input
               value={input}
@@ -169,18 +169,18 @@ export function AskPetro() {
               placeholder="Ask anything about Petro's work..."
               disabled={loading}
               maxLength={600}
-              className="flex-1 bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:opacity-50"
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-ghost focus:outline-none disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="rounded-md bg-amber-400 p-1.5 text-zinc-950 transition-colors hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-md bg-accent p-1.5 text-accent-foreground transition-colors hover:bg-accent-bright disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Send"
             >
               <Send className="h-3.5 w-3.5" />
             </button>
           </form>
-          <p className="mt-2 text-[11px] text-zinc-600">
+          <p className="mt-2 text-[11px] text-ghost">
             Powered by GPT-5-mini, grounded in Petro&rsquo;s CV + projects. Rate-limited per IP.
           </p>
         </div>

@@ -16,10 +16,10 @@ export function AIEngineering() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mb-12 max-w-3xl text-lg leading-relaxed text-zinc-300"
+        className="mb-12 max-w-3xl text-lg leading-relaxed text-muted"
       >
         I ship AI products{' '}
-        <span className="font-serif italic text-amber-200/90">
+        <span className="font-serif italic text-accent-bright/90">
           end-to-end
         </span>{' '}
         — from foundation models through fine-tuned adapters and production
@@ -36,13 +36,13 @@ export function AIEngineering() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.5, delay: gi * 0.1 }}
-            className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-5"
+            className="rounded-xl border border-border/80 bg-surface/30 p-5"
           >
             <div className="mb-3 flex items-center gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-amber-400">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-accent">
                 0{gi + 1}
               </span>
-              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-300">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-muted">
                 {group}
               </span>
             </div>
@@ -50,9 +50,9 @@ export function AIEngineering() {
               {items.map((item) => (
                 <li
                   key={item}
-                  className="flex items-baseline gap-2 font-mono text-[13px] text-zinc-400"
+                  className="flex items-baseline gap-2 font-mono text-[13px] text-dim"
                 >
-                  <span className="text-zinc-700">›</span>
+                  <span className="text-ghost">›</span>
                   <span>{item}</span>
                 </li>
               ))}
@@ -63,10 +63,10 @@ export function AIEngineering() {
 
       <div>
         <div className="mb-4 flex items-center gap-3">
-          <h3 className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+          <h3 className="font-mono text-[11px] uppercase tracking-wider text-faint">
             AI systems shipped
           </h3>
-          <span aria-hidden="true" className="h-px flex-1 bg-zinc-800" />
+          <span aria-hidden="true" className="h-px flex-1 bg-surface-elevated" />
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
@@ -77,24 +77,24 @@ export function AIEngineering() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: i * 0.06 }}
-              className="group rounded-lg border border-zinc-800/80 bg-zinc-900/30 p-4 transition-colors hover:border-zinc-700"
+              className="group rounded-lg border border-border/80 bg-surface/30 p-4 transition-colors hover:border-border-strong"
             >
               <div className="mb-2 flex items-start justify-between gap-2">
-                <h4 className="text-sm font-medium leading-tight text-zinc-100">{sys.title}</h4>
+                <h4 className="text-sm font-medium leading-tight text-foreground">{sys.title}</h4>
                 <span
                   className={`flex-shrink-0 rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider ${statusColors[sys.status]}`}
                 >
                   {sys.status}
                 </span>
               </div>
-              <p className="mb-3 text-[13px] leading-relaxed text-zinc-400">
+              <p className="mb-3 text-[13px] leading-relaxed text-dim">
                 {sys.oneLiner}
               </p>
               <div className="flex flex-wrap gap-1">
                 {sys.tags.map((t) => (
                   <span
                     key={t}
-                    className="rounded border border-zinc-800/70 bg-zinc-950/50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500"
+                    className="rounded border border-border/70 bg-background/50 px-1.5 py-0.5 font-mono text-[10px] text-faint"
                   >
                     {t}
                   </span>

@@ -114,13 +114,13 @@ export function GramotaCaseStudy() {
   useArticleHead()
 
   return (
-    <div className="relative min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="relative min-h-screen bg-background text-foreground">
       {/* top bar */}
-      <header className="border-b border-zinc-900/60 bg-zinc-950/80 backdrop-blur-md">
+      <header className="border-b border-border-subtle/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-zinc-400 transition-colors hover:text-amber-400"
+            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-dim transition-colors hover:text-accent"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             back to petro.pavlov
@@ -129,7 +129,7 @@ export function GramotaCaseStudy() {
             href="https://cal.com/petropavlov/intro"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/5 px-3 py-1 text-xs text-amber-200 transition-colors hover:border-amber-500/70 hover:bg-amber-500/10"
+            className="inline-flex items-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-3 py-1 text-xs text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10"
           >
             <Calendar className="h-3 w-3" />
             Book intro
@@ -140,32 +140,32 @@ export function GramotaCaseStudy() {
       <article className="mx-auto max-w-3xl px-6 pt-14 pb-24">
         {/* article header */}
         <div className="mb-12">
-          <div className="mb-6 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wider text-amber-400/90">
+          <div className="mb-6 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wider text-accent/90">
             <span>case study</span>
-            <span className="h-px w-8 bg-zinc-700" />
-            <span className="text-zinc-500">EU Digital Identity</span>
+            <span className="h-px w-8 bg-border-strong" />
+            <span className="text-faint">EU Digital Identity</span>
           </div>
-          <h1 className="mb-6 text-4xl leading-tight font-medium tracking-tight text-zinc-50 md:text-5xl">
+          <h1 className="mb-6 text-4xl leading-tight font-medium tracking-tight text-foreground md:text-5xl">
             {TITLE}
           </h1>
-          <p className="mb-6 text-xl leading-relaxed text-zinc-300">
+          <p className="mb-6 text-xl leading-relaxed text-muted">
             If you&rsquo;re a regulated business that has to accept EU Digital Identity Wallet
             credentials by December 2027, the situation you&rsquo;re walking into is messy. Here&rsquo;s
             what I&rsquo;ve learned building one of the few TypeScript-native SDKs for it &mdash;
             what&rsquo;s hard, what I shipped, and what I&rsquo;d still do differently.
           </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-faint">
             <span>by Petromil Pavlov</span>
-            <span className="text-zinc-700">·</span>
+            <span className="text-ghost">·</span>
             <span>May 2026</span>
-            <span className="text-zinc-700">·</span>
+            <span className="text-ghost">·</span>
             <span>~12 min read</span>
-            <span className="text-zinc-700">·</span>
+            <span className="text-ghost">·</span>
             <a
               href="https://gramota.eu"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-amber-400/80 transition-colors hover:text-amber-300"
+              className="inline-flex items-center gap-1 text-accent/80 transition-colors hover:text-accent-bright"
             >
               gramota.eu
               <ArrowUpRight className="h-3 w-3" />
@@ -177,18 +177,18 @@ export function GramotaCaseStudy() {
         <div
           className="
             prose prose-invert max-w-none
-            prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-zinc-100
+            prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-foreground
             prose-h2:mt-16 prose-h2:mb-4 prose-h2:text-2xl prose-h2:md:text-3xl
             prose-h3:mt-10 prose-h3:mb-3 prose-h3:text-xl
-            prose-p:text-zinc-300 prose-p:leading-relaxed
-            prose-strong:text-zinc-100 prose-strong:font-medium
-            prose-a:text-amber-400 prose-a:no-underline hover:prose-a:text-amber-300
-            prose-code:rounded prose-code:border prose-code:border-zinc-800 prose-code:bg-zinc-900/60 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:text-amber-300 prose-code:before:content-none prose-code:after:content-none
-            prose-pre:rounded-lg prose-pre:border prose-pre:border-zinc-800/80 prose-pre:bg-zinc-950 prose-pre:text-[0.8rem] prose-pre:leading-relaxed
-            prose-li:text-zinc-300 prose-li:my-1
+            prose-p:text-muted prose-p:leading-relaxed
+            prose-strong:text-foreground prose-strong:font-medium
+            prose-a:text-accent prose-a:no-underline hover:prose-a:text-accent-bright
+            prose-code:rounded prose-code:border prose-code:border-border prose-code:bg-surface/60 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:text-accent-bright prose-code:before:content-none prose-code:after:content-none
+            prose-pre:rounded-lg prose-pre:border prose-pre:border-border/80 prose-pre:bg-background prose-pre:text-[0.8rem] prose-pre:leading-relaxed
+            prose-li:text-muted prose-li:my-1
             prose-ul:my-4
-            prose-blockquote:border-l-amber-500/40 prose-blockquote:bg-zinc-900/30 prose-blockquote:text-zinc-300 prose-blockquote:not-italic prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r
-            prose-hr:border-zinc-800
+            prose-blockquote:border-l-accent-soft/40 prose-blockquote:bg-surface/30 prose-blockquote:text-muted prose-blockquote:not-italic prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r
+            prose-hr:border-border
           "
         >
           <p>
@@ -623,12 +623,12 @@ export function GramotaCaseStudy() {
         </div>
 
         {/* footer CTA */}
-        <div className="mt-12 flex flex-col items-stretch gap-3 rounded-2xl border border-zinc-800/80 bg-zinc-900/30 p-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col items-stretch gap-3 rounded-2xl border border-border/80 bg-surface/30 p-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-lg font-medium text-zinc-100">
+            <p className="text-lg font-medium text-foreground">
               Scoping a 2027 EUDIW integration?
             </p>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-dim">
               60-min technical call &mdash; no slides, no pitch. Answers your questions about
               how the integration would actually work for your stack.
             </p>
@@ -636,7 +636,7 @@ export function GramotaCaseStudy() {
           <div className="flex flex-shrink-0 flex-col gap-2 sm:flex-row">
             <a
               href="mailto:petromilpavlov@gmail.com"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-400 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-amber-300"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-bright"
             >
               <Mail className="h-4 w-4" />
               Email
@@ -645,7 +645,7 @@ export function GramotaCaseStudy() {
               href="https://cal.com/petropavlov/intro"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/5 px-4 py-2 text-sm font-medium text-amber-200 transition-colors hover:border-amber-500/70 hover:bg-amber-500/10"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-4 py-2 text-sm font-medium text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10"
             >
               <Calendar className="h-4 w-4" />
               Book a 20-min intro

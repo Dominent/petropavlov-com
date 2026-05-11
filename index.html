@@ -49,29 +49,26 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
 
+    <!-- LCP preload — the portrait is the hero image visible above the fold.
+         Preloading lets the browser start downloading it before JS parses, so
+         it's ready by the time React mounts the Hero. Significant LCP win. -->
+    <link
+      rel="preload"
+      as="image"
+      href="/petro.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
+
     <!-- Resource hints — preconnect for Cal.com so the booking modal
-         opens with no DNS/TLS handshake delay on click, and DNS-prefetch
-         fallback for browsers that don't honour preconnect. -->
+         opens with no DNS/TLS handshake delay on click. -->
     <link rel="preconnect" href="https://app.cal.com" />
     <link rel="dns-prefetch" href="https://app.cal.com" />
 
-    <!-- Fonts: single origin (Google Fonts), non-blocking load -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap"
-      />
-    </noscript>
+    <!-- Fonts are self-hosted via @fontsource (imported in src/main.tsx).
+         No external Google Fonts requests — saves 2 DNS + TLS + HTTP round
+         trips, especially helpful for slow / high-latency networks. -->
+
 
     <!-- JSON-LD: Person schema -->
     <script type="application/ld+json">

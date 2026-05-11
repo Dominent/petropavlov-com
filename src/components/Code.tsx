@@ -71,20 +71,30 @@ export function Code({
       )}
 
       {html ? (
-        // Shiki injects <pre style="background-color:..."> — we override
-        // margin/padding via Tailwind's !important arbitrary selectors and
-        // keep Shiki's theme bg-color (which is already dark, matches site).
+        // Shiki injects <pre style="background-color:..."><code>...</code></pre>.
+        // The parent case study uses Tailwind Typography prose styles which
+        // add background/border/padding/color to ALL <code> and <pre> tags.
+        // We must override those so Shiki's per-span inline colors are the
+        // only colors visible. Using `!important` via Tailwind's bang prefix
+        // because prose styles also use !important via the typography plugin.
         <div
-          className="text-sm overflow-x-auto [&_pre]:!my-0 [&_pre]:!p-4 [&_pre]:leading-relaxed [&_pre]:font-mono"
+          className="
+            text-sm overflow-x-auto
+            [&_pre]:!my-0 [&_pre]:!p-4 [&_pre]:!rounded-none [&_pre]:!border-0
+            [&_pre]:leading-relaxed [&_pre]:font-mono
+            [&_code]:!bg-transparent [&_code]:!border-0 [&_code]:!p-0
+            [&_code]:!rounded-none [&_code]:!text-[1em] [&_code]:!text-inherit
+            [&_code]:!font-mono
+          "
           dangerouslySetInnerHTML={{ __html: html }}
         />
       ) : error ? (
-        <pre className="overflow-x-auto p-4 text-sm leading-relaxed text-muted font-mono">
-          <code>{code}</code>
+        <pre className="!my-0 !p-4 !rounded-none !border-0 overflow-x-auto text-sm leading-relaxed text-muted font-mono">
+          <code className="!bg-transparent !border-0 !p-0 !text-inherit !text-[1em]">{code}</code>
         </pre>
       ) : (
-        <pre className="overflow-x-auto p-4 text-sm leading-relaxed text-muted font-mono opacity-60">
-          <code>{code}</code>
+        <pre className="!my-0 !p-4 !rounded-none !border-0 overflow-x-auto text-sm leading-relaxed text-muted font-mono opacity-60">
+          <code className="!bg-transparent !border-0 !p-0 !text-inherit !text-[1em]">{code}</code>
         </pre>
       )}
     </figure>

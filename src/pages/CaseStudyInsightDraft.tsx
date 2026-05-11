@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight, Calendar, Mail } from 'lucide-react'
 import { Mermaid } from '../components/Mermaid'
+import { Code } from '../components/Code'
 
 const TITLE = 'Building an AI meeting SaaS end-to-end while bots get banned'
 const DESCRIPTION =
@@ -367,12 +368,14 @@ export function InsightDraftCaseStudy() {
             <code>remaining_slots</code> counter. Each child job calls{' '}
             <code>SignalAsync</code>, which executes:
           </p>
-          <pre>
-            <code>{`UPDATE hangfire.job_batch
+          <Code
+            language="sql"
+            filename="PgBatchCoordinator.SignalAsync"
+            code={`UPDATE hangfire.job_batch
 SET remaining_slots = remaining_slots - 1
 WHERE batch_id = $1 AND remaining_slots > 0
-RETURNING remaining_slots`}</code>
-          </pre>
+RETURNING remaining_slots`}
+          />
           <p>
             When the returned value hits 0, the global Hangfire filter fires the
             continuation. <code>PgJobResultStorage</code> lets the continuation consume typed

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight, Calendar, Mail } from 'lucide-react'
+import { Mermaid } from '../components/Mermaid'
 
 const TITLE = 'Building an AI meeting SaaS end-to-end while bots get banned'
 const DESCRIPTION =
@@ -87,29 +88,19 @@ function useArticleHead() {
   }, [])
 }
 
-const ARCH_DIAGRAM = `      ┌────────────────┐         ┌────────────────────────────────┐
-      │  Angular 17    │         │  Chrome extension (MV3)        │
-      │  SPA + NgRx    │         │  tabCapture + desktopCapture   │
-      │  + SignalR     │         │  + MAIN-world caption scrape   │
-      │  status client │         │  Meet · Teams · Zoom (no bot)  │
-      └───────┬────────┘         └────────────────┬───────────────┘
-              │ REST + WebSocket                  │ recording chunks (S3)
-              │                                   │ live captions (POST)
-              ▼                                   ▼
-      ┌───────────────────────────────────────────────────────────┐
-      │  .NET 8 API + Hangfire workers                            │
-      │  Two PostgreSQL DBs (app metadata + transcripts)          │
-      │  Custom fan-out/fan-in batcher · Stripe webhook lifecycle │
-      └────────┬─────────────────────┬──────────────────┬─────────┘
-               │ proxy/orchestrate   │ transcribe       │ spawn + audio chunks
-               ▼                     ▼                  ▼
-      ┌───────────────────┐   ┌─────────────┐   ┌─────────────────────┐
-      │  Node LLM svc     │   │  Deepgram   │   │  Slack Huddle bot   │
-      │  Express + tsoa   │   │  Nova-3     │   │  Playwright stealth │
-      │  OpenAI           │   │  multi-     │   │  (no tab to grab    │
-      │  Responses API    │   │  lingual    │   │   for huddles)      │
-      │  + file_search    │   └─────────────┘   └─────────────────────┘
-      └───────────────────┘`
+const ARCH_DIAGRAM = `flowchart TB
+    SPA["Angular 17 SPA<br/>NgRx + SignalR client"]
+    EXT["Chrome extension (MV3)<br/>tabCapture + desktopCapture<br/>+ MAIN-world caption scrape<br/>Meet · Teams · Zoom (no bot)"]
+    API[".NET 8 API + Hangfire<br/>Two PostgreSQL DBs<br/>Custom fan-out/fan-in · Stripe"]
+    LLM["Node LLM service<br/>Express + tsoa<br/>OpenAI Responses API<br/>+ file_search"]
+    DG["Deepgram<br/>Nova-3 multilingual"]
+    BOT["Slack Huddle bot<br/>Playwright stealth"]
+
+    SPA -- "REST + WebSocket" --> API
+    EXT -- "recording chunks · live captions" --> API
+    API -- "proxy / orchestrate" --> LLM
+    API -- "transcribe" --> DG
+    API -- "spawn + audio chunks" --> BOT`
 
 export function InsightDraftCaseStudy() {
   useArticleHead()
@@ -262,9 +253,7 @@ export function InsightDraftCaseStudy() {
             Slack-Huddle bot run on their own; the internal CMS and the E2E suite are
             tooling. The five services that do the work day-to-day:
           </p>
-          <pre>
-            <code>{ARCH_DIAGRAM}</code>
-          </pre>
+          <Mermaid chart={ARCH_DIAGRAM} caption="Insight Draft architecture · twelve services in the monorepo · how recording, processing, and AI flow through the system" />
           <ul>
             <li>
               <strong>Chrome extension</strong> (Manifest V3, multi-package monorepo) &mdash;

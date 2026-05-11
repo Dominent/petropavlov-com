@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight, Calendar, Mail } from 'lucide-react'
+import { Mermaid } from '../components/Mermaid'
 
 const TITLE = 'Building a TypeScript SDK for the EU Digital Identity Wallet'
 const DESCRIPTION =
@@ -85,30 +86,20 @@ function useArticleHead() {
   }, [])
 }
 
-const ARCH_DIAGRAM = `                       ┌──────────────────────────┐
-                       │   gramota-identity       │
-                       │   auth.gramota.eu        │
-                       │   ASP.NET Core 10 +      │
-                       │   Duende IdentityServer  │
-                       └─────────────┬────────────┘
-                                     │ OIDC + JWTs
-                                     ▼
-       ┌────────────┐         ┌─────────────┐      ┌────────────────────┐
-       │ demo-store ├────────▶│  apps/api   │◀─────┤ apps/dashboard     │
-       │ (Solnce)   │         │  (Fastify)  │      │ (Angular 21)       │
-       └─────┬──────┘         └──────┬──────┘      └────────────────────┘
-             │                       │ imports as deps
-             │                       ▼
-             │                ┌─────────────┐
-             │                │ @gramota/*  │  ◀── eudi-gateway
-             │                │  npm pkgs   │      monorepo (15 pkgs)
-             │                └─────────────┘
-             │                       ▲
-             ▼                       │
-      ┌─────────────────┐            │
-      │ EU Reference    │◀OID4VP/VCI─┘
-      │ Wallet (Android)│
-      └─────────────────┘`
+const ARCH_DIAGRAM = `flowchart TB
+    IDS["gramota-identity<br/>auth.gramota.eu<br/>ASP.NET Core 10 + Duende"]
+    DEMO["demo-store<br/>(Solnce)"]
+    API["apps/api<br/>(Fastify)"]
+    DASH["apps/dashboard<br/>(Angular 21)"]
+    GATEWAY["eudi-gateway monorepo<br/>15 @gramota/* npm pkgs"]
+    WALLET["EU Reference Wallet<br/>(Android)"]
+
+    IDS -- "OIDC + JWTs" --> API
+    DEMO --> API
+    DASH --> API
+    GATEWAY -. "imports as deps" .-> API
+    DEMO -- "OID4VP/VCI" --> WALLET
+    GATEWAY -. "OID4VP/VCI" .-> WALLET`
 
 export function GramotaCaseStudy() {
   useArticleHead()
@@ -250,9 +241,7 @@ export function GramotaCaseStudy() {
 
           <h2>What I built</h2>
           <p>Five repositories.</p>
-          <pre>
-            <code>{ARCH_DIAGRAM}</code>
-          </pre>
+          <Mermaid chart={ARCH_DIAGRAM} caption="Gramota architecture · five repos · how the SDK, SaaS, identity service and demo connect" />
           <ul>
             <li>
               <strong><code>eudi-gateway</code></strong> &mdash; the open-source SDK monorepo. 15 published <code>@gramota/*</code> packages plus 2 internal. Apache 2.0. pnpm + Turborepo + vitest.

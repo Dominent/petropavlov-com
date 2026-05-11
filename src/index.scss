@@ -1,15 +1,59 @@
 // =============================================================================
-// SCSS layer — everything that ISN'T Tailwind utility generation.
-// Tokens + @import "tailwindcss" + @plugin live in src/theme.css (processed
-// by @tailwindcss/vite plugin, which needs a plain .css file). This file
-// references those tokens via var(--color-X) and adds SCSS features:
-// nested rules, mixins, and SCSS-only constants.
+// All-in-SCSS entry. Tailwind v4 is loaded via Sass meta.load-css() and the
+// @tailwindcss/postcss plugin (configured in postcss.config.mjs) processes the
+// resulting CSS to generate utility classes from @theme.
+//
+// Reference: tailwindlabs/tailwindcss discussion #18205 — this is the workaround
+// for "vite + scss + tailwind v4 doesn't really work" since the Vite plugin
+// refuses SCSS files by design.
 // =============================================================================
 
-// SCSS-only constants — values that don't need to drive Tailwind utilities
+@use 'sass:meta';
+@include meta.load-css('tailwindcss');
+
+@plugin "@tailwindcss/typography";
+
+// SCSS-only constants
 $bg-gradient-amber: rgba(245, 158, 11, 0.08);
 $selection-bg: rgba(245, 158, 11, 0.25);
 $grid-line: rgba(255, 255, 255, 0.03);
+
+// =============================================================================
+// Theme tokens — CSS custom properties for Tailwind v4 utility generation.
+// =============================================================================
+@theme {
+  // ---- Fonts ----
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  // ---- Surfaces ----
+  --color-background: #09090b;
+  --color-surface: #18181b;
+  --color-surface-elevated: #27272a;
+
+  // ---- Text ----
+  --color-foreground: #fafafa;
+  --color-muted: #d4d4d8;
+  --color-dim: #a1a1aa;
+  --color-faint: #71717a;
+  --color-ghost: #52525b;
+
+  // ---- Borders ----
+  --color-border: #27272a;
+  --color-border-subtle: #1f1f23;
+  --color-border-strong: #3f3f46;
+
+  // ---- Accent ----
+  --color-accent: #fbbf24;
+  --color-accent-bright: #fcd34d;
+  --color-accent-soft: #f59e0b;
+  --color-accent-foreground: #09090b;
+
+  // ---- Semantic ----
+  --color-success: #34d399;
+  --color-error: #f87171;
+}
 
 // =============================================================================
 // Base
@@ -17,8 +61,6 @@ $grid-line: rgba(255, 255, 255, 0.03);
 html {
   scroll-behavior: smooth;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  // Drives form-control colors and the Cal.com embed's auto-detected color
-  // scheme — its modal wrapper polls getComputedStyle(body).colorScheme.
   color-scheme: dark;
 }
 
@@ -36,7 +78,7 @@ body {
 }
 
 // =============================================================================
-// Scrollbar (WebKit) — nested rules courtesy of SCSS
+// Scrollbar (WebKit) — SCSS nesting
 // =============================================================================
 ::-webkit-scrollbar {
   width: 10px;

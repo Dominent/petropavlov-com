@@ -150,15 +150,19 @@ export function Hero() {
         >
           <div className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-amber-500/30 via-amber-500/5 to-transparent opacity-60 blur-2xl" />
           <div className="relative">
-            <img
-              src="/petro.jpg"
-              alt="Portrait of Petro Pavlov"
-              width={288}
-              height={288}
-              loading="eager"
-              decoding="async"
-              className="h-72 w-72 rounded-2xl border border-zinc-800 object-cover shadow-2xl shadow-black/50"
-            />
+            <picture>
+              <source srcSet="/petro.webp" type="image/webp" />
+              <img
+                src="/petro.jpg"
+                alt="Portrait of Petro Pavlov"
+                width={288}
+                height={288}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                className="h-72 w-72 rounded-2xl border border-zinc-800 object-cover shadow-2xl shadow-black/50"
+              />
+            </picture>
             <div className="absolute -right-2 -bottom-2 flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-950/90 px-2.5 py-1 font-mono text-[10px] text-zinc-300 backdrop-blur">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />

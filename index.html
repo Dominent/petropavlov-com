@@ -49,9 +49,17 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
 
+    <!-- Resource hints — preconnect for Cal.com so the booking modal
+         opens with no DNS/TLS handshake delay on click, and DNS-prefetch
+         fallback for browsers that don't honour preconnect. -->
+    <link rel="preconnect" href="https://app.cal.com" />
+    <link rel="dns-prefetch" href="https://app.cal.com" />
+
     <!-- Fonts: single origin (Google Fonts), non-blocking load -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link
       rel="preload"
       as="style"

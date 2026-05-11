@@ -26,6 +26,18 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=86400, s-maxage=86400" }
       ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/petro.webp",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=604800" }
+      ]
     }
   ]
 }

@@ -4,6 +4,7 @@ import { Calendar, Mail, MessageSquare } from 'lucide-react'
 import { GithubIcon, LinkedinIcon } from './BrandIcons'
 import { SectionLabel } from './SectionLabel'
 import { ContactDialog } from './ContactDialog'
+import { track } from '../pulse/client'
 
 export function Contact() {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -51,6 +52,7 @@ export function Contact() {
             data-cal-link="petropavlov/intro"
             data-cal-namespace=""
             data-cal-config='{"theme":"dark","ui.color-scheme":"dark"}'
+            onClick={() => track('cal_click', { source: 'contact' })}
             className="inline-flex items-center justify-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-5 py-3 text-sm font-medium text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10 hover:text-foreground"
           >
             <Calendar className="h-4 w-4" />
@@ -126,11 +128,17 @@ export function Contact() {
         </div>
         <p className="max-w-3xl text-[11px] leading-relaxed text-ghost">
           Privacy: this site uses{' '}
-          <span className="text-dim">cookieless analytics by Vercel</span>
-          {' '}— aggregate page views and referrers only, no tracking cookies,
-          no fingerprinting. Contact-form submissions are delivered to
-          petromilpavlov@gmail.com via Resend and are not stored anywhere
-          else. Email Petro to delete any data.
+          <span className="text-dim">Pulse</span>, a self-hosted
+          privacy-first analytics library — aggregate page views, Core
+          Web Vitals, and a few interaction events only. No cookies. No
+          IPs stored. No fingerprinting. Sessions are deduplicated via a
+          server-side daily-rotating hash that becomes unlinkable after
+          24 hours. A non-personal random ID is stored in your browser&rsquo;s
+          localStorage to support multi-touch attribution — first-party
+          only, never shared, easily cleared via your browser&rsquo;s
+          site-data settings. Contact-form submissions go to
+          petromilpavlov@gmail.com via Resend and aren&rsquo;t stored
+          anywhere else. Email Petro to delete any data.
         </p>
       </div>
     </section>

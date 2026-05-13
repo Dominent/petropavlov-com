@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ArrowDownRight, Calendar, Mail, MapPin } from 'lucide-react'
 import { GithubIcon } from './BrandIcons'
+import { track } from '../pulse/client'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -95,6 +96,7 @@ export function Hero() {
         >
           <a
             href="#work"
+            onClick={() => track('cta_click', { cta: 'see_work', source: 'hero' })}
             className="group inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-all hover:bg-accent-bright"
           >
             See selected work
@@ -105,6 +107,7 @@ export function Hero() {
             data-cal-link="petropavlov/intro"
             data-cal-namespace=""
             data-cal-config='{"theme":"dark","ui.color-scheme":"dark"}'
+            onClick={() => track('cal_click', { source: 'hero' })}
             className="inline-flex items-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-5 py-2.5 text-sm text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10 hover:text-foreground"
           >
             <Calendar className="h-4 w-4" />

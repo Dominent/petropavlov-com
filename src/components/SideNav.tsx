@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import clsx from 'clsx'
+import { track } from '../pulse/client'
 
 const sections = [
   { id: 'hero', label: 'Intro', num: '00' },
@@ -38,6 +39,7 @@ export function SideNav() {
           <li key={id}>
             <a
               href={`#${id}`}
+              onClick={() => track('nav_click', { target: id, source: 'side_nav' })}
               className={clsx(
                 'group flex items-center gap-3 font-mono text-xs uppercase tracking-wider transition-all',
                 active === id
@@ -69,13 +71,18 @@ export function TopBar() {
   return (
     <header className="fixed top-0 right-0 left-0 z-30 border-b border-border-subtle/50 bg-background/70 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6 lg:pl-72">
-        <a href="#hero" className="font-mono text-sm font-medium tracking-tight">
+        <a
+          href="#hero"
+          onClick={() => track('nav_click', { target: 'hero', source: 'top_bar_logo' })}
+          className="font-mono text-sm font-medium tracking-tight"
+        >
           <span className="text-accent">$</span>{' '}
           <span className="text-foreground">petro.pavlov</span>
           <span className="ml-1 inline-block h-3 w-1.5 animate-pulse bg-accent align-middle" />
         </a>
         <a
           href="#contact"
+          onClick={() => track('nav_click', { target: 'contact', source: 'top_bar' })}
           className="font-mono text-xs uppercase tracking-wider text-dim transition-colors hover:text-accent"
         >
           Get in touch &rarr;

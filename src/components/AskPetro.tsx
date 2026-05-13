@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Sparkles, AlertCircle } from 'lucide-react'
 import { SectionLabel } from './SectionLabel'
+import { track } from '../pulse/client'
 
 const SAMPLE_PROMPTS = [
   'What kind of engagements does he take?',
@@ -27,6 +28,14 @@ export function AskPetro() {
   async function send(prompt: string) {
     const trimmed = prompt.trim()
     if (!trimmed || loading) return
+
+    // Track that someone asked a question. We deliberately don't store
+    // the prompt text — only the length and whether it was a suggested
+    // prompt or freeform input.
+    track('ask_query', {
+      length: trimmed.length,
+      suggested: SAMPLE_PROMPTS.includes(trimmed),
+    })
 
     const userMsg: Message = { role: 'user', text: trimmed }
     const newMessages = [...messages, userMsg]
@@ -64,8 +73,13 @@ export function AskPetro() {
           ? data.error ||
             "You've hit the hourly limit. Try again later or email Petro at petromilpavlov@gmail.com."
           : GENERIC_ERROR
+      track('ask_error', {
+        kind: res.status === 429 ? 'rate_limit' : 'server_error',
+        status: res.status,
+      })
       setMessages([...newMessages, { role: 'error', text: errText }])
     } catch {
+      track('ask_error', { kind: 'network' })
       setMessages([...newMessages, { role: 'error', text: GENERIC_ERROR }])
     } finally {
       setLoading(false)
@@ -147,7 +161,10 @@ export function AskPetro() {
               <button
                 key={p}
                 type="button"
-                onClick={() => send(p)}
+                onClick={() => {
+                  track('ask_prompt_click', { prompt: p })
+                  send(p)
+                }}
                 disabled={loading}
                 className="rounded-full border border-border bg-surface/40 px-3 py-1 font-mono text-[11px] text-dim transition-colors hover:border-accent-soft/30 hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
               >

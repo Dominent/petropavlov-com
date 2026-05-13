@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Project } from '../data/work'
 import { ArchDiagram } from './ArchDiagram'
+import { track } from '../pulse/client'
 
 type Props = { project: Project; index: number }
 
@@ -33,6 +34,13 @@ export function ProjectCard({ project, index }: Props) {
                 href={l.url}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() =>
+                  track('project_click', {
+                    project: project.id,
+                    target: 'external',
+                    label: l.label,
+                  })
+                }
                 className="inline-flex items-center gap-1 text-sm font-normal text-accent/80 transition-colors hover:text-accent-bright"
               >
                 {l.label}
@@ -48,6 +56,12 @@ export function ProjectCard({ project, index }: Props) {
           {project.caseStudyUrl && (
             <Link
               to={project.caseStudyUrl}
+              onClick={() =>
+                track('project_click', {
+                  project: project.id,
+                  target: 'case_study',
+                })
+              }
               className="group/cta mb-8 inline-flex items-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-4 py-2 text-sm font-medium text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10 hover:text-foreground"
             >
               Read the case study

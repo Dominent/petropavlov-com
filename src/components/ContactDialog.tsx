@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, X, Sparkles, Check, AlertTriangle } from 'lucide-react'
+import { track } from '../pulse/client'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -18,9 +19,10 @@ export function ContactDialog({ open, onClose }: Props) {
   const firstFieldRef = useRef<HTMLInputElement>(null)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  // Focus the first field on open
+  // Focus the first field on open + fire analytics event
   useEffect(() => {
     if (open) {
+      track('contact_open')
       const t = setTimeout(() => firstFieldRef.current?.focus(), 100)
       return () => clearTimeout(t)
     }
@@ -56,6 +58,20 @@ export function ContactDialog({ open, onClose }: Props) {
     return () => clearTimeout(t)
   }, [open, status])
 
+  // Track which fields a visitor first focuses — measures friction in
+  // the contact funnel (e.g. people who start typing but never submit).
+  // Once-per-field-per-dialog-open via a ref-based flag set.
+  const focusedFieldsRef = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    if (open) focusedFieldsRef.current = new Set()
+  }, [open])
+
+  function onFieldFocus(field: 'name' | 'email' | 'message') {
+    if (focusedFieldsRef.current.has(field)) return
+    focusedFieldsRef.current.add(field)
+    track('contact_field_focus', { field })
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (status === 'submitting') return
@@ -73,18 +89,29 @@ export function ContactDialog({ open, onClose }: Props) {
 
       if (res.ok) {
         setStatus('success')
+        // Capture the email domain only (not the full address) so we can
+        // tell whether the contact was from a real company vs free webmail.
+        const domain = email.includes('@') ? email.split('@')[1]?.toLowerCase() : undefined
+        track('contact_submit', domain ? { email_domain: domain } : undefined)
       } else {
         setStatus('error')
-        setErrorMessage(
+        const err =
           data.error ||
-            'Couldn\'t send the message. Please email petromilpavlov@gmail.com directly.'
-        )
+          'Couldn\'t send the message. Please email petromilpavlov@gmail.com directly.'
+        setErrorMessage(err)
+        track('contact_validation_error', {
+          status: res.status,
+          // Truncate error message so we don't bloat the analytics row
+          // with full server response text.
+          error: err.slice(0, 120),
+        })
       }
     } catch {
       setStatus('error')
       setErrorMessage(
         'Network error. Please email petromilpavlov@gmail.com directly.'
       )
+      track('contact_validation_error', { status: 0, error: 'network' })
     }
   }
 
@@ -167,6 +194,7 @@ export function ContactDialog({ open, onClose }: Props) {
                     maxLength={200}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    onFocus={() => onFieldFocus('name')}
                     autoComplete="name"
                     className="w-full rounded-lg border border-border bg-surface/40 px-3 py-2 text-sm text-foreground placeholder:text-ghost focus:border-accent/50 focus:bg-surface/70 focus:outline-none"
                     placeholder="Jane Cooper"
@@ -180,6 +208,7 @@ export function ContactDialog({ open, onClose }: Props) {
                     maxLength={200}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => onFieldFocus('email')}
                     autoComplete="email"
                     className="w-full rounded-lg border border-border bg-surface/40 px-3 py-2 text-sm text-foreground placeholder:text-ghost focus:border-accent/50 focus:bg-surface/70 focus:outline-none"
                     placeholder="jane@company.com"
@@ -194,6 +223,7 @@ export function ContactDialog({ open, onClose }: Props) {
                     rows={5}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    onFocus={() => onFieldFocus('message')}
                     className="w-full resize-y rounded-lg border border-border bg-surface/40 px-3 py-2 text-sm text-foreground placeholder:text-ghost focus:border-accent/50 focus:bg-surface/70 focus:outline-none"
                     placeholder="Building an AI feature into our SaaS — looking for someone to lead the architecture and ship a working slice in 4 weeks..."
                   />

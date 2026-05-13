@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { Home } from './pages/Home'
+import { NotFound } from './pages/NotFound'
 import { initCal } from './lib/cal'
 
 // Case studies are lazy-loaded — they're long pages of prose that
@@ -51,6 +52,9 @@ function App() {
           </Suspense>
         }
       />
+      {/* Catch-all 404. NotFound fires a Pulse `404` event with the
+          attempted path, so broken inbound links show up in the dashboard. */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }

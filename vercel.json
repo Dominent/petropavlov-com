@@ -4,12 +4,21 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/*.ts": {
+    "api/**/*.ts": {
       "maxDuration": 30
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/daily-report",
+      "schedule": "0 7 * * *"
+    }
+  ],
   "rewrites": [
-    { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
+    { "source": "/admin/analytics", "destination": "/api/admin/analytics" },
+    { "source": "/admin/speed", "destination": "/api/admin/speed" },
+    { "source": "/admin/events", "destination": "/api/admin/events" },
+    { "source": "/((?!api/|assets/|admin/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

@@ -34,9 +34,14 @@ export function Contact() {
             senior full-stack work.
           </p>
           <p className="text-faint">
-            Remote-first &mdash; available for{' '}
-            <span className="text-muted">EU and US clients</span>,
-            comfortable across timezones.
+            Remote-first &mdash; clients across{' '}
+            <span className="text-muted">
+              🇪🇺 Europe, 🇮🇱 Israel (Tel Aviv), 🇺🇸 US (NYC · SF), and 🇨🇦
+              Canada (Toronto · Montreal · Vancouver)
+            </span>
+            . Tel Aviv shares my timezone; East-Coast mornings overlap
+            with my afternoons; Pacific via late-day sync. Invoiced in
+            USD, CAD, or EUR via Stripe and Wise.
           </p>
         </div>
         <div className="flex flex-col items-stretch gap-2 md:items-end">
@@ -77,8 +82,8 @@ export function Contact() {
             How I work
           </div>
           <div className="text-sm leading-relaxed text-muted">
-            Embedded with your team, async-friendly, weekly written updates.
-            NDAs welcome.
+            Embedded with your team &mdash; async-first, weekly written
+            updates, scoped checkpoints. NDAs welcome.
           </div>
         </div>
         <div>
@@ -86,8 +91,10 @@ export function Contact() {
             Engagement length
           </div>
           <div className="text-sm leading-relaxed text-muted">
-            Typical projects run <span className="font-medium text-foreground">4&ndash;12 weeks</span>;
-            consulting from a single review session up to fractional retainers.
+            <span className="font-medium text-foreground">Open-ended</span> &mdash;
+            single review sessions, scoped projects, multi-month builds,
+            or long-running retainers / fractional roles. Whatever the
+            work needs.
           </div>
         </div>
         <div>
@@ -95,8 +102,8 @@ export function Contact() {
             Time to start
           </div>
           <div className="text-sm leading-relaxed text-muted">
-            <span className="font-medium text-foreground">Right away</span> or a couple
-            of days &mdash; drop a line and we can sync this week.
+            <span className="font-medium text-foreground">Right away</span> or
+            within a few days &mdash; drop a line and we&rsquo;ll sync this week.
           </div>
         </div>
       </div>

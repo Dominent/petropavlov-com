@@ -1,10 +1,15 @@
 import { motion } from 'framer-motion'
-import { ArrowDownRight, Calendar, Mail, MapPin } from 'lucide-react'
+import { ArrowDownRight, Calendar, Download, Mail, MapPin } from 'lucide-react'
 import { GithubIcon } from './BrandIcons'
 import { track } from '../pulse/client'
 
+// LCP-friendly: start at opacity 1 with a small y-offset, so elements
+// are visible at first paint. The visible state animates only the
+// slide-up, no fade. Removes ~400ms of LCP delay caused by the staggered
+// opacity:0 → 1 transitions blocking the h1 from being considered
+// "painted" by the browser.
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 1, y: 12 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
@@ -114,6 +119,15 @@ export function Hero() {
             Book a call
           </button>
           <a
+            href="/cv"
+            download="petro-pavlov-cv.pdf"
+            onClick={() => track('cv_download', { source: 'hero' })}
+            className="inline-flex items-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-5 py-2.5 text-sm text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10 hover:text-foreground"
+          >
+            <Download className="h-4 w-4" />
+            Download CV
+          </a>
+          <a
             href="https://github.com/Dominent"
             target="_blank"
             rel="noreferrer"
@@ -136,19 +150,33 @@ export function Hero() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-faint"
+          className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs uppercase tracking-wider text-faint"
         >
           <MapPin className="h-3 w-3" />
           Sofia, Bulgaria
-          <span className="mx-2 text-ghost">/</span>
+          <span className="text-ghost">/</span>
           remote-first
+          <span className="text-ghost">·</span>
+          <span className="text-muted">
+            <span className="not-uppercase">🇪🇺</span> EU
+            <span className="mx-1.5 text-ghost">·</span>
+            <span className="not-uppercase">🇮🇱</span> Israel
+            <span className="mx-1.5 text-ghost">·</span>
+            <span className="not-uppercase">🇺🇸</span> US
+            <span className="mx-1.5 text-ghost">·</span>
+            <span className="not-uppercase">🇨🇦</span> Canada
+          </span>
         </motion.div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 20 }}
+          // LCP-friendly: the portrait is the desktop LCP element. We
+          // preload the image with fetchpriority="high" — fading it in
+          // from opacity:0 would waste that work. `initial={false}`
+          // tells Framer Motion to skip the entry animation entirely
+          // and render in the final state from the first paint.
+          initial={false}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="relative hidden flex-shrink-0 lg:block"
         >
           <div className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-accent-soft/30 via-accent-soft/5 to-transparent opacity-60 blur-2xl" />

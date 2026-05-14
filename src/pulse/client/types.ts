@@ -18,6 +18,7 @@ export type EventType =
   | 'cta_click'
   | 'nav_click'
   | 'project_click'
+  | 'click'
   | 'ask_query'
   | 'ask_prompt_click'
   | 'ask_error'
@@ -26,6 +27,8 @@ export type EventType =
   | 'js_error'
   | 'unhandled_rejection'
   | '404'
+  | 'inp_detail'
+  | 'cv_download'
   | (string & {}) // hack to allow custom strings without losing built-in autocomplete
 
 /** Section configuration for IntersectionObserver-based view tracking. */

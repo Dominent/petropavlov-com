@@ -32,6 +32,7 @@ import { initScroll } from './scroll.js'
 import { initSections } from './sections.js'
 import { initErrors } from './errors.js'
 import { initDwell } from './dwell.js'
+import { initClicks } from './clicks.js'
 
 export type {
   EventPayload,
@@ -49,6 +50,7 @@ export { initScroll } from './scroll.js'
 export { initSections } from './sections.js'
 export { initErrors } from './errors.js'
 export { initDwell } from './dwell.js'
+export { initClicks } from './clicks.js'
 export { getVisitorId, clearVisitorId } from './visitor-id.js'
 
 /**
@@ -82,13 +84,36 @@ export function init(config: PulseConfig = {}): void {
 
   if (!resolved.autoTrack) return
 
+  // ── Critical (eager) ───────────────────────────────────────────
+  // These must fire before first paint to catch FCP/LCP/the initial
+  // `view` event, and to install global error handlers in time to
+  // catch startup exceptions.
   initPageViews(resolved)
   initWebVitals(resolved)
-  initOutbound(resolved)
-  initDwell()
-  if (resolved.scrollRoutes.length > 0) initScroll(resolved)
-  if (resolved.sections.length > 0) initSections(resolved.sections)
   if (resolved.errors) initErrors()
+
+  // ── Deferred (idle) ────────────────────────────────────────────
+  // Listeners for clicks, scroll milestones, section visibility, and
+  // outbound links — none of these matter in the first ~1-2s of page
+  // life. Pushing them to requestIdleCallback frees the main thread
+  // for the hero render. We use a 2s timeout so they're guaranteed
+  // to run even if the browser stays busy.
+  const idle = (cb: () => void): void => {
+    if (typeof (window as { requestIdleCallback?: unknown }).requestIdleCallback === 'function') {
+      ;(window as Window & { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number })
+        .requestIdleCallback(cb, { timeout: 2000 })
+    } else {
+      // Safari < 17 / older browsers — fall back to a short setTimeout
+      setTimeout(cb, 1000)
+    }
+  }
+  idle(() => {
+    initOutbound(resolved)
+    initDwell()
+    initClicks()
+    if (resolved.scrollRoutes.length > 0) initScroll(resolved)
+    if (resolved.sections.length > 0) initSections(resolved.sections)
+  })
 }
 
 // Track is re-exported above; this re-declaration helps tools that

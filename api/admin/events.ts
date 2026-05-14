@@ -5,10 +5,12 @@ import {
   funnel,
   recentEvents,
   eventsByHour,
+  readingCompletion,
   parseRange,
   type BreakdownRow,
   type FunnelStage,
   type RecentEvent,
+  type ReadingCompletion,
 } from '../../src/pulse/server/index.js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -17,11 +19,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const rangeParam = typeof req.query.range === 'string' ? req.query.range : '7d'
   const range = parseRange(rangeParam)
 
-  const [events, funnelData, recent, byHour] = await Promise.all([
+  const [events, funnelData, recent, byHour, reading] = await Promise.all([
     customEvents(range),
     funnel(range),
     recentEvents(range, 50),
     eventsByHour(range),
+    readingCompletion(range),
   ])
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
@@ -33,6 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       funnel: funnelData,
       recent,
       byHour,
+      reading,
     }),
   )
 }
@@ -47,6 +51,7 @@ type ViewModel = {
   funnel: FunnelStage[]
   recent: RecentEvent[]
   byHour: { hour: number; count: number }[]
+  reading: ReadingCompletion[]
 }
 
 function renderPage(m: ViewModel): string {
@@ -73,6 +78,7 @@ function renderPage(m: ViewModel): string {
       <a href="/admin/events?range=${esc(m.rangeParam)}" class="active">Events</a>
     </nav>
     <div class="range">
+      ${renderRangeTab('1d', m.rangeParam)}
       ${renderRangeTab('7d', m.rangeParam)}
       ${renderRangeTab('30d', m.rangeParam)}
       ${renderRangeTab('90d', m.rangeParam)}
@@ -83,6 +89,11 @@ function renderPage(m: ViewModel): string {
     <section class="funnel-section">
       <h2 class="section-label">Conversion Funnel</h2>
       <div class="funnel">${renderFunnel(m.funnel)}</div>
+    </section>
+
+    <section class="funnel-section">
+      <h2 class="section-label">Reading Completion <span class="section-sub">— case studies, max scroll depth per reader</span></h2>
+      ${renderReadingCompletion(m.reading)}
     </section>
 
     <section class="grid two-col">
@@ -153,6 +164,61 @@ function renderFunnel(stages: FunnelStage[]): string {
       `
     })
     .join('')
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Reading completion (case studies)
+// ─────────────────────────────────────────────────────────────────────
+
+function renderReadingCompletion(rows: ReadingCompletion[]): string {
+  if (rows.length === 0) {
+    return `<div class="reading-empty">
+      <p class="empty">No case-study traffic in this window yet — visitors haven't reached <code>/case-studies/*</code>.</p>
+    </div>`
+  }
+  return `<div class="reading-grid">
+    ${rows.map(renderReadingFunnel).join('')}
+  </div>`
+}
+
+function renderReadingFunnel(r: ReadingCompletion): string {
+  const slug = r.page.replace('/case-studies/', '')
+  const milestones = [
+    { label: 'Viewed', count: r.viewers, pct: 100 },
+    { label: 'Scrolled 25%', count: r.reached_25, pct: pct(r.reached_25, r.viewers) },
+    { label: 'Scrolled 50%', count: r.reached_50, pct: pct(r.reached_50, r.viewers) },
+    { label: 'Scrolled 75%', count: r.reached_75, pct: pct(r.reached_75, r.viewers) },
+    { label: 'Read to end', count: r.reached_100, pct: pct(r.reached_100, r.viewers) },
+  ]
+  return `<div class="reading-card">
+    <div class="reading-head">
+      <code class="reading-slug">${esc(slug)}</code>
+      <span class="reading-summary">
+        ${r.viewers} ${r.viewers === 1 ? 'reader' : 'readers'} · ${pct(r.reached_100, r.viewers)}% to end
+      </span>
+    </div>
+    <div class="reading-stages">
+      ${milestones
+        .map(
+          (m) => `<div class="reading-stage">
+            <div class="reading-stage-label">${esc(m.label)}</div>
+            <div class="reading-bar-track">
+              <div class="reading-bar" style="width:${Math.max(2, m.pct).toFixed(1)}%"></div>
+            </div>
+            <div class="reading-stage-stats">
+              <span class="reading-count">${m.count}</span>
+              <span class="reading-pct">${m.pct}%</span>
+            </div>
+          </div>`,
+        )
+        .join('')}
+    </div>
+  </div>`
+}
+
+function pct(num: number, denom: number): number {
+  if (denom === 0) return 0
+  return Math.round((num / denom) * 100)
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -339,6 +405,60 @@ main { padding: 24px; max-width: 1400px; margin: 0 auto; }
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--dim); font-family: monospace; margin: 0 0 14px; font-weight: 500;
 }
+.section-sub {
+  text-transform: none; letter-spacing: 0; color: var(--faint);
+  font-size: 10px; margin-left: 4px;
+}
+
+/* Reading completion */
+.reading-grid {
+  display: grid; gap: 12px;
+}
+@media (min-width: 900px) {
+  .reading-grid { grid-template-columns: 1fr 1fr; }
+}
+.reading-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 18px;
+}
+.reading-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 12px; gap: 8px;
+}
+.reading-slug {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px; color: var(--accent);
+  background: var(--surface-2); padding: 2px 7px; border-radius: 4px;
+}
+.reading-summary {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px; color: var(--dim);
+}
+.reading-stages {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.reading-stage {
+  display: grid; grid-template-columns: 90px 1fr 64px;
+  align-items: center; gap: 10px;
+}
+.reading-stage-label {
+  font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.reading-bar-track {
+  height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden;
+}
+.reading-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--accent), rgba(251, 191, 36, 0.5));
+  border-radius: 3px;
+}
+.reading-stage-stats {
+  text-align: right; display: flex; justify-content: flex-end; gap: 8px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+.reading-count { font-size: 12px; color: var(--text); min-width: 24px; }
+.reading-pct { font-size: 11px; color: var(--dim); min-width: 36px; }
+.reading-empty { padding: 16px 0; }
 
 /* Funnel */
 .funnel-section { margin-bottom: 32px; }

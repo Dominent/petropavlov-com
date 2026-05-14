@@ -30,7 +30,23 @@ function CaseStudyFallback() {
 
 function App() {
   useEffect(() => {
-    initCal()
+    // Defer Cal.com embed init to idle — its setup JS is non-trivial
+    // (~15 KB gz) and is only needed when the user clicks a Cal button.
+    // Idle with a 2s timeout means Cal is guaranteed warm by the time
+    // any visitor finds the "Book a call" buttons in Hero / Contact.
+    const idle = (cb: () => void): void => {
+      const w = window as Window & {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+      }
+      if (typeof w.requestIdleCallback === 'function') {
+        w.requestIdleCallback(cb, { timeout: 2000 })
+      } else {
+        setTimeout(cb, 1000)
+      }
+    }
+    idle(() => {
+      void initCal()
+    })
   }, [])
 
   return (

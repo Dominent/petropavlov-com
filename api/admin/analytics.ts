@@ -15,9 +15,11 @@ import {
   newVsReturning,
   firstTouchAttribution,
   dwellByPage,
+  topClicks,
   parseRange,
   previousRange,
   type BreakdownRow,
+  type ClickRow,
 } from '../../src/pulse/server/index.js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -46,6 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     recency,
     firstTouch,
     dwell,
+    clicks,
   ] = await Promise.all([
     totals(range),
     totals(prev),
@@ -63,6 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     newVsReturning(range),
     firstTouchAttribution(range, 10),
     dwellByPage(range, 10),
+    topClicks(range, 15),
   ])
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
@@ -88,6 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       recency,
       firstTouch,
       dwell,
+      clicks,
     }),
   )
 }
@@ -116,6 +121,7 @@ type ViewModel = {
   recency: { new_visitors: number; returning_visitors: number }
   firstTouch: BreakdownRow[]
   dwell: { key: string; median_ms: number; samples: number }[]
+  clicks: ClickRow[]
 }
 
 function renderPage(m: ViewModel): string {
@@ -142,6 +148,7 @@ function renderPage(m: ViewModel): string {
       <a href="/admin/events">Events</a>
     </nav>
     <div class="range">
+      ${renderRangeTab('1d', m.rangeParam)}
       ${renderRangeTab('7d', m.rangeParam)}
       ${renderRangeTab('30d', m.rangeParam)}
       ${renderRangeTab('90d', m.rangeParam)}
@@ -167,6 +174,10 @@ function renderPage(m: ViewModel): string {
       ${renderPanel('Browsers', m.browsers, cap)}
       ${renderPanel('Operating Systems', m.osData, cap)}
       ${renderPanel('Custom Events', m.events, formatEvent)}
+    </section>
+
+    <section style="margin-top: 16px;">
+      ${renderClicksPanel('Top Clicked Elements', m.clicks)}
     </section>
   </main>
 
@@ -218,6 +229,51 @@ function renderRecency(r: { new_visitors: number; returning_visitors: number }):
 }
 
 /** Dwell time panel — bar widths from samples, labels from median time. */
+/**
+ * Top clicked elements — full-width table since rows can be wide
+ * (selector + text + host all together).
+ */
+function renderClicksPanel(title: string, rows: ClickRow[]): string {
+  if (rows.length === 0) {
+    return `<div class="panel">
+      <h2>${esc(title)}</h2>
+      <p class="empty">No click data yet — universal click tracking will populate this once visitors interact with the page.</p>
+    </div>`
+  }
+  const max = Math.max(...rows.map((r) => r.clicks), 1)
+  return `<div class="panel">
+    <h2>${esc(title)}</h2>
+    <table class="clicks-table">
+      <colgroup>
+        <col class="col-element" />
+        <col class="col-text" />
+        <col class="col-destination" />
+        <col class="col-clicks" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Element</th>
+          <th>Text</th>
+          <th>Destination</th>
+          <th class="num">Clicks</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows
+          .map(
+            (r) => `<tr>
+              <td class="click-element"><code>${esc(r.selector || '?')}</code></td>
+              <td class="click-text">${r.text ? esc(r.text) : '<span class="muted">·</span>'}</td>
+              <td class="click-host">${r.host ? esc(r.host) : '<span class="muted">·</span>'}</td>
+              <td class="num count">${r.clicks}</td>
+            </tr>`,
+          )
+          .join('')}
+      </tbody>
+    </table>
+  </div>`
+}
+
 function renderDwellPanel(title: string, rows: { key: string; median_ms: number; samples: number }[]): string {
   if (rows.length === 0) {
     return `<div class="panel">
@@ -456,6 +512,44 @@ main { padding: 24px; max-width: 1400px; margin: 0 auto; }
   display: flex; gap: 8px; align-items: center;
 }
 .muted-dim { color: var(--faint); }
+
+/* Top Clicked Elements table — fixed layout, no background bar.
+   The selector is rendered as a code pill (the global code element
+   styles) which already provides the visual anchor without needing
+   a long coloured background. */
+.clicks-table {
+  font-size: 12px;
+  table-layout: fixed;
+  width: 100%;
+}
+.clicks-table colgroup col.col-element     { width: 32%; }
+.clicks-table colgroup col.col-text        { width: 36%; }
+.clicks-table colgroup col.col-destination { width: 22%; }
+.clicks-table colgroup col.col-clicks      { width: 10%; }
+.clicks-table th {
+  text-align: left; padding: 8px 10px 8px 0; font-weight: 500;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--dim); font-family: monospace;
+  border-bottom: 1px solid var(--border);
+}
+.clicks-table th.num { text-align: right; padding-right: 0; }
+.clicks-table td {
+  padding: 8px 10px 8px 0;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.clicks-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+.click-element code {
+  font-size: 11px;
+}
+.click-text { color: var(--text); }
+.click-host {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px; color: var(--muted);
+}
+.num { text-align: right; padding-right: 0 !important; }
 
 .grid {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;

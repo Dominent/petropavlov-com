@@ -418,6 +418,117 @@ export async function funnel(r: Range): Promise<FunnelStage[]> {
   }))
 }
 
+/** One row per case study: viewer count + how many reached each milestone. */
+export type ReadingCompletion = {
+  page: string
+  viewers: number
+  reached_25: number
+  reached_50: number
+  reached_75: number
+  reached_100: number
+}
+
+/**
+ * How far through each case study do visitors actually read?
+ *
+ * We count distinct readers per case study (deduplicated by visitor_id
+ * when present, falling back to session_hash) — then for each reader,
+ * the max scroll milestone they hit. Rolled up per case study so the
+ * dashboard can show a per-page mini-funnel:
+ *
+ *   Viewers → 25% → 50% → 75% → 100%
+ *
+ * A reader who viewed but never fired a scroll event reaches 0%
+ * (most likely a quick bounce or a bot — they show up as the gap
+ * between Viewers and Reached 25%).
+ */
+export async function readingCompletion(r: Range): Promise<ReadingCompletion[]> {
+  const { rows } = await sql`
+    WITH viewers AS (
+      SELECT
+        page,
+        COALESCE(visitor_id, session_hash) AS who
+      FROM analytics_events
+      WHERE event_type = 'view'
+        AND page LIKE '/case-studies/%'
+        AND ts >= ${r.since.toISOString()} AND ts < ${r.until.toISOString()}
+      GROUP BY page, COALESCE(visitor_id, session_hash)
+    ),
+    scrolls AS (
+      SELECT
+        page,
+        COALESCE(visitor_id, session_hash) AS who,
+        MAX((props->>'depth')::int) AS max_depth
+      FROM analytics_events
+      WHERE event_type = 'scroll'
+        AND page LIKE '/case-studies/%'
+        AND ts >= ${r.since.toISOString()} AND ts < ${r.until.toISOString()}
+        AND props ? 'depth'
+      GROUP BY page, COALESCE(visitor_id, session_hash)
+    )
+    SELECT
+      v.page,
+      COUNT(*)::int AS viewers,
+      COUNT(*) FILTER (WHERE s.max_depth >= 25)::int AS reached_25,
+      COUNT(*) FILTER (WHERE s.max_depth >= 50)::int AS reached_50,
+      COUNT(*) FILTER (WHERE s.max_depth >= 75)::int AS reached_75,
+      COUNT(*) FILTER (WHERE s.max_depth >= 100)::int AS reached_100
+    FROM viewers v
+    LEFT JOIN scrolls s ON s.page = v.page AND s.who = v.who
+    GROUP BY v.page
+    ORDER BY viewers DESC
+  `
+  return rows.map((row) => ({
+    page: String(row.page),
+    viewers: Number(row.viewers) || 0,
+    reached_25: Number(row.reached_25) || 0,
+    reached_50: Number(row.reached_50) || 0,
+    reached_75: Number(row.reached_75) || 0,
+    reached_100: Number(row.reached_100) || 0,
+  }))
+}
+
+/** One row per (selector, text, host) tuple in the click stream. */
+export type ClickRow = {
+  selector: string
+  text: string | null
+  host: string | null
+  page: string | null
+  clicks: number
+}
+
+/**
+ * Top clicked elements across all pages (or per-page when filtered).
+ * Deduped at row level by (selector, text, host) — so "Book a call"
+ * button gets one row whether it was clicked from Hero or Contact.
+ *
+ * Counts distinct sessions, not raw events, so a user who clicks the
+ * same element 5 times in one session counts as 1.
+ */
+export async function topClicks(r: Range, limit = 20): Promise<ClickRow[]> {
+  const { rows } = await sql`
+    SELECT
+      props->>'selector'                   AS selector,
+      props->>'text'                       AS text,
+      props->>'host'                       AS host,
+      COUNT(DISTINCT session_hash)::int    AS clicks
+    FROM analytics_events
+    WHERE event_type = 'click'
+      AND ts >= ${r.since.toISOString()} AND ts < ${r.until.toISOString()}
+      AND props ? 'selector'
+    GROUP BY props->>'selector', props->>'text', props->>'host'
+    ORDER BY clicks DESC
+    LIMIT ${limit}
+  `
+  return rows.map((row) => ({
+    selector: String(row.selector ?? ''),
+    text: row.text == null ? null : String(row.text),
+    host: row.host == null ? null : String(row.host),
+    page: null,
+    clicks: Number(row.clicks) || 0,
+  }))
+}
+
 export type RecentEvent = {
   ts: string
   event_type: string
@@ -583,10 +694,10 @@ function rowOf(row: Record<string, unknown>): BreakdownRow {
   return { key: String(row.key ?? '??'), visitors: Number(row.visitors) || 0 }
 }
 
-/** Resolve a "7d" / "30d" / "90d" range string into a Range object. */
+/** Resolve a "1d" / "7d" / "30d" / "90d" range string into a Range object. */
 export function parseRange(s: string | undefined | null): Range {
   const now = new Date()
-  const days = s === '90d' ? 90 : s === '30d' ? 30 : 7
+  const days = s === '1d' ? 1 : s === '30d' ? 30 : s === '90d' ? 90 : 7
   const since = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
   return { since, until: now }
 }

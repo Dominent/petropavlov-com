@@ -18,20 +18,42 @@ const sections = [
 export function SideNav() {
   const [active, setActive] = useState('hero')
 
+  // Active-section detection. We previously used IntersectionObserver
+  // with a 5%-wide trigger band at 40-45% of the viewport, but that
+  // band can't be reached by the last few sections when the page hits
+  // its scroll limit — they stay below the band forever, so the active
+  // highlight gets stuck on whatever was last in view.
+  //
+  // The scroll-position approach instead asks "which section's top has
+  // crossed the 40% line, picking the lowest one that has?" This is
+  // monotonic in scroll position so the highlight always advances, and
+  // we explicitly force the last section active when the page is at
+  // the bottom (so contact lights up even if it's a short section).
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id)
-        })
-      },
-      { rootMargin: '-40% 0px -55% 0px' }
-    )
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    })
-    return () => observer.disconnect()
+    function update() {
+      const triggerLine = window.innerHeight * 0.4
+      let next = sections[0].id
+      for (const { id } of sections) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        if (el.getBoundingClientRect().top <= triggerLine) {
+          next = id
+        }
+      }
+      // Scrolled to the bottom? Force the last section active.
+      const atBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 4
+      if (atBottom) next = sections[sections.length - 1].id
+      setActive(next)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
   }, [])
 
   return (

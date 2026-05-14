@@ -22,7 +22,7 @@
 //   input / textarea / contenteditable elements (so typed form values
 //   can't leak via a misclick on a label or wrapper).
 
-import { track } from './core.js'
+import { track } from './core'
 
 let installed = false
 

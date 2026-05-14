@@ -11,7 +11,7 @@
 // To avoid spamming the endpoint when a single bug fires repeatedly
 // (e.g., one error per render), we rate-limit to 5 errors per page.
 
-import { track } from './core.js'
+import { track } from './core'
 
 let installed = false
 let errorCount = 0

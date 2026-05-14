@@ -1,6 +1,8 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import type { Project } from '../data/work'
 import { ArchDiagram } from './ArchDiagram'
 import { track } from '../pulse/client'
@@ -55,7 +57,7 @@ export function ProjectCard({ project, index }: Props) {
 
           {project.caseStudyUrl && (
             <Link
-              to={project.caseStudyUrl}
+              href={project.caseStudyUrl}
               onClick={() =>
                 track('project_click', {
                   project: project.id,

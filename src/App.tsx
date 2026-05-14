@@ -1,19 +1,19 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { Home } from './pages/Home'
-import { NotFound } from './pages/NotFound'
+import { Home } from './_views/Home'
+import { NotFound } from './_views/NotFound'
 import { initCal } from './lib/cal'
 
 // Case studies are lazy-loaded — they're long pages of prose that
 // most home-page visitors never reach. Keeping them out of the main
 // bundle shaves ~30-40 KB gzipped off the initial page load.
 const GramotaCaseStudy = lazy(() =>
-  import('./pages/CaseStudyGramota').then((m) => ({
+  import('./_views/CaseStudyGramota').then((m) => ({
     default: m.GramotaCaseStudy,
   })),
 )
 const InsightDraftCaseStudy = lazy(() =>
-  import('./pages/CaseStudyInsightDraft').then((m) => ({
+  import('./_views/CaseStudyInsightDraft').then((m) => ({
     default: m.InsightDraftCaseStudy,
   })),
 )

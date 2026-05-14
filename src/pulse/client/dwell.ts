@@ -24,7 +24,7 @@
 //   - 15s heartbeats give us a known floor on dwell even if pagehide
 //     never fires.
 
-import { track } from './core.js'
+import { track } from './core'
 
 const HEARTBEAT_MS = 15_000
 const MIN_REPORT_MS = 1_000 // Drop sub-second noise

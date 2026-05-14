@@ -9,8 +9,8 @@
 // sessionStorage so that re-entries (back/forward navigation within
 // the same tab) don't double-count.
 
-import type { SectionConfig } from './types.js'
-import { track } from './core.js'
+import type { SectionConfig } from './types'
+import { track } from './core'
 
 export type SectionsOptions = {
   /**

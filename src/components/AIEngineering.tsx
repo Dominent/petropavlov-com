@@ -1,3 +1,5 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { aiStack, aiSystems, statusColors } from '../data/ai'
 import { SectionLabel } from './SectionLabel'

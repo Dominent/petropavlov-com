@@ -1,3 +1,5 @@
+'use client'
+
 type Props = { projectId: string }
 
 export function ArchDiagram({ projectId }: Props) {

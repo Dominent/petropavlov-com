@@ -5,10 +5,10 @@
 // with index.ts. index.ts orchestrates init() and re-exports the
 // public API from here.
 
-import type { EventPayload, EventType, SectionConfig } from './types.js'
-import { send } from './send.js'
-import { readSessionUtm } from './page-views.js'
-import { getVisitorId } from './visitor-id.js'
+import type { EventPayload, EventType, SectionConfig } from './types'
+import { send } from './send'
+import { readSessionUtm } from './page-views'
+import { getVisitorId } from './visitor-id'
 
 /** Optional per-call overrides for track(). */
 export type TrackOptions = {

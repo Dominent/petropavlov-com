@@ -13,7 +13,7 @@ import '@fontsource/instrument-serif'
 import '@fontsource/instrument-serif/400-italic.css'
 
 import './index.scss'
-import App from './App.tsx'
+import App from './App'
 import { init as pulseInit } from './pulse/client'
 
 // Pulse — privacy-first analytics. Replaces @vercel/analytics +

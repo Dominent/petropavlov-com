@@ -1,3 +1,5 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { ArrowDownRight, Calendar, Download, Mail, MapPin } from 'lucide-react'
 import { GithubIcon } from './BrandIcons'

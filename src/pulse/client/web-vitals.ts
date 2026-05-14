@@ -84,10 +84,10 @@
 //   themselves and is consistent with how every other web-vitals tool
 //   (Vercel, Plausible, Google's own web-vitals library) reports.
 
-import type { PulseConfig, VitalMetric, VitalPayload } from './types.js'
-import { send } from './send.js'
-import { getVisitorId } from './visitor-id.js'
-import { track } from './core.js'
+import type { PulseConfig, VitalMetric, VitalPayload } from './types'
+import { send } from './send'
+import { getVisitorId } from './visitor-id'
+import { track } from './core'
 
 interface LayoutShift extends PerformanceEntry {
   value: number

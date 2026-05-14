@@ -23,16 +23,16 @@
 //   track('contact_open')
 //   track('contact_submit', { email_domain: 'company.com' })
 
-import type { PulseConfig } from './types.js'
-import { setConfig, track } from './core.js'
-import { initPageViews } from './page-views.js'
-import { initWebVitals } from './web-vitals.js'
-import { initOutbound } from './outbound.js'
-import { initScroll } from './scroll.js'
-import { initSections } from './sections.js'
-import { initErrors } from './errors.js'
-import { initDwell } from './dwell.js'
-import { initClicks } from './clicks.js'
+import type { PulseConfig } from './types'
+import { setConfig, track } from './core'
+import { initPageViews } from './page-views'
+import { initWebVitals } from './web-vitals'
+import { initOutbound } from './outbound'
+import { initScroll } from './scroll'
+import { initSections } from './sections'
+import { initErrors } from './errors'
+import { initDwell } from './dwell'
+import { initClicks } from './clicks'
 
 export type {
   EventPayload,
@@ -41,17 +41,17 @@ export type {
   SectionConfig,
   VitalMetric,
   VitalPayload,
-} from './types.js'
-export { track } from './core.js'
-export { initPageViews } from './page-views.js'
-export { initWebVitals } from './web-vitals.js'
-export { initOutbound } from './outbound.js'
-export { initScroll } from './scroll.js'
-export { initSections } from './sections.js'
-export { initErrors } from './errors.js'
-export { initDwell } from './dwell.js'
-export { initClicks } from './clicks.js'
-export { getVisitorId, clearVisitorId } from './visitor-id.js'
+} from './types'
+export { track } from './core'
+export { initPageViews } from './page-views'
+export { initWebVitals } from './web-vitals'
+export { initOutbound } from './outbound'
+export { initScroll } from './scroll'
+export { initSections } from './sections'
+export { initErrors } from './errors'
+export { initDwell } from './dwell'
+export { initClicks } from './clicks'
+export { getVisitorId, clearVisitorId } from './visitor-id'
 
 /**
  * Initialize Pulse. Call once at app boot.

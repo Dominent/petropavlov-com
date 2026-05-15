@@ -79,6 +79,7 @@ function renderPage(m: ViewModel): string {
       <a href="/admin/analytics">Analytics</a>
       <a href="/admin/speed?range=${esc(m.rangeParam)}&pct=${m.pct}" class="active">Speed</a>
       <a href="/admin/events">Events</a>
+      <a href="/admin/experiments">Experiments</a>
     </nav>
     <div class="range">
       ${renderTab('range', '1d', m.rangeParam, m.pct)}

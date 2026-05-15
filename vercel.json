@@ -18,7 +18,7 @@
     { "source": "/admin/analytics", "destination": "/api/admin/analytics" },
     { "source": "/admin/speed", "destination": "/api/admin/speed" },
     { "source": "/admin/events", "destination": "/api/admin/events" },
-    { "source": "/admin/experiments", "destination": "/api/admin/experiments-page" },
+    { "source": "/admin/experiments", "destination": "/api/admin/experiments" },
     { "source": "/cv", "destination": "/api/cv" }
   ],
   "headers": [

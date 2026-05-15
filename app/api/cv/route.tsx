@@ -1,18 +1,13 @@
-// CV PDF generation endpoint.
+// CV PDF generation — GET /api/cv (served at /cv via vercel.json rewrite).
 //
 // Renders a 1–2 page A4 CV from the same data the portfolio uses
-// (src/data/work.ts), so the moment you update a job's metrics or
-// add a project, the next /cv download reflects it. No separate
-// "CV file" to maintain.
+// (src/data/work.ts), so the moment you update a job's metrics or add
+// a project, the next /cv download reflects it. No separate CV file
+// to maintain.
 //
-// The endpoint serves a real PDF binary (Content-Type: application/pdf
-// + Content-Disposition: attachment) so a single click downloads it to
-// the visitor's machine — recruiter-friendly behaviour.
-//
-// CV-specific copy (summary line, section headings) lives inline below
-// as plain strings, separate from the portfolio's marketing voice.
+// Serves a real PDF binary (Content-Type: application/pdf +
+// Content-Disposition: attachment) so a single click downloads it.
 
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import React from 'react'
 import {
   Document,
@@ -21,9 +16,13 @@ import {
   View,
   Link,
   StyleSheet,
-  renderToStream,
+  renderToBuffer,
 } from '@react-pdf/renderer'
-import { projects, jobs, skills } from '../src/data/work.js'
+import { projects, jobs, skills } from '../../../src/data/work'
+
+// Node runtime — @react-pdf needs Node APIs (Buffer, streams). Without
+// this, Next.js would default to Edge for routes that look pure.
+export const runtime = 'nodejs'
 
 // ─────────────────────────────────────────────────────────────────────
 // Styles
@@ -167,8 +166,6 @@ const SUMMARY =
   'afternoons overlap with North-American East-Coast mornings; late-day sync for Pacific ' +
   'time. Invoiced in USD, CAD, or EUR via Stripe and Wise.'
 
-// Skill categories to include in the CV — omit Certifications/Education
-// because they get their own section below.
 const SKILL_KEYS_FOR_CV: (keyof typeof skills)[] = [
   'Frontend',
   'Backend',
@@ -186,17 +183,8 @@ const SKILL_KEYS_FOR_CV: (keyof typeof skills)[] = [
 
 const Header = () => (
   <View style={styles.header}>
-    {/* Plain straight quotes — HTML entities like &ldquo; render literally
-        in @react-pdf because it doesn't process the HTML-style decoded
-        characters the same way the DOM does. */}
     <Text style={styles.name}>Petromil "Petro" Pavlov</Text>
     <Text style={styles.title}>Senior Full-Stack & AI Engineer</Text>
-    {/* One Text with inline Links — @react-pdf treats nested elements as
-        inline flow, which avoids the flex-row wrapping mess where the
-        separator dots end up on their own lines. */}
-    {/* Explicit string separators between every chunk — JSX whitespace
-        between elements gets collapsed/stripped inconsistently by
-        @react-pdf, so we don't rely on it. */}
     <Text style={styles.contactLine}>
       {'Sofia, Bulgaria  ·  '}
       <Link src="mailto:petromilpavlov@gmail.com" style={styles.contactLink}>
@@ -273,7 +261,6 @@ const ProjectEntry = ({
       <Text style={styles.projectTagline}>· {project.tagline}</Text>
     </View>
     <Text style={styles.projectDesc}>
-      {/* Trim the long description to ~1-2 sentences for the CV */}
       {trimToSentences(project.description, 2)}
     </Text>
     <Text style={styles.projectMeta}>
@@ -340,7 +327,6 @@ const CV = () => (
     keywords="full-stack, AI engineer, RAG, LLM, Angular, .NET, TypeScript, Sofia, Bulgaria"
   >
     <Page size="A4" style={styles.page}>
-      {/* eslint-disable-next-line react/jsx-key — only one Header */}
       <Header />
       <Summary />
       <Experience />
@@ -352,48 +338,52 @@ const CV = () => (
   </Document>
 )
 
-// Also fix Education section heading: HTML entities don't decode in PDF.
-const _ = `Education & Certifications` // (handled in JSX below via plain &)
-
 // ─────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────
 
-/** Trim a long description to N sentences (rough — splits on `. `). */
 function trimToSentences(text: string, n: number): string {
-  const parts = text.split(/(?<=\.)\s+/) // split after period+space
+  const parts = text.split(/(?<=\.)\s+/)
   if (parts.length <= n) return text
   return parts.slice(0, n).join(' ').trim()
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Vercel handler
+// Route handler
 // ─────────────────────────────────────────────────────────────────────
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    return res.status(405).end()
-  }
-
+export async function GET(): Promise<Response> {
   try {
-    const stream = await renderToStream(<CV />)
+    // renderToBuffer() gives us a Node Buffer we can return as the
+    // response body — simpler than wiring renderToStream() through
+    // Web Streams in App Router. The CV PDF is small (~20-40 KB) so
+    // buffering is fine.
+    const buffer = await renderToBuffer(<CV />)
+    // Convert to Uint8Array for the Response constructor.
+    const bytes = new Uint8Array(buffer)
 
-    res.setHeader('Content-Type', 'application/pdf')
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename="petro-pavlov-cv.pdf"',
-    )
-    // Cache briefly on the edge — the CV doesn't change between every
-    // deploy, and the function takes a few hundred ms to render.
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600')
-
-    // @ts-expect-error — Node stream pipe vs Web stream; @react-pdf returns Node stream.
-    stream.pipe(res)
+    return new Response(bytes, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="petro-pavlov-cv.pdf"',
+        // Cache briefly on the edge — the CV doesn't change between every
+        // deploy, and the function takes a few hundred ms to render.
+        'Cache-Control': 'public, max-age=300, s-maxage=600',
+      },
+    })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'unknown'
     console.error('[cv] render failed:', msg)
-    return res
-      .status(500)
-      .json({ error: 'cv_render_failed', message: msg })
+    return Response.json(
+      { error: 'cv_render_failed', message: msg },
+      { status: 500 },
+    )
   }
+}
+
+// HEAD support — same headers, no body. Useful for "is /cv up?" probes.
+export async function HEAD(): Promise<Response> {
+  return new Response(null, {
+    headers: { 'Content-Type': 'application/pdf' },
+  })
 }

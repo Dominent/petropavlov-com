@@ -1,13 +1,17 @@
 // Admin UI for experiments — HTML page at /admin/experiments (mapped
-// via vercel.json rewrite). Same visual style as /admin/analytics +
-// /admin/speed + /admin/events. Handles its own CRUD via
-// POST-Redirect-GET so no client-side JS needed; the parallel JSON
-// API at /api/admin/experiments is for programmatic access.
+// via vercel.json rewrite to /api/admin/experiments). Same visual
+// style as /admin/analytics + /admin/speed + /admin/events. Handles
+// its own CRUD via POST-Redirect-GET, so no client-side JS needed.
+//
+// A separate JSON API would be nice (mobile, CI, etc.) but Vercel's
+// Hobby plan caps deployments at 12 Serverless Functions and we're
+// at the limit. This endpoint serves both the UI and the mutations.
 
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { sql } from '@vercel/postgres'
-import { requireBasicAuth } from '../_lib/auth.js'
-import { experimentResults, type ExperimentResult } from '../../src/pulse/server/index.js'
+import { requireBasicAuth } from '../../../../src/pulse/server/admin-auth'
+import { experimentResults, type ExperimentResult } from '../../../../src/pulse/server/index'
+
+export const runtime = 'nodejs'
 
 type Status = 'draft' | 'running' | 'paused' | 'concluded'
 type Variant = { name: string; weight: number }
@@ -27,19 +31,37 @@ type ExperimentRow = {
   ended_at: string | null
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!requireBasicAuth(req, res)) return
+export async function GET(req: Request): Promise<Response> {
+  const authFail = requireBasicAuth(req)
+  if (authFail) return authFail
 
   try {
-    if (req.method === 'POST') return await handlePost(req, res)
-    const key = typeof req.query.key === 'string' ? req.query.key : null
-    if (key) return await renderDetail(key, res)
-    return await renderList(res)
+    const key = new URL(req.url).searchParams.get('key')
+    if (key) return await renderDetail(key)
+    return await renderList()
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
-    console.error('admin/experiments-page error:', msg)
-    res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    res.status(500).send(renderError(msg))
+    console.error('admin/experiments error:', msg)
+    return new Response(renderError(msg), {
+      status: 500,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
+  }
+}
+
+export async function POST(req: Request): Promise<Response> {
+  const authFail = requireBasicAuth(req)
+  if (authFail) return authFail
+
+  try {
+    return await handlePost(req)
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Unknown error'
+    console.error('admin/experiments POST error:', msg)
+    return new Response(renderError(msg), {
+      status: 500,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
   }
 }
 
@@ -47,17 +69,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 // POST handler — all mutations dispatched by _action field
 // ─────────────────────────────────────────────────────────────────────
 
-async function handlePost(req: VercelRequest, res: VercelResponse) {
-  const body = (req.body ?? {}) as Record<string, string>
+async function handlePost(req: Request): Promise<Response> {
+  const form = await req.formData()
+  const body: Record<string, string> = {}
+  form.forEach((value, name) => {
+    if (typeof value === 'string') body[name] = value
+  })
   const action = body._action
-  const key = body.key || (typeof req.query.key === 'string' ? req.query.key : '')
+  const key = body.key || new URL(req.url).searchParams.get('key') || ''
 
   if (action === 'create') {
     if (!key || !/^[a-z][a-z0-9_-]*$/.test(key)) {
-      return redirect(res, '/admin/experiments?error=bad_key')
+      return redirect('/admin/experiments?error=bad_key')
     }
-    if (!body.name) return redirect(res, '/admin/experiments?error=missing_name')
-    if (!body.success_event) return redirect(res, '/admin/experiments?error=missing_event')
+    if (!body.name) return redirect('/admin/experiments?error=missing_name')
+    if (!body.success_event) return redirect('/admin/experiments?error=missing_event')
     const variants: Variant[] = [
       { name: body.variant_a_name || 'a', weight: parseInt(body.variant_a_weight, 10) || 50 },
       { name: body.variant_b_name || 'b', weight: parseInt(body.variant_b_weight, 10) || 50 },
@@ -71,11 +97,11 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
          ${JSON.stringify(variants)}::jsonb, ${body.success_event},
          ${successFilter ? JSON.stringify(successFilter) : null}::jsonb)
     `
-    return redirect(res, `/admin/experiments?key=${encodeURIComponent(key)}`)
+    return redirect(`/admin/experiments?key=${encodeURIComponent(key)}`)
   }
 
   if (action === 'update') {
-    if (!key) return redirect(res, '/admin/experiments?error=missing_key')
+    if (!key) return redirect('/admin/experiments?error=missing_key')
     const variants: Variant[] = [
       { name: body.variant_a_name || 'a', weight: parseInt(body.variant_a_weight, 10) || 50 },
       { name: body.variant_b_name || 'b', weight: parseInt(body.variant_b_weight, 10) || 50 },
@@ -90,14 +116,14 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
           success_filter = ${successFilter ? JSON.stringify(successFilter) : null}::jsonb
       WHERE key = ${key}
     `
-    return redirect(res, `/admin/experiments?key=${encodeURIComponent(key)}`)
+    return redirect(`/admin/experiments?key=${encodeURIComponent(key)}`)
   }
 
   if (action === 'status') {
-    if (!key) return redirect(res, '/admin/experiments?error=missing_key')
+    if (!key) return redirect('/admin/experiments?error=missing_key')
     const status = body.status as Status
     if (!['draft','running','paused','concluded'].includes(status)) {
-      return redirect(res, `/admin/experiments?key=${encodeURIComponent(key)}&error=bad_status`)
+      return redirect(`/admin/experiments?key=${encodeURIComponent(key)}&error=bad_status`)
     }
     if (status === 'running') {
       // Only set started_at on first transition to running, so pause+resume doesn't reset.
@@ -118,31 +144,32 @@ async function handlePost(req: VercelRequest, res: VercelResponse) {
     } else {
       await sql`UPDATE experiments SET status = ${status} WHERE key = ${key}`
     }
-    return redirect(res, `/admin/experiments?key=${encodeURIComponent(key)}`)
+    return redirect(`/admin/experiments?key=${encodeURIComponent(key)}`)
   }
 
   if (action === 'delete') {
-    if (!key) return redirect(res, '/admin/experiments?error=missing_key')
+    if (!key) return redirect('/admin/experiments?error=missing_key')
     const { rows } = await sql`SELECT status FROM experiments WHERE key = ${key}`
-    if (rows.length === 0) return redirect(res, '/admin/experiments?error=not_found')
+    if (rows.length === 0) return redirect('/admin/experiments?error=not_found')
     if (!['draft','concluded'].includes(rows[0].status as string)) {
       return redirect(
-        res,
         `/admin/experiments?key=${encodeURIComponent(key)}&error=pause_first`,
       )
     }
     await sql`DELETE FROM experiments WHERE key = ${key}`
-    return redirect(res, '/admin/experiments?deleted=1')
+    return redirect('/admin/experiments?deleted=1')
   }
 
-  return redirect(res, '/admin/experiments?error=unknown_action')
+  return redirect('/admin/experiments?error=unknown_action')
 }
 
-function redirect(res: VercelResponse, location: string): void {
+function redirect(location: string): Response {
   // 303 forces the next request to be GET, completing the
   // POST-Redirect-GET pattern correctly.
-  res.setHeader('Location', location)
-  res.status(303).end()
+  return new Response(null, {
+    status: 303,
+    headers: { Location: location },
+  })
 }
 
 function parseFilter(raw: string | undefined): Record<string, string> | null {
@@ -164,7 +191,7 @@ function parseFilter(raw: string | undefined): Record<string, string> | null {
 // List view
 // ─────────────────────────────────────────────────────────────────────
 
-async function renderList(res: VercelResponse) {
+async function renderList(): Promise<Response> {
   const { rows } = await sql`SELECT * FROM experiments ORDER BY created_at DESC`
   const experiments = rows.map(rowToExperiment)
 
@@ -177,9 +204,12 @@ async function renderList(res: VercelResponse) {
     })),
   )
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'no-store')
-  res.status(200).send(renderListPage(enriched))
+  return new Response(renderListPage(enriched), {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  })
 }
 
 function renderListPage(experiments: (ExperimentRow & { results: ExperimentResult | null })[]): string {
@@ -327,18 +357,23 @@ function renderCreateForm(): string {
 // Detail view
 // ─────────────────────────────────────────────────────────────────────
 
-async function renderDetail(key: string, res: VercelResponse) {
+async function renderDetail(key: string): Promise<Response> {
   const { rows } = await sql`SELECT * FROM experiments WHERE key = ${key}`
   if (rows.length === 0) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8')
-    return res.status(404).send(renderError(`Experiment not found: ${key}`))
+    return new Response(renderError(`Experiment not found: ${key}`), {
+      status: 404,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
   }
   const e = rowToExperiment(rows[0])
   const results = e.status === 'draft' ? null : await experimentResults(e.key, e.success_event, e.success_filter)
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'no-store')
-  res.status(200).send(renderDetailPage(e, results))
+  return new Response(renderDetailPage(e, results), {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  })
 }
 
 function renderDetailPage(e: ExperimentRow, results: ExperimentResult | null): string {

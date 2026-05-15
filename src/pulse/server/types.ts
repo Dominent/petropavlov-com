@@ -1,7 +1,7 @@
 // Server-side types — shared between the request parser, storage
 // adapters, and query helpers.
 
-import type { EventType, VitalMetric } from '../client/types.js'
+import type { EventType, VitalMetric } from '../client/types'
 
 /** What we persist to the events table — built from the incoming payload + parsed request context. */
 export type EventRecord = {

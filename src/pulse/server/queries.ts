@@ -9,8 +9,8 @@
 // dashboard implementation (or any other consumer) can render the
 // results however it likes.
 
-import { sql } from './storage/postgres.js'
-import { categorize, type Channel } from './categorize.js'
+import { sql } from './storage/postgres'
+import { categorize, type Channel } from './categorize'
 
 export type Range = { since: Date; until: Date }
 

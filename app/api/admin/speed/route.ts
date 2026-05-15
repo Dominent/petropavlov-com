@@ -1,5 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireBasicAuth } from '../_lib/auth.js'
+import { requireBasicAuth } from '../../../../src/pulse/server/admin-auth'
 import {
   vitalsPercentiles,
   vitalsByDimension,
@@ -8,15 +7,19 @@ import {
   type Percentile,
   type Metric,
   type VitalByDim,
-} from '../../src/pulse/server/index.js'
+} from '../../../../src/pulse/server/index'
+
+export const runtime = 'nodejs'
 
 const VALID_PCT: Percentile[] = [75, 90, 95, 99]
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!requireBasicAuth(req, res)) return
+export async function GET(req: Request): Promise<Response> {
+  const authFail = requireBasicAuth(req)
+  if (authFail) return authFail
 
-  const rangeParam = typeof req.query.range === 'string' ? req.query.range : '7d'
-  const pctParam = Number(req.query.pct)
+  const params = new URL(req.url).searchParams
+  const rangeParam = params.get('range') ?? '7d'
+  const pctParam = Number(params.get('pct'))
   const pct: Percentile = (VALID_PCT as number[]).includes(pctParam)
     ? (pctParam as Percentile)
     : 75
@@ -30,18 +33,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const res_score = computeRES(percentiles)
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'no-store')
-  res.status(200).send(
-    renderPage({
-      rangeParam,
-      pct,
-      res: res_score,
-      percentiles,
-      byPage,
-      byCountry,
-    }),
-  )
+  const html = renderPage({
+    rangeParam,
+    pct,
+    res: res_score,
+    percentiles,
+    byPage,
+    byCountry,
+  })
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  })
 }
 
 // ─────────────────────────────────────────────────────────────────────

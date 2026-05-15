@@ -1,5 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireBasicAuth } from '../_lib/auth.js'
+import { requireBasicAuth } from '../../../../src/pulse/server/admin-auth'
 import {
   customEvents,
   funnel,
@@ -11,12 +10,15 @@ import {
   type FunnelStage,
   type RecentEvent,
   type ReadingCompletion,
-} from '../../src/pulse/server/index.js'
+} from '../../../../src/pulse/server/index'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!requireBasicAuth(req, res)) return
+export const runtime = 'nodejs'
 
-  const rangeParam = typeof req.query.range === 'string' ? req.query.range : '7d'
+export async function GET(req: Request): Promise<Response> {
+  const authFail = requireBasicAuth(req)
+  if (authFail) return authFail
+
+  const rangeParam = new URL(req.url).searchParams.get('range') ?? '7d'
   const range = parseRange(rangeParam)
 
   const [events, funnelData, recent, byHour, reading] = await Promise.all([
@@ -27,18 +29,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     readingCompletion(range),
   ])
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'no-store')
-  res.status(200).send(
-    renderPage({
-      rangeParam,
-      events,
-      funnel: funnelData,
-      recent,
-      byHour,
-      reading,
-    }),
-  )
+  const html = renderPage({
+    rangeParam,
+    events,
+    funnel: funnelData,
+    recent,
+    byHour,
+    reading,
+  })
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  })
 }
 
 // ─────────────────────────────────────────────────────────────────────

@@ -6,10 +6,10 @@
 // anything that quacks like a request: a `headers` object and optional
 // `socket.remoteAddress`.
 
-import type { EventPayload, VitalPayload } from '../client/types.js'
-import { parseUA } from './parse-ua.js'
-import { sessionHash } from './hash.js'
-import type { EventRecord, VitalRecord } from './types.js'
+import type { EventPayload, VitalPayload } from '../client/types'
+import { parseUA } from './parse-ua'
+import { sessionHash } from './hash'
+import type { EventRecord, VitalRecord } from './types'
 
 /**
  * Minimal request shape. Compatible with @vercel/node, native Node

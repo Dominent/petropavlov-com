@@ -1,15 +1,21 @@
+// Contact form submit — POST /api/contact.
+//
+// Validates the three fields (name, email, message), rate-limits the
+// caller, then ships the message via Resend to petromilpavlov@gmail.com
+// (or whatever CONTACT_TO_EMAIL is set to).
+
 import { Resend } from 'resend'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 const requestCounts = new Map<string, { count: number; reset: number }>()
 const HOUR_MS = 60 * 60 * 1000
 const MAX_PER_HOUR = 5
 
-function getIp(req: VercelRequest): string {
-  const xf = req.headers['x-forwarded-for']
-  if (typeof xf === 'string') return xf.split(',')[0].trim()
-  if (Array.isArray(xf)) return xf[0]
-  return req.socket.remoteAddress || 'unknown'
+function getIp(req: Request): string {
+  const xff = req.headers.get('x-forwarded-for')
+  if (xff) return xff.split(',')[0].trim()
+  const real = req.headers.get('x-real-ip')
+  if (real) return real
+  return 'unknown'
 }
 
 function rateLimit(ip: string): boolean {
@@ -38,32 +44,36 @@ function escapeHtml(s: string): string {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
+export async function POST(req: Request): Promise<Response> {
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    return res.status(503).json({
-      error:
-        'The contact form isn\'t configured yet. Please email petromilpavlov@gmail.com directly.',
-    })
+    return Response.json(
+      {
+        error:
+          "The contact form isn't configured yet. Please email petromilpavlov@gmail.com directly.",
+      },
+      { status: 503 },
+    )
   }
 
   const ip = getIp(req)
   if (!rateLimit(ip)) {
-    return res.status(429).json({
-      error:
-        'Too many submissions from this address. Please email petromilpavlov@gmail.com directly.',
-    })
+    return Response.json(
+      {
+        error:
+          'Too many submissions from this address. Please email petromilpavlov@gmail.com directly.',
+      },
+      { status: 429 },
+    )
   }
 
-  const { name, email, message } = (req.body ?? {}) as {
-    name?: string
-    email?: string
-    message?: string
+  let body: { name?: string; email?: string; message?: string }
+  try {
+    body = await req.json()
+  } catch {
+    return Response.json({ error: 'Invalid request.' }, { status: 400 })
   }
+  const { name, email, message } = body
 
   if (
     !name ||
@@ -73,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     typeof email !== 'string' ||
     typeof message !== 'string'
   ) {
-    return res.status(400).json({ error: 'Please fill in all three fields.' })
+    return Response.json({ error: 'Please fill in all three fields.' }, { status: 400 })
   }
 
   const trimmedName = name.trim()
@@ -81,13 +91,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const trimmedMessage = message.trim()
 
   if (trimmedName.length < 2 || trimmedName.length > 200) {
-    return res.status(400).json({ error: 'Name must be between 2 and 200 characters.' })
+    return Response.json(
+      { error: 'Name must be between 2 and 200 characters.' },
+      { status: 400 },
+    )
   }
   if (!EMAIL_REGEX.test(trimmedEmail) || trimmedEmail.length > 200) {
-    return res.status(400).json({ error: 'Please use a valid email address.' })
+    return Response.json({ error: 'Please use a valid email address.' }, { status: 400 })
   }
   if (trimmedMessage.length < 10 || trimmedMessage.length > 5000) {
-    return res.status(400).json({ error: 'Message must be between 10 and 5000 characters.' })
+    return Response.json(
+      { error: 'Message must be between 10 and 5000 characters.' },
+      { status: 400 },
+    )
   }
 
   try {
@@ -119,17 +135,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (result.error) {
       console.error('resend error:', result.error)
-      return res.status(500).json({
-        error: 'Couldn\'t send the message. Email petromilpavlov@gmail.com directly.',
-      })
+      return Response.json(
+        {
+          error: "Couldn't send the message. Email petromilpavlov@gmail.com directly.",
+        },
+        { status: 500 },
+      )
     }
 
-    return res.status(200).json({ ok: true })
+    return Response.json({ ok: true })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
     console.error('contact api error:', msg)
-    return res.status(500).json({
-      error: 'Couldn\'t send the message. Email petromilpavlov@gmail.com directly.',
-    })
+    return Response.json(
+      {
+        error: "Couldn't send the message. Email petromilpavlov@gmail.com directly.",
+      },
+      { status: 500 },
+    )
   }
 }

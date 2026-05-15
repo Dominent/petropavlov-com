@@ -8,7 +8,7 @@
 // implement the StorageAdapter interface against it — see types.ts.
 
 import { sql } from '@vercel/postgres'
-import type { EventRecord, StorageAdapter, VitalRecord } from '../types.js'
+import type { EventRecord, StorageAdapter, VitalRecord } from '../types'
 
 export const postgres: StorageAdapter = {
   async insertEvent(r: EventRecord): Promise<void> {

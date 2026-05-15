@@ -1,4 +1,12 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+// Daily Pulse report — fires once per day via Vercel Cron, emails a
+// digest of yesterday's traffic to the site owner via Resend.
+//
+// Schedule is defined in vercel.json (`crons`). Vercel signs cron
+// requests with `Authorization: Bearer ${CRON_SECRET}`, which we verify
+// before doing any work (otherwise anyone could trigger spam emails).
+//
+// "Yesterday" is the previous full UTC day. The cron fires at 07:00 UTC.
+
 import { Resend } from 'resend'
 import {
   totals,
@@ -14,28 +22,20 @@ import {
   type BreakdownRow,
   type FunnelStage,
   type Metric,
-} from '../../src/pulse/server/index.js'
+} from '../../../../src/pulse/server/index'
 
-/**
- * Daily Pulse report — fires once per day via Vercel Cron, emails a
- * digest of yesterday's traffic to the site owner via Resend.
- *
- * Schedule is defined in vercel.json. Vercel signs cron requests with
- * `Authorization: Bearer ${CRON_SECRET}`, which we verify before doing
- * any work (otherwise anyone could trigger spam emails).
- *
- * "Yesterday" is the previous full UTC day — from 00:00 UTC to 23:59:59 UTC.
- * The cron runs at 07:00 UTC (10:00 Sofia in summer / 09:00 winter), so
- * yesterday is fully sealed when this fires.
- */
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+// Node runtime — Resend SDK uses fetch under the hood, but the rendered
+// HTML is large enough that we want full Node memory limits.
+export const runtime = 'nodejs'
+
+export async function GET(req: Request): Promise<Response> {
   if (!authorize(req)) {
-    return res.status(401).json({ error: 'unauthorized' })
+    return Response.json({ error: 'unauthorized' }, { status: 401 })
   }
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    return res.status(503).json({ error: 'RESEND_API_KEY not configured' })
+    return Response.json({ error: 'RESEND_API_KEY not configured' }, { status: 503 })
   }
 
   const yesterday = yesterdayRange()
@@ -116,9 +116,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
     if (result.error) {
       console.error('[daily-report] resend error:', result.error)
-      return res.status(500).json({ error: 'send_failed', detail: result.error })
+      return Response.json(
+        { error: 'send_failed', detail: result.error },
+        { status: 500 },
+      )
     }
-    return res.status(200).json({
+    return Response.json({
       ok: true,
       subject,
       visitors,
@@ -127,7 +130,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'unknown'
     console.error('[daily-report] exception:', msg)
-    return res.status(500).json({ error: 'send_failed', detail: msg })
+    return Response.json({ error: 'send_failed', detail: msg }, { status: 500 })
   }
 }
 
@@ -135,12 +138,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 // Auth, dates
 // ─────────────────────────────────────────────────────────────────────
 
-function authorize(req: VercelRequest): boolean {
+function authorize(req: Request): boolean {
   const secret = process.env.CRON_SECRET
   if (!secret) return false
   const expected = `Bearer ${secret}`
-  const got = req.headers.authorization
-  return typeof got === 'string' && got === expected
+  const got = req.headers.get('authorization')
+  return got === expected
 }
 
 function yesterdayRange(): { since: Date; until: Date } {
@@ -218,7 +221,6 @@ function renderEmail(m: ViewModel): string {
           ${channelsBlock(m)}
           ${pagesAndReferrersBlock(m)}
           ${funnelBlock(m)}
-          ${eventsBlock(m)}
           ${vitalsBlock(m)}
           ${footerBlock()}
 
@@ -254,7 +256,6 @@ function statsBlock(m: ViewModel): string {
 }
 
 function statCard(label: string, value: string, delta: string, isBounce: boolean): string {
-  // For bounce, lower is better; flip the color logic
   let color = '#6b7280'
   if (delta) {
     const positive = delta.includes('+') && !delta.includes('(new)')
@@ -351,11 +352,6 @@ function funnelBlock(m: ViewModel): string {
     ${sectionHeading('Funnel')}
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">${rows}</table>
   </td></tr>`
-}
-
-function eventsBlock(_m: ViewModel): string {
-  // Custom events already shown in pagesAndReferrersBlock; skip duplicate.
-  return ''
 }
 
 function vitalsBlock(m: ViewModel): string {

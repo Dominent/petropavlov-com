@@ -1,5 +1,10 @@
+// Ask Petro — POST /api/chat.
+//
+// Grounds GPT-5-mini on a static system prompt covering Petro's CV,
+// projects, engagement types + geographies. Rate-limited per IP to
+// prevent abuse (LLM calls are not free).
+
 import OpenAI from 'openai'
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 const SYSTEM_PROMPT = `You are the AI assistant on Petro Pavlov's portfolio site. You answer questions from recruiters, hiring managers, founders, and curious visitors about Petro's work.
 
@@ -88,11 +93,12 @@ const requestCounts = new Map<string, { count: number; reset: number }>()
 const HOUR_MS = 60 * 60 * 1000
 const MAX_PER_HOUR = 15
 
-function getIp(req: VercelRequest): string {
-  const xf = req.headers['x-forwarded-for']
-  if (typeof xf === 'string') return xf.split(',')[0].trim()
-  if (Array.isArray(xf)) return xf[0]
-  return req.socket.remoteAddress || 'unknown'
+function getIp(req: Request): string {
+  const xff = req.headers.get('x-forwarded-for')
+  if (xff) return xff.split(',')[0].trim()
+  const real = req.headers.get('x-real-ip')
+  if (real) return real
+  return 'unknown'
 }
 
 function rateLimit(ip: string): boolean {
@@ -109,29 +115,30 @@ function rateLimit(ip: string): boolean {
 
 type ChatMessage = { role: 'user' | 'assistant'; text: string }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
+export async function POST(req: Request): Promise<Response> {
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey) {
-    return res.status(503).json({
-      error: 'Chat is not configured on this deployment.',
-    })
+    return Response.json(
+      { error: 'Chat is not configured on this deployment.' },
+      { status: 503 },
+    )
   }
 
   const ip = getIp(req)
   if (!rateLimit(ip)) {
-    return res.status(429).json({
-      error: 'You\'ve hit the hourly limit. Try again later or email Petro directly.',
-    })
+    return Response.json(
+      { error: "You've hit the hourly limit. Try again later or email Petro directly." },
+      { status: 429 },
+    )
   }
 
-  const { message, history } = (req.body ?? {}) as {
-    message?: string
-    history?: ChatMessage[]
+  let body: { message?: string; history?: ChatMessage[] }
+  try {
+    body = await req.json()
+  } catch {
+    return Response.json({ error: 'Invalid request.' }, { status: 400 })
   }
+  const { message, history } = body
 
   if (
     !message ||
@@ -139,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     message.trim().length === 0 ||
     message.length > 600
   ) {
-    return res.status(400).json({ error: 'Invalid message.' })
+    return Response.json({ error: 'Invalid message.' }, { status: 400 })
   }
 
   const safeHistory = Array.isArray(history) ? history.slice(-6) : []
@@ -167,12 +174,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const text = completion.choices[0]?.message?.content?.trim() ?? ''
     if (!text) {
-      return res.status(500).json({ error: 'Empty response from model.' })
+      return Response.json({ error: 'Empty response from model.' }, { status: 500 })
     }
-    return res.status(200).json({ text })
+    return Response.json({ text })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Unknown error'
     console.error('chat api error:', msg)
-    return res.status(500).json({ error: 'Failed to generate response.' })
+    return Response.json({ error: 'Failed to generate response.' }, { status: 500 })
   }
 }

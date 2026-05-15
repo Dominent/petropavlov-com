@@ -12,23 +12,23 @@
 //     return result.ok ? res.status(204).end() : res.status(400).json(result)
 //   }
 
-import type { EventPayload, VitalPayload } from '../client/types.js'
-import { buildEventRecord, buildVitalRecord, type RequestLike } from './parse-request.js'
-import { postgres } from './storage/postgres.js'
-import type { StorageAdapter } from './types.js'
+import type { EventPayload, VitalPayload } from '../client/types'
+import { buildEventRecord, buildVitalRecord, type RequestLike } from './parse-request'
+import { postgres } from './storage/postgres'
+import type { StorageAdapter } from './types'
 
 export type {
   EventRecord,
   VitalRecord,
   StorageAdapter,
-} from './types.js'
+} from './types'
 
-export { postgres } from './storage/postgres.js'
-export * from './queries.js'
-export * from './parse-request.js'
-export * from './parse-ua.js'
-export * from './hash.js'
-export * from './categorize.js'
+export { postgres } from './storage/postgres'
+export * from './queries'
+export * from './parse-request'
+export * from './parse-ua'
+export * from './hash'
+export * from './categorize'
 
 /**
  * Ingest a single event. Validates the payload, builds the record from

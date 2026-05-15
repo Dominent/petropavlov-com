@@ -1,5 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireBasicAuth } from '../_lib/auth.js'
+import { requireBasicAuth } from '../../../../src/pulse/server/admin-auth'
 import {
   totals,
   bounceRate,
@@ -20,12 +19,15 @@ import {
   previousRange,
   type BreakdownRow,
   type ClickRow,
-} from '../../src/pulse/server/index.js'
+} from '../../../../src/pulse/server/index'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!requireBasicAuth(req, res)) return
+export const runtime = 'nodejs'
 
-  const rangeParam = typeof req.query.range === 'string' ? req.query.range : '7d'
+export async function GET(req: Request): Promise<Response> {
+  const authFail = requireBasicAuth(req)
+  if (authFail) return authFail
+
+  const rangeParam = new URL(req.url).searchParams.get('range') ?? '7d'
   const range = parseRange(rangeParam)
   const prev = previousRange(range)
 
@@ -69,32 +71,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     topClicks(range, 15),
   ])
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'no-store')
-  res.status(200).send(
-    renderPage({
-      rangeParam,
-      visitors: cur.visitors,
-      views: cur.views,
-      bounce,
-      visitorsDelta: pctDelta(cur.visitors, prevTotals.visitors),
-      viewsDelta: pctDelta(cur.views, prevTotals.views),
-      bounceDelta: pctDelta(bounce, prevBounce),
-      pages,
-      channels,
-      referrers,
-      utm,
-      countries,
-      devices,
-      browsers,
-      osData,
-      events,
-      recency,
-      firstTouch,
-      dwell,
-      clicks,
-    }),
-  )
+  const html = renderPage({
+    rangeParam,
+    visitors: cur.visitors,
+    views: cur.views,
+    bounce,
+    visitorsDelta: pctDelta(cur.visitors, prevTotals.visitors),
+    viewsDelta: pctDelta(cur.views, prevTotals.views),
+    bounceDelta: pctDelta(bounce, prevBounce),
+    pages,
+    channels,
+    referrers,
+    utm,
+    countries,
+    devices,
+    browsers,
+    osData,
+    events,
+    recency,
+    firstTouch,
+    dwell,
+    clicks,
+  })
+  return new Response(html, {
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  })
 }
 
 // ─────────────────────────────────────────────────────────────────────

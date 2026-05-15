@@ -158,13 +158,13 @@ export function HeroB() {
           remote-first
           <span className="text-ghost">·</span>
           <span className="text-muted">
-            <span className="not-uppercase">🇪🇺</span> EU
-            <span className="mx-1.5 text-ghost">·</span>
-            <span className="not-uppercase">🇮🇱</span> Israel
-            <span className="mx-1.5 text-ghost">·</span>
             <span className="not-uppercase">🇺🇸</span> US
             <span className="mx-1.5 text-ghost">·</span>
             <span className="not-uppercase">🇨🇦</span> Canada
+            <span className="mx-1.5 text-ghost">·</span>
+            <span className="not-uppercase">🇮🇱</span> Israel
+            <span className="mx-1.5 text-ghost">·</span>
+            <span className="not-uppercase">🇪🇺</span> EU/UK
           </span>
         </motion.div>
         </div>

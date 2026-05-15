@@ -161,10 +161,11 @@ const SUMMARY =
   'SQL AI copilot inside the platform (Q3 2025 release, demoed at Gartner D&A Summit 2025). ' +
   'Previously at VMware, TestGorilla, Walltopia, and Octopus Energy Germany. Comfortable from ' +
   'prompt design through production billing, identity, and integrations. Available for ' +
-  'consulting and project work — clients across Europe, Israel (Tel Aviv), US (NYC · SF · ' +
-  'Boston), and Canada (Toronto · Montreal · Vancouver). Tel Aviv shares my timezone; ' +
-  'afternoons overlap with North-American East-Coast mornings; late-day sync for Pacific ' +
-  'time. Invoiced in USD, CAD, or EUR via Stripe and Wise.'
+  'consulting and project work — primarily US (NYC · SF · Boston), Canada (Toronto · ' +
+  'Montreal · Vancouver), and Israel (Tel Aviv); also open to EU / UK clients where the ' +
+  'project fits. Tel Aviv shares my timezone; afternoons overlap with North-American ' +
+  'East-Coast mornings; late-day sync for Pacific time. Invoiced in USD, CAD, or EUR via ' +
+  'Stripe and Wise.'
 
 const SKILL_KEYS_FOR_CV: (keyof typeof skills)[] = [
   'Frontend',

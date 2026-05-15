@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://petropavlov.dev'),
   title: 'Petro Pavlov · Senior Full-Stack & AI Engineer · Consulting & Project Work',
   description:
-    'Petro Pavlov — senior full-stack and AI engineer with 10+ years shipping production software at VMware, CData Virtuality (AI research team), TestGorilla, Walltopia, and Octopus Energy. Builds AI products end-to-end — RAG, fine-tuning, NL→SQL, LLM orchestration. Available for consulting and project work — clients across Europe, Israel (Tel Aviv), US (NYC, SF, Boston), and Canada (Toronto, Montreal, Vancouver). Tel Aviv shares my timezone; North-American East-Coast mornings overlap with Sofia afternoons. Invoiced in USD, CAD, or EUR.',
+    'Petro Pavlov — senior full-stack and AI engineer with 10+ years shipping production software at VMware, CData Virtuality (AI research team), TestGorilla, Walltopia, and Octopus Energy. Builds AI products end-to-end — RAG, fine-tuning, NL→SQL, LLM orchestration. Available for consulting and project work — primarily US (NYC, SF, Boston), Canada (Toronto, Montreal, Vancouver), and Israel (Tel Aviv); also open to EU/UK clients. Tel Aviv shares my timezone; North-American East-Coast mornings overlap with Sofia afternoons. Invoiced in USD, CAD, or EUR.',
   keywords: [
     'Petro Pavlov',
     'Petromil Pavlov',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     'remote engineer Vancouver',
     'freelance AI engineer NYC',
     'freelance AI engineer SF',
-    'EU US Canada Israel contractor',
+    'US Canada Israel EU contractor',
     'RAG',
     'fine-tuning',
     'LLM orchestration',
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     url: 'https://petropavlov.dev/',
     title: 'Petro Pavlov · Senior Full-Stack & AI Engineer',
     description:
-      '10+ years shipping production software. Most recently on the AI research team at CData Virtuality. Now building AI products end-to-end — RAG, fine-tuning, LLM orchestration. Available for consulting — clients across 🇪🇺 Europe, 🇮🇱 Israel (Tel Aviv), 🇺🇸 US (NYC · SF), and 🇨🇦 Canada (Toronto · Montreal · Vancouver).',
+      '10+ years shipping production software. Most recently on the AI research team at CData Virtuality. Now building AI products end-to-end — RAG, fine-tuning, LLM orchestration. Available for consulting — primarily 🇺🇸 US (NYC · SF · Boston), 🇨🇦 Canada (Toronto · Montreal · Vancouver), and 🇮🇱 Israel (Tel Aviv); 🇪🇺 EU/UK clients welcome too.',
     images: [
       {
         url: 'https://petropavlov.dev/og.png',
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Petro Pavlov · Senior Full-Stack & AI Engineer',
     description:
-      'Builds AI products end-to-end. RAG, fine-tuning, LLM orchestration. Available for consulting — 🇪🇺 Europe · 🇮🇱 Israel · 🇺🇸 US · 🇨🇦 Canada.',
+      'Builds AI products end-to-end. RAG, fine-tuning, LLM orchestration. Available for consulting — 🇺🇸 US · 🇨🇦 Canada · 🇮🇱 Israel · 🇪🇺 EU/UK.',
     images: ['https://petropavlov.dev/og.png'],
   },
   icons: {
@@ -114,21 +114,23 @@ const serviceLd = {
   '@type': 'ProfessionalService',
   name: 'Petro Pavlov · Senior Engineering Consulting',
   provider: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
+  // Primary markets first (US, Canada, Israel), then EU/UK secondary.
+  // Cities listed at the end for crawlers that read both granularities.
   areaServed: [
-    { '@type': 'Country', name: 'Bulgaria' },
-    { '@type': 'Country', name: 'Germany' },
-    { '@type': 'Country', name: 'Netherlands' },
-    { '@type': 'Country', name: 'United Kingdom' },
-    { '@type': 'Country', name: 'Israel' },
     { '@type': 'Country', name: 'United States' },
     { '@type': 'Country', name: 'Canada' },
-    { '@type': 'City', name: 'Tel Aviv' },
+    { '@type': 'Country', name: 'Israel' },
+    { '@type': 'Country', name: 'United Kingdom' },
+    { '@type': 'Country', name: 'Germany' },
+    { '@type': 'Country', name: 'Netherlands' },
+    { '@type': 'Country', name: 'Bulgaria' },
     { '@type': 'City', name: 'New York' },
     { '@type': 'City', name: 'San Francisco' },
     { '@type': 'City', name: 'Boston' },
     { '@type': 'City', name: 'Toronto' },
     { '@type': 'City', name: 'Montreal' },
     { '@type': 'City', name: 'Vancouver' },
+    { '@type': 'City', name: 'Tel Aviv' },
   ],
   serviceType: [
     'AI product engineering',

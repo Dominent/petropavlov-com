@@ -75,16 +75,16 @@ export function About() {
             decisions, and conducting 20+ technical interviews for senior
             Angular roles at VMware. I lead embedded in the work: through
             code, reviews, and patterns the team adopts &mdash; not from
-            above. Open to clients across{' '}
+            above. Open to clients primarily across{' '}
             <span className="font-serif italic text-accent-bright/90">
-              🇪🇺 Europe (Berlin · Amsterdam · London · Sofia), 🇮🇱 Israel
-              (Tel Aviv), 🇺🇸 US (NYC · SF · Boston), and 🇨🇦 Canada
-              (Toronto · Montreal · Vancouver)
+              🇺🇸 US (NYC · SF · Boston), 🇨🇦 Canada (Toronto · Montreal ·
+              Vancouver), and 🇮🇱 Israel (Tel Aviv)
             </span>
-            . Tel Aviv shares my timezone; North-American East-Coast
-            mornings overlap with my afternoons; Vancouver and SF via
-            late-day sync calls. Invoiced in USD, CAD, or EUR via Stripe
-            and Wise.
+            , and also 🇪🇺 EU / UK clients where the project fits. Tel
+            Aviv shares my timezone; North-American East-Coast mornings
+            overlap with my afternoons; Vancouver and SF via late-day
+            sync calls. Invoiced in USD, CAD, or EUR via Stripe and
+            Wise.
           </motion.p>
         </div>
 

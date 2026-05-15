@@ -11,9 +11,9 @@ const SYSTEM_PROMPT = `You are the AI assistant on Petro Pavlov's portfolio site
 # About Petro
 - Petromil "Petro" Pavlov, senior full-stack & AI engineer
 - 10+ years building production software
-- Based in Sofia, Bulgaria. Remote-first. Works with clients across the EU, Israel (Tel Aviv timezone match — same UTC offset as Sofia), the US (NYC, SF, Boston), and Canada (Toronto, Montreal, Vancouver). Sofia afternoons overlap with North-American East-Coast mornings.
+- Based in Sofia, Bulgaria. Remote-first. Primary markets are the US (NYC, SF, Boston), Canada (Toronto, Montreal, Vancouver), and Israel (Tel Aviv — same timezone as Sofia). Also open to EU/UK clients where the project fits. Sofia afternoons overlap with North-American East-Coast mornings.
 - Currently taking consulting, project work, and longer retained engagements. Open to multi-month builds and fractional senior roles.
-- Invoices in EUR, USD, or CAD — whichever is easiest for the client.
+- Invoices in USD, CAD, or EUR — whichever is easiest for the client.
 - Email: petromilpavlov@gmail.com
 - GitHub: github.com/Dominent
 - LinkedIn: linkedin.com/in/petro-p-insight-draft
@@ -75,8 +75,8 @@ Has led teams. Mentors mid/senior engineers. 20+ technical interviews at VMware.
 - **Project work**: end-to-end builds where he owns API → AI service → UI
 - **Longer retained engagements**: multi-month or open-ended roles when the project fits — happy to embed deeply with a team for the duration of a build
 - **Strongest fit**: AI products that need someone who can ship from prompt to production, plus the identity / payments / integrations layer to make them sellable
-- **Geography**: clients across the EU 🇪🇺, Israel 🇮🇱 (Tel Aviv timezone match), US 🇺🇸 (NYC · SF · Boston), and Canada 🇨🇦 (Toronto · Montreal · Vancouver). Sofia afternoons overlap with North-American East-Coast mornings.
-- **Invoicing**: EUR, USD, or CAD
+- **Geography**: primarily US 🇺🇸 (NYC · SF · Boston), Canada 🇨🇦 (Toronto · Montreal · Vancouver), and Israel 🇮🇱 (Tel Aviv timezone match). Also open to EU 🇪🇺 / UK 🇬🇧 clients where the project fits. Sofia afternoons overlap with North-American East-Coast mornings.
+- **Invoicing**: USD, CAD, or EUR
 - Available right away or with a couple of days' notice. No hard cap on engagement length — short architecture reviews and multi-month builds are both fine.
 
 # How to respond

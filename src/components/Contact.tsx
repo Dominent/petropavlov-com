@@ -36,12 +36,13 @@ export function Contact() {
             senior full-stack work.
           </p>
           <p className="text-faint">
-            Remote-first &mdash; clients across{' '}
+            Remote-first &mdash; primarily{' '}
             <span className="text-muted">
-              🇪🇺 Europe, 🇮🇱 Israel (Tel Aviv), 🇺🇸 US (NYC · SF), and 🇨🇦
-              Canada (Toronto · Montreal · Vancouver)
+              🇺🇸 US (NYC · SF), 🇨🇦 Canada (Toronto · Montreal · Vancouver),
+              and 🇮🇱 Israel (Tel Aviv)
             </span>
-            . Tel Aviv shares my timezone; East-Coast mornings overlap
+            , with 🇪🇺 EU / UK clients welcome where the project fits.
+            Tel Aviv shares my timezone; East-Coast mornings overlap
             with my afternoons; Pacific via late-day sync. Invoiced in
             USD, CAD, or EUR via Stripe and Wise.
           </p>

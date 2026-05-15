@@ -14,7 +14,10 @@ import { initCal } from '../../src/lib/cal'
 export function PulseInit() {
   useEffect(() => {
     pulseInit({
-      scrollRoutes: [/^\/case-studies\//],
+      // Long-form prose routes. Scroll milestone events (25%/50%/75%/100%)
+      // power the Reading Completion panel in /admin/events. Add new
+      // long-form routes here as they ship — short pages don't need them.
+      scrollRoutes: [/^\/case-studies\//, /^\/blog\//],
       // IntersectionObserver-based section view tracking — same set
       // of section ids the Vite version uses.
       sections: [

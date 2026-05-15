@@ -28,10 +28,7 @@ const POSTS: PostMeta[] = [
       "I built feature flags + significance testing into my portfolio. Then I did the math and realised I shouldn't run it yet. Here's the framework anyway — and the spreadsheet that tells you when you actually should.",
     date: '2026-05-16',
     readMinutes: 9,
-    // Set to true once you've proofread the post and want it on /blog.
-    // Even while published=false, the page renders at the slug URL
-    // (good for sharing for review).
-    published: false,
+    published: true,
   },
 ]
 

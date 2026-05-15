@@ -8,9 +8,20 @@
 import createMDX from '@next/mdx'
 
 const withMDX = createMDX({
-  // No remark/rehype plugins yet — keep the surface small. Adding
-  // remark-gfm + rehype-pretty-code (or shiki) later when the first
-  // post needs them is one line each here.
+  options: {
+    // GitHub Flavored Markdown — gives us tables, autolinks, strike-
+    // through, task lists. Without this, pipe-style tables render as
+    // literal "| col | col |" text in the prose output. Code blocks
+    // and syntax highlighting are still handled by our <Code> React
+    // component (Shiki on the client) rather than rehype-pretty-code,
+    // because <Code> already lives in the design system used by the
+    // case studies and we want consistency.
+    //
+    // String reference (not the imported function) — Turbopack
+    // requires serialisable plugin options. Function references
+    // throw "does not have serializable options" at build time.
+    remarkPlugins: [['remark-gfm']],
+  },
 })
 
 /** @type {import('next').NextConfig} */

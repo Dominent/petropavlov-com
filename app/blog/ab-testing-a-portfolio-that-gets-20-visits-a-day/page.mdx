@@ -1,7 +1,30 @@
 import { BlogPostFrame } from '../_components/BlogPostFrame'
 import { Mermaid } from '../../../src/components/Mermaid'
 import { Code } from '../../../src/components/Code'
+import { Md } from '../../../src/components/Md'
 import Script from 'next/script'
+
+export const FUNNEL_TABLE = `
+| Section          | Visitors who reached it | % of all |
+|------------------|------------------------:|---------:|
+| \`hero\`           | 44                      | **92%**  |
+| \`work\`           | 11                      | 23%      |
+| \`ai_engineering\` | 11                      | 23%      |
+| \`experience\`     | 11                      | 23%      |
+| \`about\`          | 11                      | 23%      |
+| \`ask_petro\`      | 10                      | 21%      |
+| \`testimonials\`   | 10                      | 21%      |
+| \`contact\`        | 10                      | 21%      |
+`
+
+export const SAMPLE_SIZE_TABLE = `
+| Lift to detect (in percentage points) | Sessions needed per variant | Days at 10/var/day |
+|---------------------------------------|----------------------------:|--------------------|
+| +5pp (23% → 28%)                      | ~1,200                      | **120 days**       |
+| +10pp (23% → 33%)                     | ~290                        | **30 days**        |
+| +20pp (23% → 43%)                     | ~75                         | **8 days**         |
+| +27pp (23% → 50%)                     | ~45                         | **5 days**         |
+`
 
 export const ARCH_DIAGRAM = `flowchart TB
     ADMIN["Admin UI<br/>/admin/experiments<br/>(no redeploy needed)"]
@@ -130,16 +153,7 @@ That sounds like a worse version of the usual "I built an analytics stack" post.
 
 I've been running [my own self-hosted analytics](https://petropavlov.dev/admin/analytics) on this site for about a month — call it Pulse — and the funnel data is pretty clear:
 
-| Section | Visitors who reached it | % of all |
-|---|---|---|
-| `hero` | 44 | **92%** |
-| `work` | 11 | 23% |
-| `ai_engineering` | 11 | 23% |
-| `experience` | 11 | 23% |
-| `about` | 11 | 23% |
-| `ask_petro` | 10 | 21% |
-| `testimonials` | 10 | 21% |
-| `contact` | 10 | 21% |
+<Md source={FUNNEL_TABLE} />
 
 77% of visitors bounce before they ever see the work. Once someone scrolls past the hero, the drop-off basically stops — they read most of the page. The cliff is purely *hero → next section*.
 
@@ -185,12 +199,7 @@ The denominator for the test is "sessions exposed to the hero," which is basical
 
 How many sessions do I need to detect a meaningful improvement at α = 0.05, β = 0.2?
 
-| Lift to detect (in percentage points) | Sessions needed per variant | Days at 10/var/day |
-|---|---|---|
-| +5pp (23% → 28%) | ~1,200 | **120 days** |
-| +10pp (23% → 33%) | ~290 | **30 days** |
-| +20pp (23% → 43%) | ~75 | **8 days** |
-| +27pp (23% → 50%) | ~45 | **5 days** |
+<Md source={SAMPLE_SIZE_TABLE} />
 
 By the time I have a statistically significant answer to a 5pp lift, more than three months will have passed. The thing I'm testing today will have aged out of relevance. My hypothesis will probably have moved on. Worse: the conversion event I'm measuring is a *proxy* — "scroll past the hero" is correlated with "real engagement" but isn't engagement. A variant that wins on scroll could lose on the metric I actually care about, which is people booking a 20-minute intro call.
 

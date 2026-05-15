@@ -707,3 +707,191 @@ export function previousRange(r: Range): Range {
   const span = r.until.getTime() - r.since.getTime()
   return { since: new Date(r.since.getTime() - span), until: r.since }
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// Experiment results
+// ─────────────────────────────────────────────────────────────────────
+
+export type ExperimentVariantResult = {
+  variant: string
+  sessions: number            // unique sessions exposed to this variant
+  conversions: number         // unique sessions that fired the success event
+  rate: number                // conversions / sessions
+  ci95_low: number            // 95% confidence interval lower bound
+  ci95_high: number           // 95% confidence interval upper bound
+}
+
+export type ExperimentResult = {
+  variants: ExperimentVariantResult[]
+  // Pairwise comparison vs the first variant ("control"). Null when
+  // we have fewer than 2 variants or insufficient sample.
+  comparison: {
+    z: number                 // z-score for two-proportion test
+    p: number                 // two-tailed p-value
+    lift_pp: number           // absolute lift in percentage points (variant - control)
+    lift_rel: number          // relative lift (variant - control) / control
+  } | null
+}
+
+/**
+ * Per-variant conversion stats for an experiment, ready to render in
+ * the admin dashboard.
+ *
+ * "Exposure" = a session that fired any event with the experiment's
+ * assignment prop set (exp_<key>: <variant>). We use the view event
+ * specifically as the exposure denominator — it always fires once on
+ * landing and dedupes correctly per session.
+ *
+ * "Conversion" = a session that, after being exposed, fired the
+ * configured success_event (optionally filtered on a props match).
+ */
+export async function experimentResults(
+  key: string,
+  successEvent: string,
+  successFilter: Record<string, string> | null,
+): Promise<ExperimentResult> {
+  const assignmentField = `exp_${key}`
+
+  // Build the optional filter clause for the conversion event. We
+  // require every key/value pair in successFilter to match the
+  // event's props. Done as a single jsonb @> match for efficiency.
+  const filterClause = successFilter
+    ? JSON.stringify(successFilter)
+    : null
+
+  // Sessions exposed per variant (denominator). One row per
+  // (session_hash, variant) so we count unique sessions only.
+  const exposureRes = await sql.query(
+    `
+      SELECT
+        props->>'${assignmentField}' AS variant,
+        COUNT(DISTINCT session_hash)::int AS sessions
+      FROM analytics_events
+      WHERE event_type = 'view'
+        AND props ? '${assignmentField}'
+      GROUP BY props->>'${assignmentField}'
+    `,
+  )
+
+  // Conversions per variant (numerator). A session is a "conversion"
+  // if (a) it was ever assigned to this variant via any event, and
+  // (b) it fired the success event (matching the filter, if any).
+  const conversionRes = await sql.query(
+    `
+      WITH variant_sessions AS (
+        SELECT DISTINCT session_hash, props->>'${assignmentField}' AS variant
+        FROM analytics_events
+        WHERE props ? '${assignmentField}'
+      )
+      SELECT
+        vs.variant,
+        COUNT(DISTINCT vs.session_hash)::int AS conversions
+      FROM variant_sessions vs
+      JOIN analytics_events e ON e.session_hash = vs.session_hash
+      WHERE e.event_type = $1
+        ${filterClause ? `AND e.props @> $2::jsonb` : ''}
+      GROUP BY vs.variant
+    `,
+    filterClause ? [successEvent, filterClause] : [successEvent],
+  )
+
+  // Stitch exposures + conversions per variant.
+  const byVariant = new Map<string, { sessions: number; conversions: number }>()
+  for (const r of exposureRes.rows) {
+    const v = String(r.variant ?? '')
+    if (!v) continue
+    byVariant.set(v, { sessions: Number(r.sessions) || 0, conversions: 0 })
+  }
+  for (const r of conversionRes.rows) {
+    const v = String(r.variant ?? '')
+    if (!v) continue
+    const entry = byVariant.get(v) || { sessions: 0, conversions: 0 }
+    entry.conversions = Number(r.conversions) || 0
+    byVariant.set(v, entry)
+  }
+
+  const variants: ExperimentVariantResult[] = Array.from(byVariant.entries())
+    .map(([variant, { sessions, conversions }]) => {
+      const rate = sessions > 0 ? conversions / sessions : 0
+      const { low, high } = wilsonInterval(conversions, sessions)
+      return {
+        variant,
+        sessions,
+        conversions,
+        rate,
+        ci95_low: low,
+        ci95_high: high,
+      }
+    })
+    .sort((a, b) => a.variant.localeCompare(b.variant))
+
+  // Pairwise comparison: variant B (or whichever comes alphabetically
+  // second) vs A. With more variants we'd want a multi-arm test but
+  // for a 2-variant A/B this is sufficient.
+  let comparison: ExperimentResult['comparison'] = null
+  if (variants.length >= 2 && variants[0].sessions > 0 && variants[1].sessions > 0) {
+    const control = variants[0]
+    const test = variants[1]
+    const { z, p } = twoProportionZTest(
+      control.conversions, control.sessions,
+      test.conversions,    test.sessions,
+    )
+    const liftPp = test.rate - control.rate
+    const liftRel = control.rate > 0 ? liftPp / control.rate : 0
+    comparison = { z, p, lift_pp: liftPp, lift_rel: liftRel }
+  }
+
+  return { variants, comparison }
+}
+
+/**
+ * Wilson 95% confidence interval for a binomial proportion. More
+ * accurate than the normal-approximation interval for small n or
+ * proportions near 0 or 1.
+ */
+function wilsonInterval(successes: number, n: number): { low: number; high: number } {
+  if (n === 0) return { low: 0, high: 0 }
+  const z = 1.96
+  const phat = successes / n
+  const denom = 1 + (z * z) / n
+  const centre = (phat + (z * z) / (2 * n)) / denom
+  const margin =
+    (z * Math.sqrt((phat * (1 - phat)) / n + (z * z) / (4 * n * n))) / denom
+  return {
+    low: Math.max(0, centre - margin),
+    high: Math.min(1, centre + margin),
+  }
+}
+
+/**
+ * Two-proportion z-test. Returns the z-score and the two-tailed
+ * p-value. Pooled standard error per the standard textbook form.
+ */
+function twoProportionZTest(
+  x1: number, n1: number,
+  x2: number, n2: number,
+): { z: number; p: number } {
+  if (n1 === 0 || n2 === 0) return { z: 0, p: 1 }
+  const p1 = x1 / n1
+  const p2 = x2 / n2
+  const p = (x1 + x2) / (n1 + n2)
+  const se = Math.sqrt(p * (1 - p) * (1 / n1 + 1 / n2))
+  if (se === 0) return { z: 0, p: 1 }
+  const z = (p2 - p1) / se
+  return { z, p: 2 * (1 - standardNormalCdf(Math.abs(z))) }
+}
+
+/**
+ * Standard-normal CDF — Abramowitz & Stegun approximation 26.2.17,
+ * max error ~7.5e-8. Avoids pulling in a stats library for one use.
+ */
+function standardNormalCdf(x: number): number {
+  const t = 1 / (1 + 0.2316419 * x)
+  const d = 0.3989422804014327 * Math.exp(-x * x / 2)
+  const poly =
+    t * (0.319381530 +
+      t * (-0.356563782 +
+        t * (1.781477937 +
+          t * (-1.821255978 + t * 1.330274429))))
+  return 1 - d * poly
+}

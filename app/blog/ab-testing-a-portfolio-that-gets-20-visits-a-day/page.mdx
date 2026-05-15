@@ -1,5 +1,66 @@
 import { BlogPostFrame } from '../_components/BlogPostFrame'
+import { Mermaid } from '../../../src/components/Mermaid'
+import { Code } from '../../../src/components/Code'
 import Script from 'next/script'
+
+export const ARCH_DIAGRAM = `flowchart TB
+    ADMIN["Admin UI<br/>/admin/experiments<br/>(no redeploy needed)"]
+    DB[("experiments table<br/>key · status<br/>variants · success_event")]
+    API["GET /api/experiments<br/>(public, 5min edge-cached)"]
+    SDK["Pulse client SDK<br/>hash(visitor_id) → variant<br/>(sticky per person)"]
+    RENDER["React components<br/>useExperiment('hero')<br/>HeroA · HeroB"]
+    EVENTS[("analytics_events<br/>props.exp_hero = a | b")]
+
+    ADMIN -- "writes" --> DB
+    DB -- "reads" --> API
+    API -- "fetched on Pulse init" --> SDK
+    SDK -- "feeds variant to" --> RENDER
+    SDK -. "auto-tags every event" .-> EVENTS`
+
+export const HASH_CODE = `// Deterministic 32-bit FNV-1a hash. ~10 lines, no deps.
+function hash32(s: string): number {
+  let h = 0x811c9dc5
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return h >>> 0
+}
+
+// Project the hash into [0, totalWeight) and walk the variants'
+// cumulative distribution to pick one.
+const totalWeight = variants.reduce((s, v) => s + v.weight, 0)
+const bucket =
+  (hash32(\`\${visitor_id}:\${exp.key}\`) % 10_000) / 10_000 * totalWeight
+
+let acc = 0
+for (const v of variants) {
+  acc += v.weight
+  if (bucket < acc) return v.name
+}`
+
+export const HOOK_CODE = `// src/components/Hero/index.tsx
+'use client'
+import { useExperiment } from '../../pulse/client/experiments'
+import { HeroA } from './HeroA'
+import { HeroB } from './HeroB'
+
+export function Hero() {
+  const variant = useExperiment('hero')  // 'a' | 'b' | null
+  if (variant === 'b') return <HeroB />
+  return <HeroA />  // control (also the SSG'd default)
+}`
+
+export const SEED_SQL = `INSERT INTO experiments
+  (key, name, status, variants, success_event, success_filter)
+VALUES (
+  'hero',
+  'Hero: tight vs current',
+  'running',
+  '[{"name":"a","weight":50},{"name":"b","weight":50}]'::jsonb,
+  'section_view',
+  '{"section":"work"}'::jsonb
+);`
 
 export const metadata = {
   title: 'A/B testing a portfolio that gets 20 visits a day · Petro Pavlov',
@@ -96,47 +157,23 @@ So I built it. A few hours of work, end to end:
 - A query helper that computes per-variant sessions, conversions, conversion rate, Wilson 95% confidence intervals, and a two-proportion z-test against the first variant.
 - An admin dashboard at `/admin/experiments` to create / pause / conclude experiments without touching SQL.
 
-The variant assignment is a 32-bit FNV-1a hash of `visitor_id + ':' + experiment_key` modulo 100:
+The variant assignment is a 32-bit FNV-1a hash of `visitor_id + ':' + experiment_key`, projected into the variant weight distribution:
 
-```ts
-function hash32(s) {
-  let h = 0x811c9dc5
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i)
-    h = Math.imul(h, 0x01000193)
-  }
-  return h >>> 0
-}
-
-const bucket = (hash32(`${visitor}:${exp.key}`) % 10_000) / 10_000 * totalWeight
-```
+<Code
+  language="typescript"
+  filename="src/pulse/client/experiments.ts"
+  code={HASH_CODE}
+/>
 
 That keeps the assignment stable across reloads. Same visitor always gets the same variant. The hook in React looks like:
 
-```tsx
-export function Hero() {
-  const variant = useExperiment('hero')
-  if (variant === 'b') return <HeroB />
-  return <HeroA />
-}
-```
+<Code language="typescript" filename="src/components/Hero/index.tsx" code={HOOK_CODE} />
 
 Variants are React components, not config blobs. The DB defines *which* experiments are running and at what split; the actual A and B implementations live in code. You can't meaningfully test "change the layout of the hero" with a CMS-style config — the variants will diverge structurally — so the right boundary is `key` and `weight` in the database, JSX in the repo.
 
 Then I added the experiment row:
 
-```sql
-INSERT INTO experiments
-  (key, name, status, variants, success_event, success_filter)
-VALUES (
-  'hero',
-  'Hero: tight vs current',
-  'running',
-  '[{"name":"a","weight":50},{"name":"b","weight":50}]',
-  'section_view',
-  '{"section":"work"}'
-);
-```
+<Code language="sql" filename="seed.sql" code={SEED_SQL} />
 
 …and it's been running ever since. Visitors are being bucketed right now. You're either seeing the original hero (variant A) or one with the dense paragraph removed (variant B).
 
@@ -175,37 +212,12 @@ Three reasons.
 
 ## What the framework actually looks like
 
-The architecture is intentionally boring. There's no novel statistics, no fancy multi-armed bandits, no GrowthBook integration. It's:
+The architecture is intentionally boring. There's no novel statistics, no fancy multi-armed bandits, no GrowthBook integration.
 
-```
-   ┌─────────────────────────────────────────────────────┐
-   │  ADMIN UI  (configurable, no redeploy)              │
-   │  /admin/experiments                                  │
-   │  ─ create / edit / pause / conclude                  │
-   │  ─ variant weights                                   │
-   │  ─ success event picker                              │
-   └─────────────────┬───────────────────────────────────┘
-                     │
-                     ▼
-   ┌─────────────────────────────────────────────────────┐
-   │  experiments TABLE                                  │
-   │  key, status, variants[], success_event, ...        │
-   └─────────────────┬───────────────────────────────────┘
-                     │ read by
-                     ▼
-   ┌─────────────────────────────────────────────────────┐
-   │  CLIENT SDK  (useExperiment hook)                   │
-   │  ─ hashes visitor_id → variant (sticky)             │
-   │  ─ auto-attaches exp_hero=<variant> to every event  │
-   └─────────────────┬───────────────────────────────────┘
-                     │
-                     ▼
-   ┌─────────────────────────────────────────────────────┐
-   │  RENDER  (React components, in code)                │
-   │  <Hero /> reads useExperiment('hero')               │
-   │  switches on 'a' | 'b' → renders HeroA or HeroB     │
-   └─────────────────────────────────────────────────────┘
-```
+<Mermaid
+  chart={ARCH_DIAGRAM}
+  caption="A/B framework flow — admin UI writes to the experiments table, the public endpoint reads from it, the Pulse SDK assigns sticky variants by hashing visitor_id, and React components consume the assignment. Every event downstream gets the variant tag attached automatically."
+/>
 
 Stats are deliberately classical. For each variant I compute:
 

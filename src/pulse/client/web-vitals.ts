@@ -101,6 +101,22 @@ let lcpReported = 0
 let cls = 0
 let inp = 0
 
+// First time the tab transitioned to `hidden` since the current
+// route's startTime. While the tab is fully visible from route start
+// onward, this stays Infinity and LCP entries are accepted normally.
+// Once the tab is hidden — including the "loaded into a background
+// tab" case where it's hidden at script start — any LCP entry that
+// fires after the hidden moment gets dropped, because its value
+// reflects how long the browser deferred paint, not real performance.
+//
+// This is the algorithm Google's web-vitals library uses for the
+// same reason. Without it, a single visitor opening a link in a
+// background tab can record a 20-40 second "LCP" that dominates the
+// P75/P95 for an entire country bucket. See the LCP outlier analysis
+// in the speed dashboard: every >10s LCP we've recorded was at
+// 01:48-04:54 UTC — classic late-night background-tab pattern.
+let firstHiddenTime = Infinity
+
 export function initWebVitals(
   config: Required<Pick<PulseConfig, 'vitalsEndpoint'>> & PulseConfig,
 ): void {
@@ -110,6 +126,27 @@ export function initWebVitals(
   const endpoint = config.vitalsEndpoint
   const debug = !!config.debug
   currentPage = window.location.pathname
+
+  // Initialise firstHiddenTime based on the tab's state at script load.
+  // If the page started in a background tab, hidden time is 0 (route
+  // start), so every LCP that fires later will be filtered. If the tab
+  // is visible at load, hidden time stays Infinity until something
+  // changes.
+  firstHiddenTime =
+    typeof document !== 'undefined' && document.visibilityState === 'hidden'
+      ? 0
+      : Infinity
+  if (typeof document !== 'undefined') {
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.visibilityState === 'hidden') {
+          firstHiddenTime = Math.min(firstHiddenTime, performance.now())
+        }
+      },
+      { capture: true },
+    )
+  }
 
   const report = (metric: VitalMetric, value: number): void => {
     if (!isFinite(value) || value < 0) return
@@ -137,6 +174,11 @@ export function initWebVitals(
     lcpReported = 0
     cls = 0
     inp = 0
+    // Reset hidden tracking for the new route. If the tab is currently
+    // hidden at the moment of navigation, count it as hidden from the
+    // route's start; otherwise wait for the next visibilitychange.
+    firstHiddenTime =
+      document.visibilityState === 'hidden' ? routeStartTime : Infinity
 
     // Soft-FCP approximation. Double-rAF is the established idiom for
     // "wait until the browser has actually painted at least once" — by
@@ -188,6 +230,10 @@ export function initWebVitals(
     const last = entries[entries.length - 1]
     if (!last) return
     if (last.startTime < routeStartTime) return // belongs to a previous route
+    // Drop entries that fire AFTER the tab was first hidden — these
+    // are the backgrounded-tab artifacts (20-40s "LCP") that poison
+    // the dashboard's P75/P95. See firstHiddenTime declaration above.
+    if (last.startTime > firstHiddenTime) return
     const value = last.startTime - routeStartTime
     // Debounce noisy micro-increments during the initial paint flurry.
     if (value > lcpReported + 50) {

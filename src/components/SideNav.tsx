@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import clsx from 'clsx'
 import { track } from '../pulse/client'
 
@@ -104,13 +105,22 @@ export function TopBar() {
           <span className="text-foreground">petro.pavlov</span>
           <span className="ml-1 inline-block h-3 w-1.5 animate-pulse bg-accent align-middle" />
         </a>
-        <a
-          href="#contact"
-          onClick={() => track('nav_click', { target: 'contact', source: 'top_bar' })}
-          className="font-mono text-xs uppercase tracking-wider text-dim transition-colors hover:text-accent"
-        >
-          Get in touch &rarr;
-        </a>
+        <nav className="flex items-center gap-5">
+          <Link
+            href="/blog"
+            onClick={() => track('nav_click', { target: 'blog', source: 'top_bar' })}
+            className="font-mono text-xs uppercase tracking-wider text-dim transition-colors hover:text-accent"
+          >
+            Blog
+          </Link>
+          <a
+            href="#contact"
+            onClick={() => track('nav_click', { target: 'contact', source: 'top_bar' })}
+            className="font-mono text-xs uppercase tracking-wider text-dim transition-colors hover:text-accent"
+          >
+            Get in touch &rarr;
+          </a>
+        </nav>
       </div>
     </header>
   )

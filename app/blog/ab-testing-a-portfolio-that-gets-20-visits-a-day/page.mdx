@@ -1,0 +1,240 @@
+import { BlogPostFrame } from '../_components/BlogPostFrame'
+import Script from 'next/script'
+
+export const metadata = {
+  title: 'A/B testing a portfolio that gets 20 visits a day · Petro Pavlov',
+  description:
+    'I built feature flags + a Bayesian-shaped dashboard into my portfolio so I could optimise the hero. Then I did the math and realised I should not run it yet. Here is the framework anyway — and the spreadsheet that tells you when you actually should.',
+  alternates: {
+    canonical: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
+  },
+  openGraph: {
+    type: 'article',
+    title: 'A/B testing a portfolio that gets 20 visits a day',
+    description:
+      'I built A/B testing into my portfolio. Then I did the math and realised I should not run it yet. Here is the framework anyway — and the spreadsheet that tells you when you actually should.',
+    url: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
+    images: ['https://petropavlov.dev/og.png'],
+    publishedTime: '2026-05-16',
+    authors: ['Petromil Pavlov'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'A/B testing a portfolio that gets 20 visits a day',
+    description:
+      'Built A/B testing into my portfolio. Then did the math. Here is the framework + the spreadsheet that tells you when to actually run it.',
+    images: ['https://petropavlov.dev/og.png'],
+  },
+}
+
+export const ARTICLE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: 'A/B testing a portfolio that gets 20 visits a day',
+  description:
+    'A self-hosted A/B testing framework built into a personal portfolio analytics stack, and an honest reckoning with whether running it at this traffic level makes sense.',
+  datePublished: '2026-05-16',
+  author: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
+  publisher: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
+  },
+  url: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
+  keywords:
+    'A/B testing, feature flags, web analytics, statistical significance, low traffic, portfolio, Next.js, Postgres, Pulse, self-hosted',
+}
+
+<Script
+  id="ld-article-ab-testing"
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
+/>
+
+<BlogPostFrame
+  title="A/B testing a portfolio that gets 20 visits a day"
+  description="I built feature flags + significance testing into my portfolio. Then I did the math and realised I should not run it yet. Here is the framework anyway — and the spreadsheet that tells you when you actually should."
+  date="May 16, 2026"
+  readMinutes={9}
+  tag="essay · engineering"
+>
+
+My portfolio gets about 20 visits a day. 77% of those visitors leave from the hero before scrolling to the work section. Last week I built a full A/B testing framework into it — feature flags, sticky variant assignment, an admin dashboard with Wilson confidence intervals and two-proportion z-tests, the works.
+
+Then I did the math on whether to actually run an experiment, and the answer turned out to be: kind of no, not really, not yet. So I built the framework anyway, shipped it, and I'm publishing this post about it.
+
+That sounds like a worse version of the usual "I built an analytics stack" post. I think it's actually a better version, and I want to convince you that the math problem here is more interesting than the engineering one.
+
+## The problem
+
+I've been running [my own self-hosted analytics](https://petropavlov.dev/admin/analytics) on this site for about a month — call it Pulse — and the funnel data is pretty clear:
+
+| Section | Visitors who reached it | % of all |
+|---|---|---|
+| `hero` | 44 | **92%** |
+| `work` | 11 | 23% |
+| `ai_engineering` | 11 | 23% |
+| `experience` | 11 | 23% |
+| `about` | 11 | 23% |
+| `ask_petro` | 10 | 21% |
+| `testimonials` | 10 | 21% |
+| `contact` | 10 | 21% |
+
+77% of visitors bounce before they ever see the work. Once someone scrolls past the hero, the drop-off basically stops — they read most of the page. The cliff is purely *hero → next section*.
+
+I have a hypothesis about why: the hero has a long descriptive paragraph in the middle of it (a dense block listing VMware, TestGorilla, CData Virtuality, RAG, NL→SQL, a Cursor-style copilot). Maybe people see a wall of text and leave. Maybe the paragraph is fine and the hypothesis is wrong. The thing about hypotheses is you generally want to test them.
+
+## The seductive instinct: just A/B it
+
+The first instinct, especially for an engineer, is: "let me ship two versions, split traffic 50/50, see which one converts." That's the textbook play.
+
+So I built it. A few hours of work, end to end:
+
+- An `experiments` table in Postgres: key, name, status (draft / running / paused / concluded), variants as JSONB, success event, optional filter.
+- A public `/api/experiments` endpoint that returns the currently-running experiments. Edge-cached, 5 min stale-while-revalidate.
+- A client SDK that fetches that list on Pulse init, hashes the visitor's persistent ID into a sticky variant, and auto-attaches the assignment to every event downstream as `exp_hero: "a"` or `exp_hero: "b"`.
+- A query helper that computes per-variant sessions, conversions, conversion rate, Wilson 95% confidence intervals, and a two-proportion z-test against the first variant.
+- An admin dashboard at `/admin/experiments` to create / pause / conclude experiments without touching SQL.
+
+The variant assignment is a 32-bit FNV-1a hash of `visitor_id + ':' + experiment_key` modulo 100:
+
+```ts
+function hash32(s) {
+  let h = 0x811c9dc5
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return h >>> 0
+}
+
+const bucket = (hash32(`${visitor}:${exp.key}`) % 10_000) / 10_000 * totalWeight
+```
+
+That keeps the assignment stable across reloads. Same visitor always gets the same variant. The hook in React looks like:
+
+```tsx
+export function Hero() {
+  const variant = useExperiment('hero')
+  if (variant === 'b') return <HeroB />
+  return <HeroA />
+}
+```
+
+Variants are React components, not config blobs. The DB defines *which* experiments are running and at what split; the actual A and B implementations live in code. You can't meaningfully test "change the layout of the hero" with a CMS-style config — the variants will diverge structurally — so the right boundary is `key` and `weight` in the database, JSX in the repo.
+
+Then I added the experiment row:
+
+```sql
+INSERT INTO experiments
+  (key, name, status, variants, success_event, success_filter)
+VALUES (
+  'hero',
+  'Hero: tight vs current',
+  'running',
+  '[{"name":"a","weight":50},{"name":"b","weight":50}]',
+  'section_view',
+  '{"section":"work"}'
+);
+```
+
+…and it's been running ever since. Visitors are being bucketed right now. You're either seeing the original hero (variant A) or one with the dense paragraph removed (variant B).
+
+## Then I did the math
+
+Here's where it gets interesting. Just because you *can* run an experiment doesn't mean it'll *tell* you anything.
+
+The denominator for the test is "sessions exposed to the hero," which is basically every visit — about 20 a day. Split 50/50 leaves me 10 sessions per variant per day. The conversion event I'm measuring (visitor scrolls past the hero) currently runs at 23%.
+
+How many sessions do I need to detect a meaningful improvement at α = 0.05, β = 0.2?
+
+| Lift to detect (in percentage points) | Sessions needed per variant | Days at 10/var/day |
+|---|---|---|
+| +5pp (23% → 28%) | ~1,200 | **120 days** |
+| +10pp (23% → 33%) | ~290 | **30 days** |
+| +20pp (23% → 43%) | ~75 | **8 days** |
+| +27pp (23% → 50%) | ~45 | **5 days** |
+
+By the time I have a statistically significant answer to a 5pp lift, more than three months will have passed. The thing I'm testing today will have aged out of relevance. My hypothesis will probably have moved on. Worse: the conversion event I'm measuring is a *proxy* — "scroll past the hero" is correlated with "real engagement" but isn't engagement. A variant that wins on scroll could lose on the metric I actually care about, which is people booking a 20-minute intro call.
+
+Real conversions on this site clock in at about 5 booking-intent clicks across 30-ish real (non-me) visitors over two weeks. To A/B-test *those* directly, I'd need months of traffic per variant. And the cost of getting it wrong isn't small — picking the wrong hero based on a noisy proxy means living with a hero that converts less of the rare, high-value visitor.
+
+A/B testing is the right tool for high-traffic, frequent-conversion, comparable-cohort situations. Ecommerce. Onboarding flows. Anything with thousands of daily samples and a clear "click buy" event. Portfolios are none of those things. They have dozens of daily samples, rare and high-value conversions, and visitors arriving from wildly different contexts (HN, LinkedIn, a recruiter's link, a friend's tab — these aren't comparable populations).
+
+So I shouldn't run an A/B test today. The right play at this stage is sequential iteration on judgment: ship a change, watch the rolling 7-day funnel, decide. Maybe send the URL to five people you trust and ask them what's confusing.
+
+## Why I built it anyway
+
+Three reasons.
+
+**One: the build is the marketing.** Engineers writing about engineering, especially something with a slightly contrarian honest take, is roughly the entire HN front page. The framework + the blog post + a live experiment running on the site is far more useful to me than the A/B test itself ever would be. The traffic this post generates *is* the test. If a few thousand engineers land on the site over the next week, the experiment hits significance fast — and the experiment hitting significance is itself content for a follow-up post.
+
+**Two: the framework will be reused.** I'll keep doing portfolio iteration. I'll keep wanting to test things. In six months when I actually have the volume to A/B properly, I'll have the framework already there. The cost of building it now is real but bounded; the cost of building it later when I urgently need it is unbounded.
+
+**Three: it forced me to write down the math.** I had a vague intuition that "20 visits a day is small for A/B testing." Working out the actual sample-size table — that's the table above — converted the intuition into a number I can refer to. And the reflection that *the metric is a proxy* hit me halfway through building the admin dashboard. I would not have noticed that if I'd just shipped the change.
+
+## What the framework actually looks like
+
+The architecture is intentionally boring. There's no novel statistics, no fancy multi-armed bandits, no GrowthBook integration. It's:
+
+```
+   ┌─────────────────────────────────────────────────────┐
+   │  ADMIN UI  (configurable, no redeploy)              │
+   │  /admin/experiments                                  │
+   │  ─ create / edit / pause / conclude                  │
+   │  ─ variant weights                                   │
+   │  ─ success event picker                              │
+   └─────────────────┬───────────────────────────────────┘
+                     │
+                     ▼
+   ┌─────────────────────────────────────────────────────┐
+   │  experiments TABLE                                  │
+   │  key, status, variants[], success_event, ...        │
+   └─────────────────┬───────────────────────────────────┘
+                     │ read by
+                     ▼
+   ┌─────────────────────────────────────────────────────┐
+   │  CLIENT SDK  (useExperiment hook)                   │
+   │  ─ hashes visitor_id → variant (sticky)             │
+   │  ─ auto-attaches exp_hero=<variant> to every event  │
+   └─────────────────┬───────────────────────────────────┘
+                     │
+                     ▼
+   ┌─────────────────────────────────────────────────────┐
+   │  RENDER  (React components, in code)                │
+   │  <Hero /> reads useExperiment('hero')               │
+   │  switches on 'a' | 'b' → renders HeroA or HeroB     │
+   └─────────────────────────────────────────────────────┘
+```
+
+Stats are deliberately classical. For each variant I compute:
+
+- A Wilson 95% CI for the conversion rate (more accurate than normal-approximation at small N or rates near 0).
+- A two-proportion z-test for the lift versus the first variant, with the standard pooled-standard-error form.
+- The two-tailed p-value via an Abramowitz & Stegun standard-normal CDF approximation. No stats library; ~10 lines of code.
+
+That's it. Nothing in here would impress a statistician, but it's everything you actually need to read whether a result is real or noise.
+
+The whole framework — schema, public endpoint, admin CRUD, client SDK, query helper, dashboard — is under 1,500 lines of code. About half is the dashboard's HTML rendering.
+
+## A few honest limits
+
+**Picking the wrong proxy is a real risk.** If the new hero gets more people to scroll but fewer to book a call, the test "wins" while my business loses. I'm hedging by tracking both `section_view` and `cal_click` per variant; the admin dashboard shows them side-by-side. But ultimately, "did this hero make me money" is a sample-size-of-zero or one question at this traffic, and no framework solves that.
+
+**Sticky-assignment is via localStorage UUID.** A visitor in private browsing, or on a fresh device, or who clears their storage, gets a fresh bucket. For an experiment running long enough to reach significance, this is fine — re-buckets are rare and symmetric. For a hyper-precise test, you'd want server-side cohort assignment.
+
+**The traffic skew problem doesn't vanish.** HN readers and LinkedIn readers don't behave the same way. A test that "wins" right after a HN post may "lose" once the population reverts to organic. This is a fundamental issue with A/B at small N — randomisation within a session is fine, but you can't randomise *which* of your audience cohorts shows up that day.
+
+**The visibility-aware vitals fix landed in the same week.** Tangential, but: while reviewing data for this post I noticed my LCP P95 was being dominated by 20-40 second outliers — visitors who'd opened a link in a background tab, where the browser defers paint until the tab is focused, and "LCP" ends up measuring time-to-foreground. I'd shipped a per-route `firstHiddenTime` filter in `web-vitals.ts` modeled on `google/web-vitals`. Same lesson: at small N, one outlier dominates. The fix is mechanical; the principle is "be paranoid about which samples you're allowing into your aggregates."
+
+## What I'm watching next
+
+The live `hero` experiment is collecting data right now. I'm going to give it the rest of this month, then either ship the winning variant or — far more likely — conclude that the sample is too small to call and ship the variant I think is better on aesthetic grounds. Either way, the post-mortem becomes a follow-up post.
+
+In parallel, the next portfolio iteration *isn't* going to be A/B tested. I'm going to drop the dense hero paragraph for everyone (mirroring HeroB), watch the rolling 7-day funnel, and accept that a quasi-experiment "before vs after" comparison is statistically weaker but practically faster. The A/B framework is now a tool in the box — and like every tool, the right call is sometimes to leave it there.
+
+The whole thing — Pulse, the experiment framework, this blog, the Next.js migration that made it all coherent — is open in spirit on [petropavlov.dev](https://petropavlov.dev). If you read any of the stack and have notes, I'd genuinely like to hear them. Email's at the bottom of every page.
+
+If you're scoping work that needs someone who builds end-to-end at this depth — picks the boring architecture, sweats the statistics, owns the post-mortem — that's literally the engagement I take. The Book-a-call button below skips slides and goes straight to a 60-minute technical conversation.
+
+</BlogPostFrame>

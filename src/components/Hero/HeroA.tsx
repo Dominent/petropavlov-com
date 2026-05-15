@@ -1,9 +1,14 @@
 'use client'
 
+// Hero variant A — the control. Full version with dense meta-paragraph,
+// 5 CTAs, geography line. This is the original hero that's been live
+// since launch. The A/B test against HeroB (sibling file) measures
+// whether the dense paragraph is the cause of the 77% hero drop-off.
+
 import { motion } from 'framer-motion'
 import { ArrowDownRight, Calendar, Download, Mail, MapPin } from 'lucide-react'
-import { GithubIcon } from './BrandIcons'
-import { track } from '../pulse/client'
+import { GithubIcon } from '../BrandIcons'
+import { track } from '../../pulse/client'
 
 // LCP-friendly: start at opacity 1 with a small y-offset, so elements
 // are visible at first paint. The visible state animates only the
@@ -19,7 +24,7 @@ const fadeUp = {
   }),
 }
 
-export function Hero() {
+export function HeroA() {
   return (
     <section
       id="hero"

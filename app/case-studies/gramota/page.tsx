@@ -8,6 +8,10 @@ const DESCRIPTION =
 const URL = 'https://petropavlov.dev/case-studies/gramota'
 const PUBLISHED = '2026-05-10'
 
+// ISR — regenerate every 60s so the inlined experiments JSON (in
+// app/layout) refreshes between deploys.
+export const revalidate = 60
+
 export const metadata: Metadata = {
   title: `${TITLE} · Petro Pavlov`,
   description: DESCRIPTION,

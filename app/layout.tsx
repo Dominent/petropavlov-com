@@ -11,6 +11,7 @@ import '@fontsource/instrument-serif/400-italic.css'
 
 import './globals.scss'
 import { PulseInit } from './_components/pulse-init'
+import { ExperimentsScript } from './_components/experiments-script'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://petropavlov.dev'),
@@ -160,6 +161,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Resource hints — Cal.com booking modal */}
         <link rel="preconnect" href="https://app.cal.com" />
         <link rel="dns-prefetch" href="https://app.cal.com" />
+        {/* Inline active A/B experiments as JSON so the Pulse client SDK
+            reads variant assignments synchronously on init — before the
+            first view event fires. Pages using this layout must export
+            `revalidate = 60` for the inlined data to refresh between
+            deploys. */}
+        <ExperimentsScript />
       </head>
       <body className="bg-zinc-950 text-zinc-100 antialiased">
         {children}

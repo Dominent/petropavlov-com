@@ -38,22 +38,48 @@ let loaded = false
 let loadingPromise: Promise<void> | null = null
 
 /**
- * Fetch the active experiment list and compute assignments. Called
- * once by Pulse init. Idempotent — repeated calls return the same
- * promise.
+ * Initialise experiments — populate `active` + `assignments` so any
+ * subsequent track() call has the variant tags ready to merge.
+ *
+ * Two-tier load:
+ *   1. SYNCHRONOUS — read the inlined JSON from <script id=
+ *      "__pulse_experiments"> (rendered by app/_components/
+ *      experiments-script.tsx). If present, assignments are computed
+ *      before this function returns, and the first view + first
+ *      section_view fire WITH the tag.
+ *   2. ASYNC FALLBACK — if the inlined script is missing (old build,
+ *      static asset cache, etc.), GET /api/experiments. The first few
+ *      events of this load may fire untagged but subsequent events
+ *      catch up.
+ *
+ * Idempotent — repeated calls return the same promise.
  */
 export function initExperiments(endpoint = '/api/experiments'): Promise<void> {
   if (typeof window === 'undefined') return Promise.resolve()
   if (loadingPromise) return loadingPromise
 
+  // Tier 1 — synchronous inline load.
+  const inlined = readInlinedExperiments()
+  if (inlined !== null) {
+    active = inlined
+    assignments = computeAssignments(active)
+    loaded = true
+    // Still dispatch the event so useExperiment() hooks waiting on
+    // the next tick don't sit waiting forever.
+    queueMicrotask(() =>
+      window.dispatchEvent(new Event('pulse:experiments-loaded')),
+    )
+    loadingPromise = Promise.resolve()
+    return loadingPromise
+  }
+
+  // Tier 2 — async fetch fallback.
   loadingPromise = fetch(endpoint, { credentials: 'omit' })
     .then((r) => (r.ok ? r.json() : { experiments: [] }))
     .then((data: { experiments?: ActiveExperiment[] }) => {
       active = Array.isArray(data.experiments) ? data.experiments : []
       assignments = computeAssignments(active)
       loaded = true
-      // Tell any mounted useExperiment() hooks to re-render now that
-      // assignments are available. They subscribe to this event.
       window.dispatchEvent(new Event('pulse:experiments-loaded'))
     })
     .catch(() => {
@@ -65,6 +91,31 @@ export function initExperiments(endpoint = '/api/experiments'): Promise<void> {
     })
 
   return loadingPromise
+}
+
+/**
+ * Read the inlined experiment JSON from <script id="__pulse_experiments">,
+ * if present. Returns the variant list, an empty array (DB query
+ * succeeded with no rows), or null (script not present — fall back to
+ * the async fetch path).
+ */
+function readInlinedExperiments(): ActiveExperiment[] | null {
+  if (typeof document === 'undefined') return null
+  const el = document.getElementById('__pulse_experiments')
+  if (!el || !el.textContent) return null
+  try {
+    const parsed = JSON.parse(el.textContent) as { experiments?: unknown }
+    if (!Array.isArray(parsed.experiments)) return []
+    return parsed.experiments.filter(
+      (e): e is ActiveExperiment =>
+        !!e &&
+        typeof e === 'object' &&
+        typeof (e as { key: unknown }).key === 'string' &&
+        Array.isArray((e as { variants: unknown }).variants),
+    )
+  } catch {
+    return null
+  }
 }
 
 /**

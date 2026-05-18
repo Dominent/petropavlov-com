@@ -65,9 +65,17 @@ function buildViewPayload(page: string): EventPayload {
   const url = new URL(window.location.href)
   const params = url.searchParams
 
-  // UTM precedence: current URL params > session-stored > none
+  // UTM precedence: current URL params > session-stored > none.
+  //
+  // `?ref=<tag>` is a short alias for utm_source — clean to drop into
+  // a Reddit / HN / LinkedIn post (petropavlov.dev?ref=forhire reads
+  // better than a full utm_source=...&utm_medium=... string). It maps
+  // straight to utm_source so it flows into the existing UTM Sources
+  // panel + first-touch attribution with zero new schema or queries.
+  // An explicit utm_source always wins over ref if both are present.
   const stored = readSessionUtm()
-  const utm_source = params.get('utm_source') || stored.utm_source
+  const utm_source =
+    params.get('utm_source') || params.get('ref') || stored.utm_source
   const utm_medium = params.get('utm_medium') || stored.utm_medium
   const utm_campaign = params.get('utm_campaign') || stored.utm_campaign
   if (utm_source || utm_medium || utm_campaign) {

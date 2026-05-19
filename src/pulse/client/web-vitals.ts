@@ -101,21 +101,69 @@ let lcpReported = 0
 let cls = 0
 let inp = 0
 
-// First time the tab transitioned to `hidden` since the current
-// route's startTime. While the tab is fully visible from route start
-// onward, this stays Infinity and LCP entries are accepted normally.
-// Once the tab is hidden — including the "loaded into a background
-// tab" case where it's hidden at script start — any LCP entry that
-// fires after the hidden moment gets dropped, because its value
-// reflects how long the browser deferred paint, not real performance.
+// Backgrounded-paint artifact rejection. When a tab/app is hidden,
+// the browser defers painting until it's foregrounded again, and the
+// LCP/FCP entry then records time-to-foreground (20-70s) rather than
+// real paint latency. A single such sample dominates P75/P95 at low
+// traffic. We reject these with three layered defences:
 //
-// This is the algorithm Google's web-vitals library uses for the
-// same reason. Without it, a single visitor opening a link in a
-// background tab can record a 20-40 second "LCP" that dominates the
-// P75/P95 for an entire country bucket. See the LCP outlier analysis
-// in the speed dashboard: every >10s LCP we've recorded was at
-// 01:48-04:54 UTC — classic late-night background-tab pattern.
+//   1. firstHiddenTime — earliest hidden moment seen via JS events
+//      (visibilitychange + pagehide + freeze). Covers the ongoing
+//      case + non-Chromium browsers.
+//   2. visibility-state Performance Timeline — the browser records
+//      every visibility transition from navigationStart into the
+//      perf buffer, regardless of when (or whether) our JS listeners
+//      attached. A synchronous read at metric time closes the two
+//      holes #1 can't: (a) hides before Pulse boots — Pulse inits in
+//      a useEffect after hydration; (b) mobile, where
+//      visibilitychange is unreliable (screen-lock / app-switch /
+//      OS backgrounding often don't fire it) but the engine still
+//      logs the visibility-state entry. Chromium-only — which is
+//      exactly the browser set that reports LCP/FCP anyway.
+//   3. A 30s absolute clamp — final net, matches the soft-FCP clamp.
+//      No real static-page paint is ever this slow.
 let firstHiddenTime = Infinity
+
+/** Record the earliest hidden moment (monotonic, never increases). */
+function markHidden(at: number): void {
+  if (at >= 0 && at < firstHiddenTime) firstHiddenTime = at
+}
+
+/**
+ * Did the page go hidden at any point in [start, end]? Reads the
+ * visibility-state perf entries synchronously, so there's no race
+ * with async observers and no dependence on when our listeners ran.
+ * Route-aware (start = routeStartTime) so a hide during a *previous*
+ * SPA route doesn't wrongly reject the current route's paint.
+ * Returns false on browsers without the entry type → falls back to
+ * firstHiddenTime + clamp.
+ */
+function wasHiddenBetween(start: number, end: number): boolean {
+  try {
+    const entries = performance.getEntriesByType('visibility-state')
+    for (const e of entries) {
+      if (e.name === 'hidden' && e.startTime >= start && e.startTime <= end) {
+        return true
+      }
+    }
+  } catch {
+    // 'visibility-state' entry type unsupported — degrade gracefully.
+  }
+  return false
+}
+
+/**
+ * True when a paint metric looks like a backgrounded-defer artifact
+ * rather than a real measurement. `entryStart` is from navigationStart
+ * (the raw entry.startTime); `routeRelative` is the value we'd report
+ * (entry.startTime - routeStartTime).
+ */
+function isDeferredArtifact(entryStart: number, routeRelative: number): boolean {
+  if (entryStart > firstHiddenTime) return true // JS-event signal
+  if (wasHiddenBetween(routeStartTime, entryStart)) return true // perf-buffer signal
+  if (routeRelative > 30_000) return true // absolute clamp
+  return false
+}
 
 export function initWebVitals(
   config: Required<Pick<PulseConfig, 'vitalsEndpoint'>> & PulseConfig,
@@ -127,25 +175,31 @@ export function initWebVitals(
   const debug = !!config.debug
   currentPage = window.location.pathname
 
-  // Initialise firstHiddenTime based on the tab's state at script load.
-  // If the page started in a background tab, hidden time is 0 (route
-  // start), so every LCP that fires later will be filtered. If the tab
-  // is visible at load, hidden time stays Infinity until something
-  // changes.
+  // Seed from the current state — covers "opened directly into a
+  // background tab" (hidden at script load → treat all later paint
+  // as deferred). The perf-buffer check in isDeferredArtifact()
+  // catches hides that happened before this line ran; these JS
+  // listeners catch ongoing hides + non-Chromium browsers.
   firstHiddenTime =
     typeof document !== 'undefined' && document.visibilityState === 'hidden'
       ? 0
       : Infinity
   if (typeof document !== 'undefined') {
+    const onHidden = (): void => markHidden(performance.now())
+    // visibilitychange — reliable for desktop tab-switch.
     document.addEventListener(
       'visibilitychange',
       () => {
-        if (document.visibilityState === 'hidden') {
-          firstHiddenTime = Math.min(firstHiddenTime, performance.now())
-        }
+        if (document.visibilityState === 'hidden') onHidden()
       },
       { capture: true },
     )
+    // pagehide — the reliable signal on iOS Safari for app-switch /
+    // screen-lock, where visibilitychange frequently doesn't fire.
+    window.addEventListener('pagehide', onHidden, { capture: true })
+    // freeze — Chromium fires this when it freezes a backgrounded
+    // page (Page Lifecycle API). Another mobile-backgrounding catch.
+    document.addEventListener('freeze', onHidden, { capture: true })
   }
 
   const report = (metric: VitalMetric, value: number): void => {
@@ -217,7 +271,13 @@ export function initWebVitals(
   observe('paint', (entries, obs) => {
     for (const entry of entries) {
       if (entry.name === 'first-contentful-paint') {
-        report('FCP', entry.startTime)
+        // Same artifact rejection as LCP — a backgrounded load defers
+        // first paint too, producing 30-40s "FCP" values. On the
+        // initial load routeStartTime is 0, so routeRelative ===
+        // entry.startTime.
+        if (!isDeferredArtifact(entry.startTime, entry.startTime)) {
+          report('FCP', entry.startTime)
+        }
         obs.disconnect()
       }
     }
@@ -230,11 +290,10 @@ export function initWebVitals(
     const last = entries[entries.length - 1]
     if (!last) return
     if (last.startTime < routeStartTime) return // belongs to a previous route
-    // Drop entries that fire AFTER the tab was first hidden — these
-    // are the backgrounded-tab artifacts (20-40s "LCP") that poison
-    // the dashboard's P75/P95. See firstHiddenTime declaration above.
-    if (last.startTime > firstHiddenTime) return
     const value = last.startTime - routeStartTime
+    // Reject backgrounded-defer artifacts (the 20-70s "LCP" values
+    // that dominate P75/P95 at low traffic). See isDeferredArtifact.
+    if (isDeferredArtifact(last.startTime, value)) return
     // Debounce noisy micro-increments during the initial paint flurry.
     if (value > lcpReported + 50) {
       lcpReported = value

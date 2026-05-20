@@ -85,8 +85,11 @@ VALUES (
   '{"section":"work"}'::jsonb
 );`
 
-// ISR — regenerate every 60s so the inlined experiments JSON (in
-// app/layout) refreshes between deploys.
+{/* ISR — regenerate every 60s so the inlined experiments JSON
+    (rendered by app/_components/experiments-script.tsx inside
+    app/layout.tsx) refreshes between deploys. JSX-style comment
+    here because MDX treats loose `//` lines as markdown paragraphs
+    and they bleed into the rendered HTML. */}
 export const revalidate = 60
 
 export const metadata = {

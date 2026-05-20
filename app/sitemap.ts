@@ -35,10 +35,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const blogEntries: MetadataRoute.Sitemap = listPosts().map((p) => ({
     url: `${BASE}/blog/${p.slug}`,
-    // Post `date` is the publication date — use it as lastModified.
-    // When a post is updated, bumping the date in posts.ts is the
-    // canonical signal to refresh crawlers.
-    lastModified: new Date(`${p.date}T00:00:00Z`),
+    // Use modified if set (post was updated), else publication date.
+    lastModified: new Date(`${p.modified || p.date}T00:00:00Z`),
     changeFrequency: 'monthly',
     priority: 0.7,
   }))

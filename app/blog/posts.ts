@@ -15,7 +15,11 @@ export type PostMeta = {
   slug: string
   title: string
   description?: string
-  date: string         // YYYY-MM-DD — used for both display and ordering
+  date: string         // YYYY-MM-DD — publication date, used for ordering
+  modified?: string    // YYYY-MM-DD — last meaningful content update.
+                       // Defaults to `date` if omitted. Bumping this is
+                       // the canonical signal for crawlers + sitemap
+                       // that the post was refreshed.
   readMinutes?: number
   published?: boolean  // false = draft, hidden from listing
 }

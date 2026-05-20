@@ -40,10 +40,17 @@ const ARTICLE_SCHEMA = {
   headline: TITLE,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  image: `${URL}/opengraph-image`,
   author: {
     '@type': 'Person',
     name: 'Petromil Pavlov',
     url: 'https://petropavlov.dev/',
+    image: 'https://petropavlov.dev/petro.webp',
+    sameAs: [
+      'https://github.com/Dominent',
+      'https://www.linkedin.com/in/petro-p-insight-draft/',
+    ],
   },
   publisher: {
     '@type': 'Person',
@@ -52,6 +59,7 @@ const ARTICLE_SCHEMA = {
   },
   mainEntityOfPage: { '@type': 'WebPage', '@id': URL },
   url: URL,
+  inLanguage: 'en',
   about: [
     'AI meeting notes',
     'Chrome extension',

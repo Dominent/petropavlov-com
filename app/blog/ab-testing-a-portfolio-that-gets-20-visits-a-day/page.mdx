@@ -123,13 +123,37 @@ export const ARTICLE_SCHEMA = {
   description:
     'A self-hosted A/B testing framework built into a personal portfolio analytics stack, and an honest reckoning with whether running it at this traffic level makes sense.',
   datePublished: '2026-05-16',
-  author: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
-  publisher: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
+  // dateModified equals datePublished for unmodified posts. Bump this
+  // when the post content is materially updated; Google uses it as a
+  // freshness signal in ranking and may show the modified date in
+  // SERP snippets.
+  dateModified: '2026-05-16',
+  // image points to the per-post OG card (dynamic, edge-rendered).
+  // Google's article rich result uses this when available.
+  image: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day/opengraph-image',
+  author: {
+    '@type': 'Person',
+    name: 'Petromil Pavlov',
+    url: 'https://petropavlov.dev/',
+    // Author image — Google's article rich result can show this next
+    // to the byline, which materially improves CTR vs a text-only byline.
+    image: 'https://petropavlov.dev/petro.webp',
+    sameAs: [
+      'https://github.com/Dominent',
+      'https://www.linkedin.com/in/petro-p-insight-draft/',
+    ],
+  },
+  publisher: {
+    '@type': 'Person',
+    name: 'Petromil Pavlov',
+    url: 'https://petropavlov.dev/',
+  },
   mainEntityOfPage: {
     '@type': 'WebPage',
     '@id': 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
   },
   url: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
+  inLanguage: 'en',
   keywords:
     'A/B testing, feature flags, web analytics, statistical significance, low traffic, portfolio, Next.js, Postgres, Pulse, self-hosted',
 }

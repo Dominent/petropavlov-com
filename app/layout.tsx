@@ -157,6 +157,66 @@ const serviceLd = {
     'RAG implementation',
     'Identity & payments integration',
   ],
+  // Concrete offerings with descriptions — gives crawlers (and AI
+  // search engines) something more specific than a flat serviceType
+  // list. Each item is a distinct engagement shape buyers would
+  // search for.
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Consulting & project engagements',
+    itemListElement: [
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'AI product engineering — end-to-end',
+          description:
+            'Ship an AI product from prompt design through fine-tuned adapters, production RAG, and the identity / payments / integrations layer. Anthropic + OpenAI SDKs daily; Claude Code + Cursor for development.',
+          serviceType: 'AI engineering',
+        },
+      },
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'Architecture review',
+          description:
+            'Trace your existing AI / full-stack architecture end-to-end. Identify the highest-risk failure modes under load and the highest-leverage simplifications. Written report + walkthrough call.',
+          serviceType: 'Architecture consulting',
+        },
+      },
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'Fractional senior IC',
+          description:
+            'Multi-month retained engagement — embedded with one or two of your senior engineers, owning a slice of the codebase (AI service, identity / payments layer, etc.) and handing it off when complete.',
+          serviceType: 'Fractional engineering',
+        },
+      },
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'EU Digital Identity Wallet (eIDAS 2) integration',
+          description:
+            'Wire OID4VP / OID4VCI / SD-JWT VC / X.509 certificate management into your stack against the 2027 EU acceptance deadline. Tested against the EU Commission reference infrastructure. See the Gramota case study.',
+          serviceType: 'Digital identity integration',
+        },
+      },
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'Chrome extension engineering (Manifest V3)',
+          description:
+            'Production Chrome extensions — tabCapture / desktopCapture / content scripts, multi-package monorepos, E2E test suites, Web Store publishing. 2+ years on a published meeting-recorder extension.',
+          serviceType: 'Browser extension engineering',
+        },
+      },
+    ],
+  },
   url: 'https://petropavlov.dev/',
 }
 

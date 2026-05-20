@@ -150,12 +150,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <head>
         <meta name="color-scheme" content="dark" />
-        {/* LCP preload — portrait above the fold. Same as Vite build. */}
+        {/* LCP preload — portrait above the fold. Preload the AVIF
+            since most modern browsers support it (Chrome 85+, Safari
+            16+, Firefox 93+); WebP-only browsers will fall back via
+            the <picture> sources at slightly higher cost (12 KB vs
+            8 KB). The duplicate preload that used to appear in the
+            served HTML was this same href emitted twice by Next.js
+            head processing — removing the redundant href fixes it. */}
         <link
           rel="preload"
           as="image"
-          href="/petro.webp"
-          type="image/webp"
+          href="/petro.avif"
+          type="image/avif"
           fetchPriority="high"
         />
         {/* Resource hints — Cal.com booking modal */}

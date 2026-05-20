@@ -189,6 +189,10 @@ export function HeroA() {
           <div className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-accent-soft/30 via-accent-soft/5 to-transparent opacity-60 blur-2xl" />
           <div className="relative">
             <picture>
+              {/* AVIF first — best compression (7.7 KB at 576×576).
+                  WebP fallback for older Safari / Firefox.
+                  JPG last for ancient browsers (~1% today). */}
+              <source srcSet="/petro.avif" type="image/avif" />
               <source srcSet="/petro.webp" type="image/webp" />
               <img
                 src="/petro.jpg"

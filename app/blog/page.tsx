@@ -5,9 +5,18 @@ import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react'
 import { listPosts } from './posts'
 
 const URL = 'https://petropavlov.dev/blog'
-const TITLE = 'Blog · Petro Pavlov'
+// Title leads with keyword intent ("AI engineering & self-hosted infra
+// notes") so the index competes for queries someone would actually
+// type — not just the word "blog." Brand trails. 59 chars.
+const TITLE = 'Blog — AI engineering & self-hosted infra notes · Petro Pavlov'
+// Description loads relevant terms (RAG, LLM, self-hosted analytics)
+// and leads with the author. 156 chars, within Google's snippet cap.
 const DESCRIPTION =
-  'Notes on building production AI products, self-hosted infrastructure, and the engineering decisions behind petropavlov.dev itself.'
+  'Petro Pavlov on building production AI products end-to-end — RAG, LLM orchestration, self-hosted analytics, and the engineering behind petropavlov.dev.'
+// Twitter-card copy can run a touch tighter since previews truncate
+// earlier than SERP snippets.
+const TWITTER_DESCRIPTION =
+  'Notes on building production AI products end-to-end — RAG, LLM orchestration, self-hosted analytics, and the engineering behind petropavlov.dev.'
 
 // ISR — regenerate every 60s so the inlined experiments JSON (in
 // app/layout) refreshes between deploys. The post listing itself
@@ -18,6 +27,21 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: URL },
+  // Override the layout-level location-heavy keywords for blog
+  // routes — they read off-topic on a content page about AI
+  // engineering. These match the actual post topics.
+  keywords: [
+    'AI engineering blog',
+    'self-hosted analytics',
+    'RAG',
+    'LLM orchestration',
+    'A/B testing',
+    'feature flags',
+    'web analytics',
+    'Next.js',
+    'TypeScript',
+    'Postgres',
+  ],
   openGraph: {
     type: 'website',
     title: TITLE,
@@ -25,6 +49,14 @@ export const metadata: Metadata = {
     url: URL,
     // No explicit images — Next.js auto-populates from the sibling
     // opengraph-image.tsx file (per-route OG card with title rendered).
+  },
+  // Explicit Twitter card so /blog doesn't inherit the home-page
+  // pitch ("Senior Full-Stack & AI Engineer · ...") which read
+  // off-topic on the blog index.
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: TWITTER_DESCRIPTION,
   },
 }
 
@@ -44,11 +76,15 @@ export default function BlogIndexPage() {
 
   // ItemList — tells search engines the listing structure of /blog.
   // Listing this way lets Google understand the page as an index of
-  // articles rather than a single article itself.
+  // articles rather than a single article itself. numberOfItems +
+  // itemListOrder (descending = newest first) are schema.org-
+  // recommended for unambiguous parsing.
   const itemListLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'Petro Pavlov · Blog posts',
+    numberOfItems: posts.length,
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
     itemListElement: posts.map((p, i) => ({
       '@type': 'ListItem',
       position: i + 1,
@@ -98,7 +134,7 @@ export default function BlogIndexPage() {
             <span className="text-faint">notes + writeups</span>
           </div>
           <h1 className="mb-6 text-4xl leading-tight font-medium tracking-tight text-foreground md:text-5xl">
-            Notes from building production AI products and the engineering behind this site.
+            Notes from building production AI products and the engineering behind this site
           </h1>
           <p className="text-lg leading-relaxed text-muted">
             {DESCRIPTION}

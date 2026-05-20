@@ -36,6 +36,15 @@ export function HeroB() {
       id="hero"
       className="relative flex min-h-screen items-center px-6 pt-24 pb-16 lg:px-0"
     >
+      {/* See HeroA — LCP preload scoped to Hero so it only fires on
+          the home page (not blog / case-study routes). */}
+      <link
+        rel="preload"
+        as="image"
+        href="/petro.avif"
+        type="image/avif"
+        fetchPriority="high"
+      />
       <div className="bg-grid pointer-events-none absolute inset-0 opacity-30 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
       <div className="relative flex w-full items-center gap-10 lg:gap-16">
         <div className="max-w-3xl flex-1">

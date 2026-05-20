@@ -92,29 +92,49 @@ VALUES (
     and they bleed into the rendered HTML. */}
 export const revalidate = 60
 
+{/* Tight 152-char description — Google truncates SERP snippets at
+    ~160 chars. The previous 249-char version was getting cut after
+    "I should not run it yet", losing the framework + spreadsheet
+    pitch. Exported (not bare const) because MDX only recognises
+    import/export at the file's module scope. */}
+export const DESCRIPTION =
+  "I built A/B testing into my portfolio. Then did the math and realised I shouldn't run it yet. The framework, the spreadsheet, and when to actually ship."
+
 export const metadata = {
   title: 'A/B testing a portfolio that gets 20 visits a day · Petro Pavlov',
-  description:
-    'I built feature flags + a Bayesian-shaped dashboard into my portfolio so I could optimise the hero. Then I did the math and realised I should not run it yet. Here is the framework anyway — and the spreadsheet that tells you when you actually should.',
+  description: DESCRIPTION,
   alternates: {
     canonical: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
   },
+  // Override the layout-level keywords (which list company names +
+  // locations from the home-page targeting) with post-topic terms.
+  keywords: [
+    'A/B testing',
+    'feature flags',
+    'statistical significance',
+    'low traffic optimization',
+    'web analytics',
+    'self-hosted analytics',
+    'sample size calculation',
+    'experiment framework',
+    'Next.js',
+    'Postgres',
+  ],
   openGraph: {
     type: 'article',
     title: 'A/B testing a portfolio that gets 20 visits a day',
-    description:
-      'I built A/B testing into my portfolio. Then I did the math and realised I should not run it yet. Here is the framework anyway — and the spreadsheet that tells you when you actually should.',
+    description: DESCRIPTION,
     url: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
     // No explicit images — sibling opengraph-image.tsx provides the
     // per-post card with the title rendered.
-    publishedTime: '2026-05-16',
+    publishedTime: '2026-05-16T00:00:00Z',
+    modifiedTime: '2026-05-16T00:00:00Z',
     authors: ['Petromil Pavlov'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'A/B testing a portfolio that gets 20 visits a day',
-    description:
-      'Built A/B testing into my portfolio. Then did the math. Here is the framework + the spreadsheet that tells you when to actually run it.',
+    description: DESCRIPTION,
     // Twitter inherits the OG image when not set explicitly.
   },
 }
@@ -125,12 +145,21 @@ export const ARTICLE_SCHEMA = {
   headline: 'A/B testing a portfolio that gets 20 visits a day',
   description:
     'A self-hosted A/B testing framework built into a personal portfolio analytics stack, and an honest reckoning with whether running it at this traffic level makes sense.',
-  datePublished: '2026-05-16',
+  // Full ISO 8601 with timezone — Google prefers timezone-precise
+  // dates over date-only strings; gives a cleaner freshness signal.
+  datePublished: '2026-05-16T00:00:00Z',
   // dateModified equals datePublished for unmodified posts. Bump this
   // when the post content is materially updated; Google uses it as a
   // freshness signal in ranking and may show the modified date in
   // SERP snippets.
-  dateModified: '2026-05-16',
+  dateModified: '2026-05-16T00:00:00Z',
+  // wordCount tells crawlers this is long-form content; AI search
+  // overviews (Perplexity, ChatGPT browse) weight depth signals when
+  // ranking source articles for synthesis.
+  wordCount: 2092,
+  // articleSection — broad topical category, useful for topical
+  // clustering and "more in Engineering" related-content widgets.
+  articleSection: 'Engineering',
   // image points to the per-post OG card (dynamic, edge-rendered).
   // Google's article rich result uses this when available.
   image: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day/opengraph-image',
@@ -157,6 +186,7 @@ export const ARTICLE_SCHEMA = {
   },
   url: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
   inLanguage: 'en',
+  isAccessibleForFree: true,
   keywords:
     'A/B testing, feature flags, web analytics, statistical significance, low traffic, portfolio, Next.js, Postgres, Pulse, self-hosted',
 }
@@ -195,7 +225,7 @@ export const BREADCRUMB_LD = {
   tag="essay · engineering"
 >
 
-My portfolio gets about 20 visits a day. 77% of those visitors leave from the hero before scrolling to the work section. Last week I built a full A/B testing framework into it — feature flags, sticky variant assignment, an admin dashboard with Wilson confidence intervals and two-proportion z-tests, the works.
+My [portfolio](/) gets about 20 visits a day. 77% of those visitors leave from the hero before scrolling to [the work section](/#work). Last week I built a full A/B testing framework into it — feature flags, sticky variant assignment, an admin dashboard with Wilson confidence intervals and two-proportion z-tests, the works.
 
 Then I did the math on whether to actually run an experiment, and the answer turned out to be: kind of no, not really, not yet. So I built the framework anyway, shipped it, and I'm publishing this post about it.
 
@@ -203,7 +233,7 @@ That sounds like a worse version of the usual "I built an analytics stack" post.
 
 ## The problem
 
-I've been running [my own self-hosted analytics](https://petropavlov.dev/admin/analytics) on this site for about a month — call it Pulse — and the funnel data is pretty clear:
+I've been running my own self-hosted analytics on this site for about a month — call it Pulse — and the funnel data is pretty clear:
 
 <Md source={FUNNEL_TABLE} />
 
@@ -306,7 +336,7 @@ The live `hero` experiment is collecting data right now. I'm going to give it th
 
 In parallel, the next portfolio iteration *isn't* going to be A/B tested. I'm going to drop the dense hero paragraph for everyone (mirroring HeroB), watch the rolling 7-day funnel, and accept that a quasi-experiment "before vs after" comparison is statistically weaker but practically faster. The A/B framework is now a tool in the box — and like every tool, the right call is sometimes to leave it there.
 
-The whole thing — Pulse, the experiment framework, this blog, the Next.js migration that made it all coherent — is open in spirit on [petropavlov.dev](https://petropavlov.dev). If you read any of the stack and have notes, I'd genuinely like to hear them. Email's at the bottom of every page.
+The whole thing — Pulse, the experiment framework, this blog, the Next.js migration that made it all coherent — is open in spirit on [petropavlov.dev](/). If you read any of the stack and have notes, I'd genuinely like to hear them. Email's at the bottom of every page. There are two deeper case studies under the same roof — the [AI meeting SaaS I co-founded](/case-studies/insight-draft) and the [EU Digital Identity Wallet SDK](/case-studies/gramota) — both with the same flavour of honest writeup as this one.
 
 If you're scoping work that needs someone who builds end-to-end at this depth — picks the boring architecture, sweats the statistics, owns the post-mortem — that's literally the engagement I take. The Book-a-call button below skips slides and goes straight to a 60-minute technical conversation.
 

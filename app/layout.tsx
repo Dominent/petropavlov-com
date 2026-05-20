@@ -108,6 +108,35 @@ const personLd = {
     'Senior full-stack and AI engineer with 10+ years shipping production software. Builds AI products end-to-end — RAG, fine-tuning, LLM orchestration. Available for consulting and project work.',
   address: { '@type': 'PostalAddress', addressLocality: 'Sofia', addressCountry: 'BG' },
   sameAs: ['https://github.com/Dominent', 'https://www.linkedin.com/in/petro-p-insight-draft/'],
+  // Entity-level expertise. Lets AI search engines surface this Person
+  // for topical queries beyond just job title — e.g., "TypeScript SDK
+  // for EU Digital Identity Wallet" or "low-traffic A/B testing".
+  knowsAbout: [
+    'AI product engineering',
+    'RAG (retrieval-augmented generation)',
+    'LLM orchestration',
+    'Fine-tuning (Qwen3)',
+    'NL-to-SQL',
+    'Anthropic SDK',
+    'OpenAI SDK',
+    'Claude Code',
+    'Cursor',
+    'TypeScript',
+    'Angular',
+    '.NET / C#',
+    'Node.js',
+    'PostgreSQL',
+    'Chrome extensions (Manifest V3)',
+    'OAuth 2.0 / OIDC',
+    'OID4VP / OID4VCI',
+    'eIDAS 2 / EU Digital Identity Wallet',
+    'Stripe payments integration',
+    'X.509 PKI',
+    'Self-hosted analytics',
+    'A/B testing infrastructure',
+    'Web Vitals',
+    'Next.js',
+  ],
 }
 
 // WebSite schema — entity linking for the site itself. Helps search
@@ -130,6 +159,13 @@ const serviceLd = {
   '@type': 'ProfessionalService',
   name: 'Petro Pavlov · Senior Engineering Consulting',
   provider: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
+  // Recommended LocalBusiness/ProfessionalService fields.
+  // `$$$` = premium/senior contractor band per schema.org convention;
+  // accurate without committing to a specific number that anchors
+  // negotiation. `address` mirrors the Person address.
+  address: { '@type': 'PostalAddress', addressLocality: 'Sofia', addressCountry: 'BG' },
+  priceRange: '$$$',
+  image: 'https://petropavlov.dev/petro.webp',
   // Primary markets first (US, Canada, Israel), then EU/UK secondary.
   // Cities listed at the end for crawlers that read both granularities.
   areaServed: [
@@ -224,24 +260,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <head>
-        <meta name="color-scheme" content="dark" />
-        {/* LCP preload — portrait above the fold. Preload the AVIF
-            since most modern browsers support it (Chrome 85+, Safari
-            16+, Firefox 93+); WebP-only browsers will fall back via
-            the <picture> sources at slightly higher cost (12 KB vs
-            8 KB). The duplicate preload that used to appear in the
-            served HTML was this same href emitted twice by Next.js
-            head processing — removing the redundant href fixes it. */}
-        <link
-          rel="preload"
-          as="image"
-          href="/petro.avif"
-          type="image/avif"
-          fetchPriority="high"
-        />
-        {/* Resource hints — Cal.com booking modal */}
+        {/* color-scheme is also emitted by Next.js from the viewport
+            export — keeping ONE source. The viewport export below is
+            authoritative; this <meta> was duplicating it. */}
+        {/* Resource hints — Cal.com booking modal. preconnect alone
+            opens DNS+TCP+TLS; the redundant dns-prefetch was dropped
+            (preconnect supersedes it on browsers that support both,
+            which is everything ≥ Chrome 80 / Safari 11.3). */}
         <link rel="preconnect" href="https://app.cal.com" />
-        <link rel="dns-prefetch" href="https://app.cal.com" />
+        {/* NOTE: The /petro.avif LCP preload used to live here. It
+            was being emitted on every page (blog, case studies, etc.)
+            even though the portrait only renders in the home Hero —
+            wasting a high-priority bandwidth slot and a connection.
+            Moved into the Hero components themselves so React 19
+            hoists it into <head> only when Hero actually renders. */}
         {/* Auto-discovery for the blog RSS feed. Feedly / NetNewsWire /
             Reeder pick this up when a reader subscribes to /blog. */}
         <link

@@ -30,6 +30,19 @@ export function HeroA() {
       id="hero"
       className="relative flex min-h-screen items-center px-6 pt-24 pb-16 lg:px-0"
     >
+      {/* LCP preload for the portrait (the LCP element on desktop).
+          Scoped to Hero so it only fires on the home page — blog
+          and case-study routes don't render the portrait and used
+          to waste a high-priority fetch slot before this was moved
+          out of app/layout.tsx. React 19 hoists this <link> into
+          <head> automatically. */}
+      <link
+        rel="preload"
+        as="image"
+        href="/petro.avif"
+        type="image/avif"
+        fetchPriority="high"
+      />
       <div className="bg-grid pointer-events-none absolute inset-0 opacity-30 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
       <div className="relative flex w-full items-center gap-10 lg:gap-16">
         <div className="max-w-3xl flex-1">

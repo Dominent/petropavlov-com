@@ -65,6 +65,16 @@ const ARTICLE_SCHEMA = {
     'EU Digital Identity Wallet, eIDAS 2, OID4VP, OID4VCI, SD-JWT VC, DPoP, DCQL, TypeScript SDK, EUDIW, verifier, issuer',
 }
 
+const BREADCRUMB_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://petropavlov.dev/' },
+    { '@type': 'ListItem', position: 2, name: 'Case Studies', item: 'https://petropavlov.dev/#work' },
+    { '@type': 'ListItem', position: 3, name: 'Gramota', item: URL },
+  ],
+}
+
 export default function GramotaCaseStudyPage() {
   return (
     <>
@@ -72,6 +82,11 @@ export default function GramotaCaseStudyPage() {
         id="ld-article-gramota"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
+      />
+      <Script
+        id="ld-breadcrumb-gramota"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_LD) }}
       />
       <GramotaCaseStudyContent />
     </>

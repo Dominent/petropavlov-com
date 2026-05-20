@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Script from 'next/script'
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react'
 import { listPosts } from './posts'
 
@@ -29,8 +30,44 @@ export const metadata: Metadata = {
 export default function BlogIndexPage() {
   const posts = listPosts()
 
+  // BreadcrumbList — Home → Blog. Helps Google show the breadcrumb
+  // trail in search result snippets, which improves CTR.
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://petropavlov.dev/' },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: URL },
+    ],
+  }
+
+  // ItemList — tells search engines the listing structure of /blog.
+  // Listing this way lets Google understand the page as an index of
+  // articles rather than a single article itself.
+  const itemListLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Petro Pavlov · Blog posts',
+    itemListElement: posts.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `https://petropavlov.dev/blog/${p.slug}`,
+      name: p.title,
+    })),
+  }
+
   return (
     <div className="relative min-h-screen bg-background text-foreground">
+      <Script
+        id="ld-blog-breadcrumb"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <Script
+        id="ld-blog-itemlist"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}
+      />
       <header className="border-b border-border-subtle/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link

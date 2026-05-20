@@ -1,0 +1,28 @@
+# Petro Pavlov — Senior Full-Stack & AI Engineer
+
+> Petromil "Petro" Pavlov. 10+ years shipping production software. Most recently on CData Virtuality's AI research team — solo-built a Cursor-style SQL AI copilot, shipped Q3 2025, demoed at Gartner D&A Summit 2025. Available for consulting and project work — primarily US, Canada, Israel; also EU/UK. Based in Sofia, Bulgaria. Remote-first.
+
+## About
+
+- [Home page](https://petropavlov.dev/): full portfolio — experience, case studies, testimonials, contact, AI assistant grounded in CV
+- [CV (PDF)](https://petropavlov.dev/cv): downloadable A4 CV generated from the same source as the portfolio
+
+## Case studies (long-form technical writeups)
+
+- [Insight Draft — AI meeting SaaS, bot-free recording across Meet/Teams/Zoom](https://petropavlov.dev/case-studies/insight-draft): Chrome extension (Manifest V3), 6 parallel LLM call types per meeting, custom Hangfire fan-out/fan-in via Postgres atomic UPDATE, statistical-voting speaker mapping. .NET 8 + Postgres + Node + Angular. Co-founded by Petromil Pavlov; case study covers the systems he led.
+- [Gramota — EU Digital Identity Wallet SDK (eIDAS 2)](https://petropavlov.dev/case-studies/gramota): TypeScript SDK monorepo, 15 published npm packages with Sigstore provenance, ~580 conformance tests + 31 live interop tests against EU reference infrastructure. OID4VP/OID4VCI/DPoP/DCQL/SD-JWT VC. End-to-end roundtrips against the EU reference Android wallet.
+
+## Blog
+
+- [A/B testing a portfolio that gets 20 visits a day](https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day): Built a self-hosted analytics + A/B framework into the portfolio. Did the math on whether to run it at low traffic. Honest take on sample-size thresholds, proxy-metric risk, and when A/B testing is the wrong tool. Includes the live Hero A/B running on the site.
+- [Blog index](https://petropavlov.dev/blog)
+
+## Optional — what to expect
+
+- Engagement types: consulting, project builds, longer retained roles (no hard cap on length)
+- Sweet spot: AI products end-to-end (RAG, fine-tuning, LLM orchestration) + identity / payments / integrations to ship them
+- Daily Claude Code + Cursor user
+- Invoicing: USD, CAD, EUR
+- Email: petromilpavlov@gmail.com
+- GitHub: https://github.com/Dominent
+- LinkedIn: https://www.linkedin.com/in/petro-p-insight-draft/

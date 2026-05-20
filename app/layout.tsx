@@ -110,6 +110,21 @@ const personLd = {
   sameAs: ['https://github.com/Dominent', 'https://www.linkedin.com/in/petro-p-insight-draft/'],
 }
 
+// WebSite schema — entity linking for the site itself. Helps search
+// engines and AI crawlers understand petropavlov.dev as a single
+// coherent entity rather than a loose collection of pages.
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Petro Pavlov',
+  alternateName: 'petropavlov.dev',
+  url: 'https://petropavlov.dev/',
+  description:
+    'Senior full-stack and AI engineer. Case studies, blog, and consulting availability.',
+  author: { '@type': 'Person', name: 'Petromil Pavlov', url: 'https://petropavlov.dev/' },
+  inLanguage: 'en',
+}
+
 const serviceLd = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
@@ -167,6 +182,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Resource hints — Cal.com booking modal */}
         <link rel="preconnect" href="https://app.cal.com" />
         <link rel="dns-prefetch" href="https://app.cal.com" />
+        {/* Auto-discovery for the blog RSS feed. Feedly / NetNewsWire /
+            Reeder pick this up when a reader subscribes to /blog. */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Petro Pavlov · Blog"
+          href="/blog/feed.xml"
+        />
         {/* Inline active A/B experiments as JSON so the Pulse client SDK
             reads variant assignments synchronously on init — before the
             first view event fires. Pages using this layout must export
@@ -177,6 +200,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-zinc-950 text-zinc-100 antialiased">
         {children}
         <PulseInit />
+        <Script
+          id="ld-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }}
+        />
         <Script
           id="ld-person"
           type="application/ld+json"

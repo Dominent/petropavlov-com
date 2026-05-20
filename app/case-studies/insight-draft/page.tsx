@@ -67,6 +67,16 @@ const ARTICLE_SCHEMA = {
     'AI meeting notes, Chrome extension, Manifest V3, tabCapture, Deepgram, OpenAI Responses API, RAG, Hangfire, Stripe, .NET, Angular, no-bot recording',
 }
 
+const BREADCRUMB_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://petropavlov.dev/' },
+    { '@type': 'ListItem', position: 2, name: 'Case Studies', item: 'https://petropavlov.dev/#work' },
+    { '@type': 'ListItem', position: 3, name: 'Insight Draft', item: URL },
+  ],
+}
+
 export default function InsightDraftCaseStudyPage() {
   return (
     <>
@@ -74,6 +84,11 @@ export default function InsightDraftCaseStudyPage() {
         id="ld-article-insight-draft"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
+      />
+      <Script
+        id="ld-breadcrumb-insight-draft"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_LD) }}
       />
       <InsightDraftCaseStudyContent />
     </>

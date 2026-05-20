@@ -12,6 +12,7 @@ import '@fontsource/instrument-serif/400-italic.css'
 import './globals.scss'
 import { PulseInit } from './_components/pulse-init'
 import { ExperimentsScript } from './_components/experiments-script'
+import { CvFollowupDialog } from '../src/components/CvFollowupDialog'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://petropavlov.dev'),
@@ -292,6 +293,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-zinc-950 text-zinc-100 antialiased">
         {children}
         <PulseInit />
+        {/* Globally-mounted dialog that intercepts CV downloads and
+            offers a follow-up (book a call / quick email). Listens
+            for any <a href="/cv" download> click via a delegated
+            document handler — auto-installs for any future CV link
+            without per-callsite changes. Shows once per session. */}
+        <CvFollowupDialog />
         <Script
           id="ld-website"
           type="application/ld+json"

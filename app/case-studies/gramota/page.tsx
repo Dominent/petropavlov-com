@@ -21,7 +21,8 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: URL,
-    images: ['https://petropavlov.dev/og.png'],
+    // No explicit images — sibling opengraph-image.tsx provides the
+    // per-case-study card with the title rendered.
     publishedTime: PUBLISHED,
     authors: ['Petromil Pavlov'],
   },
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
-    images: ['https://petropavlov.dev/og.png'],
+    // Twitter inherits the OG image when not set explicitly.
   },
 }
 

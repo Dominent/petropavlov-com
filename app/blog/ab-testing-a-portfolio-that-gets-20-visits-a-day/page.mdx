@@ -102,7 +102,8 @@ export const metadata = {
     description:
       'I built A/B testing into my portfolio. Then I did the math and realised I should not run it yet. Here is the framework anyway — and the spreadsheet that tells you when you actually should.',
     url: 'https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day',
-    images: ['https://petropavlov.dev/og.png'],
+    // No explicit images — sibling opengraph-image.tsx provides the
+    // per-post card with the title rendered.
     publishedTime: '2026-05-16',
     authors: ['Petromil Pavlov'],
   },
@@ -111,7 +112,7 @@ export const metadata = {
     title: 'A/B testing a portfolio that gets 20 visits a day',
     description:
       'Built A/B testing into my portfolio. Then did the math. Here is the framework + the spreadsheet that tells you when to actually run it.',
-    images: ['https://petropavlov.dev/og.png'],
+    // Twitter inherits the OG image when not set explicitly.
   },
 }
 

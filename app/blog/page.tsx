@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     url: URL,
-    images: ['https://petropavlov.dev/og.png'],
+    // No explicit images — Next.js auto-populates from the sibling
+    // opengraph-image.tsx file (per-route OG card with title rendered).
   },
 }
 

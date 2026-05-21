@@ -44,6 +44,7 @@ type AttributionRow = {
 }
 
 const CHANNELS = [
+  // Outbound posts we make
   'hn',
   'show-hn',
   'hn-who-is-hiring',
@@ -55,6 +56,14 @@ const CHANNELS = [
   'mastodon',
   'email-cold',
   'email-warm',
+  // Inbound — outreach received in response to our posts. Tracked so
+  // we can see what TYPES of responses each distribution channel
+  // attracts (recruiters vs vendors vs real prospects). The ref_tag
+  // for these is just a unique placeholder — no utm_source match
+  // since there's no link clicked, only a record of the inbound.
+  'inbound-recruiter',
+  'inbound-vendor',
+  'inbound-prospect',
   'other',
 ]
 

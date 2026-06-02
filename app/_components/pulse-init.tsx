@@ -28,6 +28,7 @@ export function PulseInit() {
         { id: 'about', name: 'about' },
         { id: 'ask', name: 'ask_petro' },
         { id: 'testimonials', name: 'testimonials' },
+        { id: 'packages', name: 'packages' },
         { id: 'contact', name: 'contact' },
       ],
       errors: true,

@@ -13,7 +13,8 @@ const sections = [
   { id: 'about', label: 'About', num: '04' },
   { id: 'ask', label: 'Ask Petro', num: '05' },
   { id: 'testimonials', label: 'What people say', num: '06' },
-  { id: 'contact', label: 'Contact', num: '07' },
+  { id: 'packages', label: 'Work with me', num: '07' },
+  { id: 'contact', label: 'Contact', num: '08' },
 ]
 
 export function SideNav() {

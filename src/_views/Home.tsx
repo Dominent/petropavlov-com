@@ -5,6 +5,7 @@ import { SelectedWork } from '../components/SelectedWork'
 import { AIEngineering } from '../components/AIEngineering'
 import { Experience } from '../components/Experience'
 import { About } from '../components/About'
+import { Packages } from '../components/Packages'
 
 // Below-the-fold sections — lazy-loaded so they're not in the initial
 // JS bundle. The components themselves are moderately heavy (Framer
@@ -70,6 +71,7 @@ export function Home() {
         <Suspense fallback={<SectionFallback minHeight="320px" />}>
           <Testimonials />
         </Suspense>
+        <Packages />
         <Suspense fallback={<SectionFallback minHeight="560px" />}>
           <Contact />
         </Suspense>

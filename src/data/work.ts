@@ -2,13 +2,22 @@ export type Project = {
   id: string
   title: string
   tagline: string
+  // Two or three sentences — the card and the CV both lead with this.
+  // Depth belongs in `highlights` (card only) or the case study.
   description: string
+  highlights: string[]
   metrics: { value: string; label: string }[]
   tech: string[]
   links?: { label: string; url: string }[]
   github?: string
+  // Featured projects also appear on the PDF CV; the rest are site-only.
   featured?: boolean
   caseStudyUrl?: string
+  caseStudyLabel?: string
+  // Extra depth for the Ask Petro assistant only — never rendered.
+  assistantNotes?: string[]
+  // Optional product screenshot, served from /public.
+  image?: { src: string; alt: string; width: number; height: number }
 }
 
 export const projects: Project[] = [
@@ -17,10 +26,16 @@ export const projects: Project[] = [
     title: 'Insight Draft',
     tagline: 'Production AI SaaS for meetings',
     description:
-      'Insight Draft turns meeting recordings into searchable team knowledge — instant summaries, action items, and a Q&A assistant grounded in the transcript with verifiable citations. The Chrome extension (Manifest V3, 2 years\' work, published on the Chrome Web Store) records Google Meet, Microsoft Teams, and Zoom without bots joining the call — uses tabCapture for browser-based meetings and desktopCapture for desktop clients, plus manual recording. A separate Slack Huddle bot covers the case where tab capture doesn\'t apply. Speaker-attributed transcription via Deepgram (Nova-3 multilingual) feeds AI summaries with topic chapters, RAG-powered Q&A, AI Quick Actions for decisions, and conversation analytics (speaking time, interruptions, turn-taking). Engineered end-to-end (engineering led solo within a two-person founding team): .NET 8 backend, dedicated Node.js LLM service orchestrating multiple OpenAI models via the Responses API with strict structured outputs, Angular 17 client. Multi-environment Jenkins CI/CD, Stripe billing, S3 storage, Playwright E2E.',
+      'Insight Draft turns meeting recordings into searchable team knowledge — summaries, action items, and a Q&A assistant grounded in the transcript with verifiable citations. Its Manifest V3 Chrome extension records Google Meet, Microsoft Teams, and Zoom without a bot joining the call. Engineering led solo within a two-person founding team.',
+    highlights: [
+      "Bot-free capture — tabCapture for browser meetings, desktopCapture for desktop clients, and a separate Slack Huddle bot where tab capture doesn't apply",
+      'Speaker-attributed transcription (Deepgram Nova-3) feeding summaries with topic chapters, RAG Q&A, AI Quick Actions, and conversation analytics',
+      'Dedicated Node.js LLM service orchestrating OpenAI models through the Responses API with strict structured outputs',
+      '.NET 8 API, Angular 17 client, Stripe billing, S3 storage, multi-environment Jenkins CI/CD, Playwright E2E',
+    ],
     metrics: [
       { value: '2 yrs', label: 'on the Manifest V3 Chrome extension — bot-free Meet/Teams/Zoom recording' },
-      { value: '12+', label: 'parallel LLM calls per meeting (summary, chapters, highlights, tags, behaviour mentions, classification)' },
+      { value: '6+', label: 'parallel LLM calls per meeting (summary, chapters, highlights, tags, behaviour mentions, classification)' },
       { value: 'Solo eng', label: 'extension · API · LLM service · UI · CI/CD · live in production' },
     ],
     tech: ['Chrome Extension MV3', 'tabCapture', 'desktopCapture', '.NET 8', 'Node.js', 'Angular 17', 'OpenAI Responses API', 'Deepgram', 'RAG', 'PostgreSQL', 'Stripe', 'Hangfire', 'AWS S3', 'Jenkins', 'Playwright'],
@@ -30,22 +45,82 @@ export const projects: Project[] = [
     ],
     featured: true,
     caseStudyUrl: '/case-studies/insight-draft',
+    assistantNotes: [
+      'The extension is a multi-package monorepo (content scripts, tooltip overlay, Next.js popup, shared utilities) with an E2E suite; it talks to the web app via externally_connectable and uses a MAIN-world content script for Google Meet',
+      'Q&A uses the OpenAI Responses API with file_search vector stores; live Google Meet caption scraping backs up Deepgram for speaker attribution',
+      'The LLM service has a provider strategy with an Anthropic scaffold, but production routes to OpenAI exclusively',
+      'Custom Hangfire fan-out/fan-in coordinator built on Postgres atomic UPDATE...RETURNING, avoiding paid Hangfire Pro',
+      'Two PostgreSQL databases — the main app, and a separate transcript DB for high-write word and caption tables; Stripe billing uses strategy-pattern subscription change handlers',
+    ],
   },
   {
-    id: 'gramota',
-    title: 'Gramota',
-    tagline: 'EU Digital Identity Wallet SDK · eIDAS 2',
+    id: 'magistrat',
+    title: 'Magistrat',
+    tagline: 'AI legal assistant · Bulgarian law',
     description:
-      'A multi-package SDK and SaaS layer for the EU Digital Identity Wallet. Implements OID4VP Final 1.0, OID4VCI Draft 15, DPoP, DCQL, and X.509 per-organisation certificate management. Tested against the European Commission reference infrastructure. Includes a hosted gateway, multi-tenant SaaS, an ASP.NET Core 10 + Duende IdentityServer auth server, and a marketing site with auto-generated TypeDoc API docs.',
-    metrics: [
-      { value: '12+', label: 'published npm packages w/ provenance' },
-      { value: 'eIDAS 2', label: 'compliant against EU reference infra' },
-      { value: '5 repos', label: 'gateway · SaaS · identity · demo · site' },
+      'Magistrat is an AI assistant for Bulgarian lawyers, built on its own legal corpus — court cases, consolidated laws, EU law, the State Gazette, and the commercial register — crawled from national registries into PostgreSQL and searched as one. Every citation is checkable down to the article and the case.',
+    highlights: [
+      'Every registry is the same shape — ingestion worker, append-only facts, idempotent upserts on natural keys, GraphQL API — so adding a source is a pattern, not a project',
+      'Coverage is measured against the totals each source declares, because the recurring failure is not a crash — it is a crawl that returns HTTP 200, well-formed data, and the wrong answer',
+      "Cross-registry retrieval doubles as the LLM agent's tool surface, and an MCP server exposes every database to coding agents as read-only SQL",
     ],
-    tech: ['TypeScript', 'ASP.NET Core 10', 'Duende IdentityServer', 'Angular', 'Analog.js', 'OID4VP/VCI', 'PostgreSQL'],
-    links: [{ label: 'gramota.eu', url: 'https://gramota.eu' }],
+    metrics: [
+      { value: '4.6M', label: 'court cases in the corpus' },
+      { value: '1.37M', label: 'companies from the commercial register — ownership and filings' },
+      { value: '607K', label: 'documents indexed for cross-registry search' },
+    ],
+    tech: ['.NET', 'PostgreSQL', 'Dapper / Npgsql', 'DbUp', 'Quartz', 'HotChocolate GraphQL', 'Angular', 'MCP', 'Docker', 'GitHub Actions'],
+    links: [{ label: 'magistrat.bg', url: 'https://magistrat.bg' }],
     featured: true,
-    caseStudyUrl: '/case-studies/gramota',
+  },
+  {
+    id: 'switchboard',
+    title: 'Switchboard',
+    tagline: 'Open-source desktop tool · multi-account Claude',
+    description:
+      'Switchboard puts several Claude accounts in one window. It runs the real Claude desktop app once per profile — each with its own data directory and sign-in — and hosts every instance as a tab, or two side by side. Independent open-source project, not affiliated with Anthropic.',
+    highlights: [
+      "Windows: the guest becomes a frameless owned window kept over the shell's content area — reparenting it as a child looked tidier and silently ate every key press",
+      "macOS: there is no supported way to embed another process's window, so the active guest is pinned in place through the Accessibility API and re-pinned on every move and resize",
+      'Per-tab sign-in: owns the claude:// scheme on macOS; on Windows, where the MSIX package claims it, a WMI process-creation watch hands the link to the focused tab',
+    ],
+    metrics: [
+      { value: '2 OSes', label: 'one TypeScript codebase — owned Win32 windows on Windows, Accessibility-API pinning on macOS' },
+      { value: 'No C++', label: 'every native Win32 / macOS call goes through koffi FFI — nothing to compile' },
+      { value: 'MIT', label: 'open source · v0.1.0 Windows installer on GitHub Releases' },
+    ],
+    tech: ['Electron', 'TypeScript', 'koffi FFI', 'Win32 API', 'macOS Accessibility API', 'claude:// deep links', 'WMI', 'electron-builder', 'node:test'],
+    links: [
+      { label: 'GitHub', url: 'https://github.com/Dominent/claude-desk' },
+      { label: 'Download for Windows', url: 'https://github.com/Dominent/claude-desk/releases/latest' },
+    ],
+    github: 'https://github.com/Dominent/claude-desk',
+    featured: true,
+    caseStudyUrl: '/blog/hosting-another-apps-window-inside-yours',
+    caseStudyLabel: 'Read the write-up',
+  },
+  {
+    id: 'beacon',
+    title: 'Beacon',
+    tagline: 'Angular 21 + Nx reference architecture',
+    description:
+      'Beacon is a small, deliberately built issue tracker that shows modern Angular — version 21, zoneless, signals — inside a scalable Nx 23 monorepo. The surface is modest on purpose, so that every architectural decision is explainable.',
+    highlights: [
+      'Domain × layer libraries with lint-enforced boundaries — a ui library physically cannot import a store, and CI fails if it tries',
+      'NgRx SignalStore where a store earns its keep, plain-signal services where it would be ceremony, RxJS only for typeahead and the SSE feed',
+      'Local Nx plugin — generator, executor, and task inference — plus SSR with incremental hydration and @defer-loaded charts',
+    ],
+    metrics: [
+      { value: 'Zoneless', label: 'no zone.js — change detection driven by signal reads and events' },
+      { value: 'Enforced', label: 'module boundaries across feature · ui · data-access · util, checked by lint in CI' },
+      { value: 'CLS 0', label: 'by construction — every deferred view has a sized placeholder' },
+    ],
+    tech: ['Angular 21', 'Nx 23', 'NgRx SignalStore', 'Signals', 'RxJS', 'Angular CDK', 'SSR', 'Vitest', 'Playwright'],
+    links: [
+      { label: 'Live demo', url: 'https://beacon-petromilpavlovs-projects.vercel.app' },
+      { label: 'GitHub', url: 'https://github.com/Dominent/beacon' },
+    ],
+    github: 'https://github.com/Dominent/beacon',
   },
 ]
 
@@ -143,7 +218,7 @@ export const jobs: Job[] = [
 ]
 
 export const skills = {
-  Frontend: ['Angular 8–18', 'React', 'Next.js', 'TypeScript', 'RxJS', 'Signals', 'NGRX', 'Module Federation', 'Tailwind', 'GraphQL'],
+  Frontend: ['Angular 8–21', 'React', 'Next.js', 'TypeScript', 'RxJS', 'Signals', 'NGRX', 'Module Federation', 'Tailwind', 'GraphQL'],
   Backend: ['.NET / C#', 'ASP.NET', 'Entity Framework', 'Node.js', 'NestJS', 'Express'],
   'AI / ML': ['Anthropic SDK', 'OpenAI SDK', 'RAG', 'Fine-tuning', 'Whisper', 'ElevenLabs', 'NL→SQL', 'Evals'],
   'Identity & Payments': ['Duende IdentityServer', 'OAuth 2.0 / OIDC', 'OID4VP / OID4VCI', 'eIDAS 2', 'Stripe', 'X.509 PKI'],

@@ -83,7 +83,7 @@ function PackageCard({ pkg, index }: { pkg: Package; index: number }) {
             className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-accent-soft/10 blur-3xl"
           />
           <span className="absolute top-0 right-6 -translate-y-1/2 rounded-full border border-accent-soft/40 bg-background px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-accent-bright">
-            Most popular
+            Recommended
           </span>
         </>
       )}

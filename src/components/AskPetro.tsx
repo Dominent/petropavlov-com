@@ -109,7 +109,7 @@ export function AskPetro() {
             ask-petro · v0.1
           </span>
           <span className="ml-auto font-mono text-[10px] uppercase tracking-wider text-ghost">
-            grounded in CV + project docs
+            grounded in CV + projects
           </span>
         </div>
 
@@ -118,7 +118,7 @@ export function AskPetro() {
             <div className="rounded-lg bg-surface/40 px-4 py-3 text-sm text-dim">
               <span className="font-mono text-accent">petro:</span> Hi.
               I&rsquo;m Petro&rsquo;s AI assistant, grounded in his CV,
-              project READMEs, and recent work. Ask me anything &mdash; I&rsquo;ll
+              projects, and recent work. Ask me anything &mdash; I&rsquo;ll
               answer with what I actually know and tell you when I don&rsquo;t.
             </div>
           )}

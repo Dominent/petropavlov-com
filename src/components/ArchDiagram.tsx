@@ -4,7 +4,9 @@ type Props = { projectId: string }
 
 export function ArchDiagram({ projectId }: Props) {
   if (projectId === 'insight-draft') return <InsightDraftArch />
-  if (projectId === 'gramota') return <GramotaArch />
+  if (projectId === 'magistrat') return <MagistratArch />
+  if (projectId === 'switchboard') return <SwitchboardArch />
+  if (projectId === 'beacon') return <BeaconArch />
   return null
 }
 
@@ -34,7 +36,7 @@ function InsightDraftArch() {
       </div>
       <div className="flex flex-col items-stretch gap-2">
         <div className={boxClass}>
-          Angular 21 client
+          Angular 17 client
           <div className="mt-0.5 text-[9px] text-faint">SPA · Stripe</div>
         </div>
         <div className="flex justify-center">
@@ -49,7 +51,7 @@ function InsightDraftArch() {
         </div>
         <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
           Node LLM service
-          <div className="mt-0.5 text-[9px] text-faint">GPT-5-mini · Claude 3.5</div>
+          <div className="mt-0.5 text-[9px] text-faint">OpenAI · structured outputs</div>
         </div>
         <div className="mt-2 grid grid-cols-3 gap-1.5 text-center font-mono text-[9px] text-faint">
           <div className="rounded border border-border py-1">Deepgram</div>
@@ -61,40 +63,139 @@ function InsightDraftArch() {
   )
 }
 
-function GramotaArch() {
+function MagistratArch() {
   return (
     <div className="rounded-xl border border-border bg-background/60 p-4">
       <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
         <span>architecture</span>
-        <span>gramota</span>
+        <span>magistrat</span>
       </div>
       <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-2 gap-2">
-          <div className={boxClass}>EU Wallet</div>
-          <div className={boxClass}>Verifier app</div>
+        <div className={boxClass}>
+          National registries
+          <div className="mt-0.5 text-[9px] text-faint">courts · laws · EU · gazette · companies</div>
         </div>
         <div className="flex items-center justify-center gap-1">
           <Arrow className="rotate-90" />
-          <span className="font-mono text-[9px] text-faint">OID4VP</span>
+          <span className="font-mono text-[9px] text-faint">Quartz crawlers</span>
           <Arrow className="rotate-90" />
         </div>
         <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
-          Gramota Gateway
-          <div className="mt-0.5 text-[9px] text-faint">DPoP · DCQL</div>
+          PostgreSQL per registry
+          <div className="mt-0.5 text-[9px] text-faint">append-only · ON CONFLICT upserts</div>
         </div>
         <div className="flex justify-center">
           <Arrow className="rotate-90" />
         </div>
         <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
-          Multi-tenant SaaS
-          <div className="mt-0.5 text-[9px] text-faint">X.509 per org</div>
+          Cross-registry retrieval
+          <div className="mt-0.5 text-[9px] text-faint">LLM agent tool surface</div>
         </div>
         <div className="flex justify-center">
           <Arrow className="rotate-90" />
         </div>
         <div className={boxClass}>
-          ASP.NET Core 10 + Duende
-          <div className="mt-0.5 text-[9px] text-faint">auth.gramota.eu</div>
+          Angular app
+          <div className="mt-0.5 text-[9px] text-faint">answers with checkable citations</div>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center font-mono text-[9px] text-faint">
+          <div className="rounded border border-border py-1">GraphQL</div>
+          <div className="rounded border border-border py-1">MCP · SQL</div>
+          <div className="rounded border border-border py-1">DbUp</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BeaconArch() {
+  return (
+    <div className="rounded-xl border border-border bg-background/60 p-4">
+      <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
+        <span>allowed imports</span>
+        <span>beacon</span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className={boxClass}>
+          app shell
+          <div className="mt-0.5 text-[9px] text-faint">routes · providers · SSR</div>
+        </div>
+        <div className="flex justify-center">
+          <Arrow className="rotate-90" />
+        </div>
+        <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
+          feature
+          <div className="mt-0.5 text-[9px] text-faint">list · board · detail · dashboard</div>
+        </div>
+        <div className="flex items-center justify-center gap-6">
+          <Arrow className="rotate-90" />
+          <Arrow className="rotate-90" />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className={boxClass}>
+            ui
+            <div className="mt-0.5 text-[9px] text-faint">no store imports</div>
+          </div>
+          <div className={boxClass}>
+            data-access
+            <div className="mt-0.5 text-[9px] text-faint">SignalStore · SSE</div>
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <Arrow className="rotate-90" />
+        </div>
+        <div className={boxClass}>
+          util
+          <div className="mt-0.5 text-[9px] text-faint">models</div>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center font-mono text-[9px] text-faint">
+          <div className="rounded border border-border py-1">Nx plugin</div>
+          <div className="rounded border border-border py-1">@defer</div>
+          <div className="rounded border border-border py-1">CDK</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SwitchboardArch() {
+  return (
+    <div className="rounded-xl border border-border bg-background/60 p-4">
+      <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
+        <span>architecture</span>
+        <span>switchboard</span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
+          Switchboard shell
+          <div className="mt-0.5 text-[9px] text-faint">Electron · tabs · split view</div>
+        </div>
+        <div className="flex items-center justify-center gap-1">
+          <Arrow className="rotate-90" />
+          <span className="font-mono text-[9px] text-faint">koffi FFI</span>
+          <Arrow className="rotate-90" />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className={boxClass}>
+            Windows
+            <div className="mt-0.5 text-[9px] text-faint">owned window</div>
+          </div>
+          <div className={boxClass}>
+            macOS
+            <div className="mt-0.5 text-[9px] text-faint">Accessibility API</div>
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <Arrow className="rotate-90" />
+        </div>
+        <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
+          Claude desktop × N
+          <div className="mt-0.5 text-[9px] text-faint">--user-data-dir per profile</div>
+        </div>
+        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center font-mono text-[9px] text-faint">
+          <div className="rounded border border-border py-1">claude://</div>
+          <div className="rounded border border-border py-1">WMI watch</div>
+          <div className="rounded border border-border py-1">Hotkeys</div>
         </div>
       </div>
     </div>

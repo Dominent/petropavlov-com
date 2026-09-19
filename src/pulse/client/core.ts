@@ -9,7 +9,6 @@ import type { EventPayload, EventType, SectionConfig } from './types'
 import { send } from './send'
 import { readSessionUtm } from './page-views'
 import { getVisitorId } from './visitor-id'
-import { getAllAssignments } from './experiments'
 
 /** Optional per-call overrides for track(). */
 export type TrackOptions = {
@@ -77,16 +76,6 @@ export function track(
   if (typeof window === 'undefined') return
 
   const utm = readSessionUtm()
-  // Merge active experiment assignments into the event's props so the
-  // dashboard can group conversions by variant. exp_<key>: <variant>
-  // keys never collide with regular props because callers don't use
-  // the exp_ prefix.
-  const assignments = getAllAssignments()
-  const mergedProps =
-    Object.keys(assignments).length > 0
-      ? { ...assignments, ...(props || {}) }
-      : props
-
   const payload: EventPayload = {
     event,
     page: opts?.page || window.location.pathname,
@@ -94,7 +83,7 @@ export function track(
     utm_source: utm.utm_source || undefined,
     utm_medium: utm.utm_medium || undefined,
     utm_campaign: utm.utm_campaign || undefined,
-    props: mergedProps,
+    props,
   }
   send(activeConfig.endpoint, payload, activeConfig.debug)
 }

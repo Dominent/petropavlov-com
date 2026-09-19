@@ -4,8 +4,7 @@
 //
 // Includes every published route + every blog post in posts.ts, with
 // per-route lastmod, changefreq, and priority. New blog posts appear
-// in the sitemap on the next deploy (or sooner — pages have
-// revalidate=60 so the sitemap also revalidates).
+// in the sitemap on the next deploy.
 
 import type { MetadataRoute } from 'next'
 import { listPosts } from './blog/posts'
@@ -25,8 +24,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
     url: `${BASE}${r.path}`,
-    // Use today's date for now — these pages revalidate every 60s in
-    // production so "today" is honest. A more precise scheme would
+    // Build date — these pages are static, so they change exactly when
+    // the site is deployed. A more precise scheme would
     // pull per-route content timestamps from a content registry.
     lastModified: now,
     changeFrequency: r.changeFrequency,

@@ -15,7 +15,6 @@
 import type { EventPayload, PulseConfig } from './types'
 import { send } from './send'
 import { getVisitorId } from './visitor-id'
-import { getAllAssignments } from './experiments'
 
 const SESSION_UTM_KEY = '__pulse_utm'
 
@@ -95,14 +94,6 @@ function buildViewPayload(page: string): EventPayload {
     }
   }
 
-  // Same experiment-assignment merge as core.track() does — view events
-  // bypass track() to keep the initial-load path tight, so we attach
-  // the assignments here too. Empty object when initExperiments() has
-  // not resolved yet (the first view event on a cold load may miss the
-  // assignment; subsequent SPA navigations include it).
-  const assignments = getAllAssignments()
-  const props = Object.keys(assignments).length > 0 ? assignments : undefined
-
   return {
     event: 'view',
     page,
@@ -111,7 +102,6 @@ function buildViewPayload(page: string): EventPayload {
     utm_source: utm_source || undefined,
     utm_medium: utm_medium || undefined,
     utm_campaign: utm_campaign || undefined,
-    props,
   }
 }
 

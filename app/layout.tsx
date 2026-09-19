@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 
-// Self-hosted fonts via Fontsource — same setup as the Vite build.
+// Self-hosted fonts via Fontsource.
 // Variable fonts for Inter + JetBrains Mono, static 400 + italic for
 // Instrument Serif.
 import '@fontsource-variable/inter'
@@ -11,7 +11,6 @@ import '@fontsource/instrument-serif/400-italic.css'
 
 import './globals.scss'
 import { PulseInit } from './_components/pulse-init'
-import { ExperimentsScript } from './_components/experiments-script'
 import { CvFollowupDialog } from '../src/components/CvFollowupDialog'
 
 export const metadata: Metadata = {
@@ -98,8 +97,8 @@ export const viewport: Viewport = {
 }
 
 // JSON-LD structured data — Person + ProfessionalService schemas.
-// Kept inline as the Vite build had them — search engines parse this
-// directly out of the served HTML.
+// Kept inline — search engines parse this directly out of the served
+// HTML.
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -287,12 +286,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           title="Petro Pavlov · Blog"
           href="/blog/feed.xml"
         />
-        {/* Inline active A/B experiments as JSON so the Pulse client SDK
-            reads variant assignments synchronously on init — before the
-            first view event fires. Pages using this layout must export
-            `revalidate = 60` for the inlined data to refresh between
-            deploys. */}
-        <ExperimentsScript />
       </head>
       <body className="bg-zinc-950 text-zinc-100 antialiased">
         {children}

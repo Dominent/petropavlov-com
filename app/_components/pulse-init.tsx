@@ -2,10 +2,8 @@
 
 // Client-side boot — runs once after hydration on every page.
 //
-// In the Vite build this was a synchronous call from src/main.tsx
-// (for Pulse) and a useEffect in src/App.tsx (for Cal.com). In Next.js
-// the equivalent is a small Client Component mounted at the root
-// layout level; its useEffect fires once and configures both.
+// A small Client Component mounted at the root layout level; its
+// useEffect fires once and configures both Pulse and Cal.com.
 
 import { useEffect } from 'react'
 import { init as pulseInit } from '../../src/pulse/client'
@@ -18,8 +16,7 @@ export function PulseInit() {
       // power the Reading Completion panel in /admin/events. Add new
       // long-form routes here as they ship — short pages don't need them.
       scrollRoutes: [/^\/case-studies\//, /^\/blog\//],
-      // IntersectionObserver-based section view tracking — same set
-      // of section ids the Vite version uses.
+      // IntersectionObserver-based section view tracking.
       sections: [
         { id: 'hero', name: 'hero' },
         { id: 'work', name: 'work' },

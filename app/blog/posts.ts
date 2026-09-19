@@ -26,11 +26,21 @@ export type PostMeta = {
 
 const POSTS: PostMeta[] = [
   {
+    slug: 'hosting-another-apps-window-inside-yours',
+    title: "Hosting another app's window inside yours",
+    description:
+      'Switchboard shows several Claude desktop instances as tabs in one window. The obvious way to embed a window ate every key press — here is what Windows and macOS actually allow, and how a sign-in link finds the right tab.',
+    date: '2026-09-20',
+    readMinutes: 6,
+    published: true,
+  },
+  {
     slug: 'ab-testing-a-portfolio-that-gets-20-visits-a-day',
     title: 'A/B testing a portfolio that gets 20 visits a day',
     description:
       "I built feature flags + significance testing into my portfolio. Then I did the math and realised I shouldn't run it yet. Here's the framework anyway — and the spreadsheet that tells you when you actually should.",
     date: '2026-05-16',
+    modified: '2026-09-20',
     readMinutes: 9,
     published: true,
   },

@@ -1,0 +1,245 @@
+import { BlogPostFrame } from '../_components/BlogPostFrame'
+import { Mermaid } from '../../../src/components/Mermaid'
+import { Code } from '../../../src/components/Code'
+import Script from 'next/script'
+
+export const ARCH_DIAGRAM = `flowchart TB
+    SHELL["Switchboard shell<br/>Electron · tab bar · split view"]
+    HOST["WindowHost interface<br/>findWindow · attach · layout · show · hide"]
+    WIN["Windows host<br/>owned window · user32 via koffi"]
+    MAC["macOS host<br/>Accessibility API via koffi"]
+    G1["Claude desktop<br/>--user-data-dir=Claude-work"]
+    G2["Claude desktop<br/>--user-data-dir=Claude-personal"]
+
+    SHELL --> HOST
+    HOST --> WIN
+    HOST --> MAC
+    WIN -. "positions" .-> G1
+    WIN -. "positions" .-> G2
+    MAC -. "positions" .-> G1
+    MAC -. "positions" .-> G2`
+
+export const ATTACH_CODE = `attach(win: GuestWindow): void {
+  const hwnd = win as bigint;
+  const style = BigInt(GetWindowLongPtrW(hwnd, GWL_STYLE));
+  SetWindowLongPtrW(hwnd, GWL_STYLE, (style & ~FRAME_STYLES) | WS_POPUP);
+  const ex = BigInt(GetWindowLongPtrW(hwnd, GWL_EXSTYLE));
+  // No taskbar button of its own; the shell's is the one that matters.
+  SetWindowLongPtrW(hwnd, GWL_EXSTYLE, (ex & ~WS_EX_APPWINDOW) | WS_EX_TOOLWINDOW);
+  SetWindowLongPtrW(hwnd, GWLP_HWNDPARENT, this.shell);
+  SetWindowPos(hwnd, 0n, 0, 0, 0, 0,
+    SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+  this.needsResize.add(hwnd);
+}`
+
+export const FFI_CODE = `import koffi from 'koffi';
+
+const user32 = koffi.load('user32.dll');
+
+const SetWindowPos = user32.func(
+  'bool __stdcall SetWindowPos(uint64_t hwnd, uint64_t after, int x, int y, int w, int h, uint32_t flags)',
+);`
+
+export const WQL_CODE = `SELECT * FROM __InstanceCreationEvent WITHIN 0.25
+WHERE TargetInstance ISA 'Win32_Process'
+  AND TargetInstance.Name = 'claude.exe'
+  AND TargetInstance.CommandLine LIKE '%claude://%'`
+
+export const LINK_CODE = `export function linkActivationUrl(commandLine: string): string | undefined {
+  // Our own forwards carry --user-data-dir and are ignored, or they would loop.
+  if (/--user-data-dir[=\\s]/i.test(commandLine)) return undefined;
+  const m = commandLine.match(/"(claude:\\/\\/[^"]*)"|(?:^|\\s)(claude:\\/\\/\\S+)/i);
+  return m ? (m[1] ?? m[2]) : undefined;
+}`
+
+export const DESCRIPTION =
+  "Switchboard shows several Claude desktop instances as tabs in one window. Why a child window ate every key press, and what Windows and macOS allow instead."
+
+export const metadata = {
+  title: "Hosting another app's window inside yours · Petro Pavlov",
+  description: DESCRIPTION,
+  alternates: {
+    canonical: 'https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours',
+  },
+  keywords: [
+    'Electron',
+    'Win32 owned window',
+    'SetParent',
+    'GWLP_HWNDPARENT',
+    'macOS Accessibility API',
+    'koffi FFI',
+    'custom URL scheme',
+    'MSIX protocol handler',
+    'WMI process creation event',
+    'Claude desktop',
+  ],
+  openGraph: {
+    type: 'article',
+    title: "Hosting another app's window inside yours",
+    description: DESCRIPTION,
+    url: 'https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours',
+    publishedTime: '2026-09-20T00:00:00Z',
+    modifiedTime: '2026-09-20T00:00:00Z',
+    authors: ['Petromil Pavlov'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Hosting another app's window inside yours",
+    description: DESCRIPTION,
+  },
+}
+
+export const ARTICLE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: "Hosting another app's window inside yours",
+  description: DESCRIPTION,
+  datePublished: '2026-09-20T00:00:00Z',
+  dateModified: '2026-09-20T00:00:00Z',
+  wordCount: 1150,
+  articleSection: 'Engineering',
+  image: 'https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours/opengraph-image',
+  author: {
+    '@type': 'Person',
+    name: 'Petromil Pavlov',
+    url: 'https://petropavlov.dev/',
+    image: 'https://petropavlov.dev/petro.webp',
+    sameAs: [
+      'https://github.com/Dominent',
+      'https://www.linkedin.com/in/petro-p-insight-draft/',
+    ],
+  },
+  publisher: {
+    '@type': 'Person',
+    name: 'Petromil Pavlov',
+    url: 'https://petropavlov.dev/',
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': 'https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours',
+  },
+  url: 'https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours',
+  inLanguage: 'en',
+  isAccessibleForFree: true,
+  keywords:
+    'Electron, Win32, owned window, SetParent, macOS Accessibility API, koffi, FFI, URL scheme, MSIX, WMI, Claude desktop',
+}
+
+export const BREADCRUMB_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://petropavlov.dev/' },
+    { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://petropavlov.dev/blog' },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: "Hosting another app's window inside yours",
+      item: 'https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours',
+    },
+  ],
+}
+
+<Script
+  id="ld-article-switchboard"
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
+/>
+<Script
+  id="ld-breadcrumb-switchboard"
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_LD) }}
+/>
+
+<BlogPostFrame
+  title="Hosting another app's window inside yours"
+  description="Switchboard shows several Claude desktop instances as tabs in one window. The obvious way to embed a window ate every key press. Here is what Windows and macOS actually allow."
+  date="September 20, 2026"
+  readMinutes={6}
+  tag="essay · engineering"
+>
+
+The Claude desktop app signs in to one account at a time. If you have more than one — say, a work account and your own — switching means signing out and back in, and the Code tab's sessions go with it.
+
+[Switchboard](https://github.com/Dominent/claude-desk) is the tool I built to stop doing that. It is one window with a tab per account, and every tab is the real Claude desktop app, signed in to its own account. It is open source, MIT, and not affiliated with Anthropic: it drives the app you already have installed.
+
+The part that makes it possible is one flag. The part that made it interesting is that an operating system does not want you to put another process's window inside yours.
+
+## The easy half
+
+Claude desktop is an Electron app, and Electron honours `--user-data-dir`. Give each profile its own directory — `Claude-work` next to the default `Claude` — start the app on it, and you have an independent instance with its own sign-in, its own settings, its own sessions. Nothing is patched and nothing is injected.
+
+That gets you several Claude windows. The goal was one.
+
+<Mermaid chart={ARCH_DIAGRAM} caption="One shell, one WindowHost interface, two very different implementations underneath" />
+
+## Windows: the tidy approach that ate every key press
+
+The textbook way to put a window inside another is `SetParent`: make the guest a `WS_CHILD` of your window and it clips, moves, and minimises with you for free.
+
+It looked right. The Claude window sat inside the shell exactly where it should — and silently ate every key press. Typing into the message box did nothing.
+
+The reason is in how Chromium decides it has focus. It treats its widget as active only when its own HWND is the active top-level window. A child of a *foreign* top-level window is never that, so Chromium concludes it is in the background and drops every key press.
+
+What works is an older, less fashionable relationship: an **owned** window. The guest stays a top-level window, but its owner is set to the shell:
+
+<Code language="typescript" filename="src/main/host/win.ts" code={ATTACH_CODE} />
+
+An owned window stays above its owner, follows it through the z-order, and hides when the owner minimises. It is still top-level, so activating it produces a real `WM_ACTIVATE`, and Chromium accepts the keyboard. The frame styles are stripped so it looks like content rather than a window, and `WS_EX_TOOLWINDOW` takes away its taskbar button — the shell's is the one that matters.
+
+What you give up is clipping. Nothing keeps an owned window inside your bounds, so Switchboard places it over the content area on every move and resize, in physical pixels.
+
+Two smaller things the code now remembers:
+
+- A guest adopted from an earlier run keeps painting at its old size if you resize it to the size it already believes it has. The first layout therefore sets it one pixel narrower, then to the real size, to force a genuine `WM_SIZE`.
+- Quitting Switchboard must not strand anyone. `detach` restores the frame, the taskbar button, and visibility — a guest whose tab was inactive is hidden, and leaving it that way would mean a running Claude with no window at all. Your instances carry on as normal windows, and the next start adopts them again.
+
+## macOS: there is no supported way
+
+On macOS there is nothing to get wrong, because there is nothing to call. No API places another process's window inside yours.
+
+So Switchboard pins instead. It finds the guest's window through the Accessibility API, sets its position and size to cover the shell's content area, hides the guests whose tabs are inactive, and re-pins on every move and resize. It looks and behaves like a tab. It is a separate window.
+
+That honesty has a cost, and I would rather state it than hide it: it needs the Accessibility grant, and during a fast drag the guest can trail the shell by a frame.
+
+## No native module
+
+Everything above is native API work — `user32` on one side, ApplicationServices and the Objective-C runtime on the other. None of it is compiled. It all goes through [koffi](https://koffi.dev), an FFI library that binds a C signature at runtime:
+
+<Code language="typescript" filename="src/main/host/win.ts" code={FFI_CODE} />
+
+No node-gyp, no per-platform build step, no prebuilt binaries of my own to ship. One TypeScript codebase produces both apps.
+
+It is not free of sharp edges. koffi returns a `uint64_t` as a plain number when it fits and as a BigInt when it does not, and window handles on the shell side are BigInt — so a foreground check written as `fg === this.shell` was simply always false until both sides were wrapped in `BigInt()`.
+
+## Sign-in: a link that goes to the wrong window
+
+Signing in with Google leaves the app, goes through the browser, and comes back through a `claude://` link. With three instances running, which one gets it?
+
+On macOS Switchboard claims the scheme while it runs, re-claims it whenever a freshly started instance grabs it back, so each instance uses an in-process auth session whose callback cannot go astray, and restores the previous handler on quit.
+
+Windows does not allow that. Current Claude builds are MSIX packages that declare `claude://` in their manifest, and for a scheme a package declares, Windows ignores the per-user registry key entirely — and its "open with" picker offers no alternative. Every link starts Claude on its **default** profile, which drops the callback because it never started that sign-in.
+
+You cannot intercept the link. You can notice the launch. The short-lived `claude.exe` Windows starts for the link carries the URL on its command line, and WMI publishes process creation to unprivileged callers:
+
+<Code language="sql" filename="process-creation query (WQL)" code={WQL_CODE} />
+
+Switchboard runs that query in a hidden PowerShell child, reads command lines from its stdout, and hands the URL to the focused tab. No admin rights, nothing registered, nothing to set up. The one guard that matters keeps it from chasing its own tail:
+
+<Code language="typescript" filename="src/main/linkWatch.ts" code={LINK_CODE} />
+
+The watcher exits by itself when Switchboard's process is gone, and gives up after five failed restarts — on a machine whose policy blocks PowerShell, link sign-in is unavailable and "Continue with email", which needs no link, still works.
+
+## What I would tell someone starting this
+
+**Look for the relationship the OS already has.** The approach that looked most correct was the one that did not work. `SetParent` is what embedding *means* in Win32, and it is wrong for a Chromium guest. The owned-window relationship predates all of this and fits exactly.
+
+**When you cannot intercept, observe.** The MSIX scheme binding is not something an unprivileged app can argue with. The process it spawns is observable by anyone.
+
+**Be plain about the seams.** Switchboard's taskbar and Alt+Tab thumbnails show only the tab bar, because each Claude really is its own window. The macOS build can lag a frame. Those are in the README, not discovered by users.
+
+The code is at [github.com/Dominent/claude-desk](https://github.com/Dominent/claude-desk), with a Windows installer on the [releases page](https://github.com/Dominent/claude-desk/releases/latest).
+
+If you are scoping desktop or integration work that lives in the gaps between what platforms document and what they allow, that is the kind of problem I like. The Book-a-call button below is the fastest way to talk.
+
+</BlogPostFrame>

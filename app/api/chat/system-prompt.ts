@@ -7,7 +7,6 @@
 
 import { projects, jobs, skills, type Project, type Job } from '../../../src/data/work'
 import { aiStack } from '../../../src/data/ai'
-import { packages } from '../../../src/data/packages'
 
 const SITE = 'https://petropavlov.dev'
 
@@ -83,8 +82,6 @@ ${skills.Education.map((e) => `- ${e}`).join('\n')}
 - **Strongest fit**: AI products that need someone who can ship from prompt to production, plus the identity / payments / integrations layer to make them sellable
 - **Geography**: primarily US 🇺🇸 (NYC · SF · Boston), Canada 🇨🇦 (Toronto · Montreal · Vancouver), and Israel 🇮🇱 (Tel Aviv timezone match). Also open to EU 🇪🇺 / UK 🇬🇧 clients where the project fits. Sofia afternoons overlap with North-American East-Coast mornings.
 - **Invoicing**: USD, CAD, or EUR
-- **Published packages** (all "from" prices — heavier builds are quoted on a call):
-${packages.map((p) => `  - ${p.name} (${p.timeline}, ${p.price} ${p.priceNote}): ${p.tagline}`).join('\n')}
 - Available right away or with a couple of days' notice. No hard cap on engagement length — short architecture reviews and multi-month builds are both fine.
 
 # How to respond
@@ -93,6 +90,6 @@ ${packages.map((p) => `  - ${p.name} (${p.timeline}, ${p.price} ${p.priceNote}):
 - If the question is outside the context above, say so plainly: "I don't have that on hand — best to email Petro at petromilpavlov@gmail.com."
 - Never fabricate companies, dates, numbers, models, or projects.
 - Don't oversell. Match a confident-but-grounded tone.
-- For pricing: quote the published packages above. For anything outside them (hourly or day rates, custom scopes), say Petro shares that after a short scoping call.
+- For pricing and rates: the site publishes none. Say Petro scopes the work on a short call and shares pricing after it. Never invent a number or a range.
 - For availability: he can usually start within a couple of days.
 `

@@ -11,7 +11,6 @@ import { Experience } from '../src/components/Experience'
 import { About } from '../src/components/About'
 import { AskPetro } from '../src/components/AskPetro'
 import { Testimonials } from '../src/components/Testimonials'
-import { Packages } from '../src/components/Packages'
 import { Contact } from '../src/components/Contact'
 
 export default function HomePage() {
@@ -29,7 +28,6 @@ export default function HomePage() {
         <About />
         <AskPetro />
         <Testimonials />
-        <Packages />
         <Contact />
       </main>
     </div>

@@ -5,7 +5,6 @@ type Props = { projectId: string }
 export function ArchDiagram({ projectId }: Props) {
   if (projectId === 'insight-draft') return <InsightDraftArch />
   if (projectId === 'switchboard') return <SwitchboardArch />
-  if (projectId === 'beacon') return <BeaconArch />
   return null
 }
 
@@ -56,56 +55,6 @@ function InsightDraftArch() {
           <div className="rounded border border-border py-1">Deepgram</div>
           <div className="rounded border border-border py-1">RAG / KB</div>
           <div className="rounded border border-border py-1">Hangfire</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function BeaconArch() {
-  return (
-    <div className="rounded-xl border border-border bg-background/60 p-4">
-      <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
-        <span>allowed imports</span>
-        <span>beacon</span>
-      </div>
-      <div className="flex flex-col gap-2">
-        <div className={boxClass}>
-          app shell
-          <div className="mt-0.5 text-[9px] text-faint">routes · providers · SSR</div>
-        </div>
-        <div className="flex justify-center">
-          <Arrow className="rotate-90" />
-        </div>
-        <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
-          feature
-          <div className="mt-0.5 text-[9px] text-faint">list · board · detail · dashboard</div>
-        </div>
-        <div className="flex items-center justify-center gap-6">
-          <Arrow className="rotate-90" />
-          <Arrow className="rotate-90" />
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className={boxClass}>
-            ui
-            <div className="mt-0.5 text-[9px] text-faint">no store imports</div>
-          </div>
-          <div className={boxClass}>
-            data-access
-            <div className="mt-0.5 text-[9px] text-faint">SignalStore · SSE</div>
-          </div>
-        </div>
-        <div className="flex justify-center">
-          <Arrow className="rotate-90" />
-        </div>
-        <div className={boxClass}>
-          util
-          <div className="mt-0.5 text-[9px] text-faint">models</div>
-        </div>
-        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center font-mono text-[9px] text-faint">
-          <div className="rounded border border-border py-1">Nx plugin</div>
-          <div className="rounded border border-border py-1">@defer</div>
-          <div className="rounded border border-border py-1">CDK</div>
         </div>
       </div>
     </div>

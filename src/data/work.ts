@@ -54,26 +54,6 @@ export const projects: Project[] = [
     ],
   },
   {
-    id: 'magistrat',
-    title: 'Magistrat',
-    tagline: 'AI legal assistant · Bulgarian law',
-    description:
-      'Magistrat is an AI assistant for Bulgarian lawyers, built on its own legal corpus — court cases, consolidated laws, EU law, the State Gazette, and the commercial register — crawled from national registries into PostgreSQL and searched as one. Every citation is checkable down to the article and the case.',
-    highlights: [
-      'Every registry is the same shape — ingestion worker, append-only facts, idempotent upserts on natural keys, GraphQL API — so adding a source is a pattern, not a project',
-      'Coverage is measured against the totals each source declares, because the recurring failure is not a crash — it is a crawl that returns HTTP 200, well-formed data, and the wrong answer',
-      "Cross-registry retrieval doubles as the LLM agent's tool surface, and an MCP server exposes every database to coding agents as read-only SQL",
-    ],
-    metrics: [
-      { value: '4.6M', label: 'court cases in the corpus' },
-      { value: '1.37M', label: 'companies from the commercial register — ownership and filings' },
-      { value: '607K', label: 'documents indexed for cross-registry search' },
-    ],
-    tech: ['.NET', 'PostgreSQL', 'Dapper / Npgsql', 'DbUp', 'Quartz', 'HotChocolate GraphQL', 'Angular', 'MCP', 'Docker', 'GitHub Actions'],
-    links: [{ label: 'magistrat.bg', url: 'https://magistrat.bg' }],
-    featured: true,
-  },
-  {
     id: 'switchboard',
     title: 'Switchboard',
     tagline: 'Open-source desktop tool · multi-account Claude',

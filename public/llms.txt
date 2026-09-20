@@ -14,7 +14,6 @@
 
 ## Projects
 
-- [Magistrat — AI legal assistant for Bulgarian law](https://magistrat.bg): AI assistant built on its own legal corpus — court cases, consolidated laws, EU law, the State Gazette, the commercial register — crawled from national registries into PostgreSQL and searched as one. Citations checkable to the article and the case. .NET, PostgreSQL, GraphQL, Angular, MCP.
 - [Switchboard — several Claude accounts in one window](https://github.com/Dominent/claude-desk): open-source Electron + TypeScript desktop tool that runs the real Claude desktop app once per profile and hosts each instance as a tab or side by side. Owned Win32 windows on Windows, Accessibility-API pinning on macOS, all native calls through koffi FFI. Per-tab claude:// sign-in routing. MIT. Independent project, not affiliated with Anthropic.
 - [Beacon — Angular 21 + Nx reference architecture](https://github.com/Dominent/beacon): zoneless Angular 21 issue tracker in an Nx 23 monorepo. Lint-enforced module boundaries, NgRx SignalStore, SSR with incremental hydration, local Nx plugin. Live demo linked from the repo.
 

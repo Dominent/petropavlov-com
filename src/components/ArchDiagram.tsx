@@ -4,7 +4,6 @@ type Props = { projectId: string }
 
 export function ArchDiagram({ projectId }: Props) {
   if (projectId === 'insight-draft') return <InsightDraftArch />
-  if (projectId === 'magistrat') return <MagistratArch />
   if (projectId === 'switchboard') return <SwitchboardArch />
   if (projectId === 'beacon') return <BeaconArch />
   return null
@@ -57,51 +56,6 @@ function InsightDraftArch() {
           <div className="rounded border border-border py-1">Deepgram</div>
           <div className="rounded border border-border py-1">RAG / KB</div>
           <div className="rounded border border-border py-1">Hangfire</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function MagistratArch() {
-  return (
-    <div className="rounded-xl border border-border bg-background/60 p-4">
-      <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-faint">
-        <span>architecture</span>
-        <span>magistrat</span>
-      </div>
-      <div className="flex flex-col gap-2">
-        <div className={boxClass}>
-          National registries
-          <div className="mt-0.5 text-[9px] text-faint">courts · laws · EU · gazette · companies</div>
-        </div>
-        <div className="flex items-center justify-center gap-1">
-          <Arrow className="rotate-90" />
-          <span className="font-mono text-[9px] text-faint">Quartz crawlers</span>
-          <Arrow className="rotate-90" />
-        </div>
-        <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
-          PostgreSQL per registry
-          <div className="mt-0.5 text-[9px] text-faint">append-only · ON CONFLICT upserts</div>
-        </div>
-        <div className="flex justify-center">
-          <Arrow className="rotate-90" />
-        </div>
-        <div className={boxClass + ' border-accent-soft/30 bg-accent-soft/10'}>
-          Cross-registry retrieval
-          <div className="mt-0.5 text-[9px] text-faint">LLM agent tool surface</div>
-        </div>
-        <div className="flex justify-center">
-          <Arrow className="rotate-90" />
-        </div>
-        <div className={boxClass}>
-          Angular app
-          <div className="mt-0.5 text-[9px] text-faint">answers with checkable citations</div>
-        </div>
-        <div className="mt-2 grid grid-cols-3 gap-1.5 text-center font-mono text-[9px] text-faint">
-          <div className="rounded border border-border py-1">GraphQL</div>
-          <div className="rounded border border-border py-1">MCP · SQL</div>
-          <div className="rounded border border-border py-1">DbUp</div>
         </div>
       </div>
     </div>

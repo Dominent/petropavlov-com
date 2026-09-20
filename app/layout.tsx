@@ -114,7 +114,7 @@ const personLd = {
   sameAs: ['https://github.com/Dominent', 'https://www.linkedin.com/in/petro-p-insight-draft/'],
   // Entity-level expertise. Lets AI search engines surface this Person
   // for topical queries beyond just job title — e.g., "TypeScript SDK
-  // for EU Digital Identity Wallet" or "low-traffic A/B testing".
+  // for EU Digital Identity Wallet" or "hosting a window from another app".
   knowsAbout: [
     'AI product engineering',
     'RAG (retrieval-augmented generation)',
@@ -137,7 +137,7 @@ const personLd = {
     'Stripe payments integration',
     'X.509 PKI',
     'Self-hosted analytics',
-    'A/B testing infrastructure',
+    'Electron desktop apps',
     'Web Vitals',
     'Next.js',
   ],

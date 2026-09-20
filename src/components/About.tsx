@@ -18,7 +18,7 @@ export function About() {
             transition={{ duration: 0.6 }}
           >
             I&rsquo;ve been a senior engineer for{' '}
-            <span className="text-accent">10+ years</span> &mdash; deepest
+            <span className="text-accent">10+ years</span>{' '}&mdash; deepest
             on the frontend (Angular 8&ndash;21, TypeScript, RxJS, NGRX),
             always paired with the backend (C#/.NET and Node.js). At VMware I
             built Workspace ONE features from scratch; at TestGorilla I
@@ -55,12 +55,12 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             Outside of AI I have deep work in{' '}
-            <span className="text-muted">identity</span> &mdash; Duende
+            <span className="text-muted">identity</span>{' '}&mdash; Duende
             IdentityServer, OAuth/OIDC, the EU&rsquo;s OID4VP/VCI standards,
             and X.509 PKI &mdash;{' '}
-            <span className="text-muted">Stripe</span> billing across
+            <span className="text-muted">Stripe</span>{' '}billing across
             multiple SaaS products, and{' '}
-            <span className="text-muted">fintech / regulatory</span> work
+            <span className="text-muted">fintech / regulatory</span>{' '}work
             (billing systems for Octopus Energy DE serving 40K+ users).
           </motion.p>
           <motion.p
@@ -70,7 +70,7 @@ export function About() {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             I&rsquo;ve{' '}
-            <span className="text-muted">led teams</span> &mdash;
+            <span className="text-muted">led teams</span>{' '}&mdash;
             mentoring mid and senior engineers, owning architectural
             decisions, and conducting 20+ technical interviews for senior
             Angular roles at VMware. I lead embedded in the work: through

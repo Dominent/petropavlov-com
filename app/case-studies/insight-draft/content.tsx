@@ -114,7 +114,7 @@ export function InsightDraftCaseStudyContent() {
             default. Universities &mdash; UW, Chapman, UC Riverside &mdash; have banned
             non-native AI bots from their meeting estates. And in March 2026, Granola raised{' '}
             <a href="https://techcrunch.com/2026/03/25/granola-raises-125m-hits-1-5b-valuation-as-it-expands-from-meeting-notetaker-to-enterprise-ai-app/" target="_blank" rel="noreferrer">$125M Series C at a $1.5B valuation</a>{' '}
-            on the bet that <em>botless</em> recording is the future. Granola did it for one
+            on the bet that <em>botless</em>{' '}recording is the future. Granola did it for one
             platform; doing it across Google Meet, Microsoft Teams, Zoom, and Slack Huddles
             is the work I&rsquo;m about to describe.
           </p>
@@ -127,7 +127,7 @@ export function InsightDraftCaseStudyContent() {
             cover one or two platforms each.
           </p>
           <p>
-            <strong>Insight Draft</strong> is a two-person founding team. My co-founder
+            <strong>Insight Draft</strong>{' '}is a two-person founding team. My co-founder
             Francesco and I built it end-to-end. I owned the architecture and the systems
             described in this case study &mdash; the extension, the API, the LLM
             orchestration, the billing lifecycle, and the infrastructure. Francesco
@@ -173,9 +173,9 @@ export function InsightDraftCaseStudyContent() {
           <Mermaid chart={ARCH_DIAGRAM} caption="Insight Draft architecture · twelve services in the monorepo · how recording, processing, and AI flow through the system" />
           <ul>
             <li>
-              <strong>Chrome extension</strong> (Manifest V3, multi-package monorepo) &mdash;
+              <strong>Chrome extension</strong>{' '}(Manifest V3, multi-package monorepo) &mdash;
               records Meet/Teams/Zoom via <code>tabCapture</code> for browser meetings and{' '}
-              <code>desktopCapture</code> for desktop apps. Has a content script running in
+              <code>desktopCapture</code>{' '}for desktop apps. Has a content script running in
               MAIN world on Google Meet that scrapes the platform&rsquo;s own caption stream
               for live speaker attribution. Bidirectional messaging with the web app via{' '}
               <code>externally_connectable</code>.
@@ -191,7 +191,7 @@ export function InsightDraftCaseStudyContent() {
               <strong>.NET 8 API</strong> (<code>insight-draft-api/</code>) &mdash; ASP.NET
               Core, EF Core, Hangfire (background jobs), MediatR (in-process CQRS), Identity
               + JWT auth, two PostgreSQL databases (main app + a separate transcript DB to
-              keep high-write <code>Word</code>/<code>Caption</code> tables off the metadata
+              keep high-write <code>Word</code>/<code>Caption</code>{' '}tables off the metadata
               DB). Stripe.net 48, Deepgram SDK 6, AWS SDK, FFmpeg via CliWrap. This is where
               the recording pipeline, billing lifecycle, and tenant model live.
             </li>
@@ -200,7 +200,7 @@ export function InsightDraftCaseStudyContent() {
               Express + tsoa-generated routes, kept deliberately thin. Proxies and
               orchestrates the OpenAI Responses API with strict structured outputs,
               moderation passthrough, conversation persistence, and the assistant RAG path
-              backed by OpenAI-hosted <code>file_search</code> vector stores. The .NET API
+              backed by OpenAI-hosted <code>file_search</code>{' '}vector stores. The .NET API
               calls this; the SPA never does.
             </li>
             <li>
@@ -215,10 +215,10 @@ export function InsightDraftCaseStudyContent() {
           <ul>
             <li>
               <strong>Marketing site</strong> (Angular SSR), <strong>internal CMS</strong>{' '}
-              (React 19 + Vite + shadcn), <strong>CMS API</strong> (clean-architecture .NET
+              (React 19 + Vite + shadcn), <strong>CMS API</strong>{' '}(clean-architecture .NET
               skeleton), <strong>Playwright E2E suite</strong> (extension + meetings projects),{' '}
               <strong>DB-setup container</strong> (one-shot bootstrap),{' '}
-              <strong>deployment</strong> (Docker Compose + Traefik 2.5 with Let&rsquo;s
+              <strong>deployment</strong>{' '}(Docker Compose + Traefik 2.5 with Let&rsquo;s
               Encrypt + AWS Secrets Manager), <strong>cookie-consent kit</strong>.
             </li>
           </ul>
@@ -234,19 +234,19 @@ export function InsightDraftCaseStudyContent() {
             heuristic) fail on real meetings with overlap and short utterances.
           </p>
           <p>
-            <code>StatisticalVotingSpeakerMapper</code> does it differently. It iterates every
+            <code>StatisticalVotingSpeakerMapper</code>{' '}does it differently. It iterates every
             caption emitted by Deepgram, votes for the participant whose known speaking-time
             window overlaps it, weights by overlap duration, and then derives a confidence
             threshold per mapping. The threshold itself adapts to coverage &mdash; relaxed for
             short sample windows, stricter for longer ones &mdash; via a separate{' '}
             <code>ThresholdPolicy</code>. When confidence is below the threshold, the mapping
-            falls back to the simpler <code>TimestampOnlySpeakerMapper</code> rather than
+            falls back to the simpler <code>TimestampOnlySpeakerMapper</code>{' '}rather than
             making a high-confidence claim it can&rsquo;t back up.
           </p>
           <p>
             Around it: <code>VoteCollector</code>, <code>MappingBuilder</code>,{' '}
             <code>CoverageAnalyzer</code>, <code>SpeakerTimeLookup</code>. The whole stack is
-            pluggable behind <code>ISpeakerMappingService</code> with separate strategies for
+            pluggable behind <code>ISpeakerMappingService</code>{' '}with separate strategies for
             different meeting providers (<code>SimulatedDiarizationMapper</code>,{' '}
             <code>ManualRecordingDiarizationStrategy</code>,{' '}
             <code>StatisticalVotingSpeakerMapper</code>).
@@ -264,15 +264,15 @@ export function InsightDraftCaseStudyContent() {
           </p>
           <p>
             The fix is inline in <code>RecordingCompletionService.CreateTranscriptWithLLM</code>{' '}
-            (around lines 465&ndash;486): if exactly one <code>deviceId</code> remains
-            unmatched after the regular pass, that <code>deviceId</code> is the host. A
+            (around lines 465&ndash;486): if exactly one <code>deviceId</code>{' '}remains
+            unmatched after the regular pass, that <code>deviceId</code>{' '}is the host. A
             hand-engineered correction for a real Google API gap. The kind of fix you only
             build after watching real meeting traces fail and figuring out why.
           </p>
 
           <h3>3. Custom Hangfire fan-out/fan-in via Postgres atomic UPDATE</h3>
           <p>
-            Hangfire ships single-job continuations out of the box. <em>Batches</em> (fan-out
+            Hangfire ships single-job continuations out of the box. <em>Batches</em>{' '}(fan-out
             from N jobs to a single continuation when all complete) is a paid Hangfire Pro
             feature. So I built it. The three core files (<code>PgBatchCoordinator</code>,{' '}
             <code>BatchContinuationFilter</code>, <code>PgJobResultStorage</code>) are about
@@ -294,16 +294,16 @@ RETURNING remaining_slots`}
           />
           <p>
             When the returned value hits 0, the global Hangfire filter fires the
-            continuation. <code>PgJobResultStorage</code> lets the continuation consume typed
+            continuation. <code>PgJobResultStorage</code>{' '}lets the continuation consume typed
             results from earlier jobs in the batch (<code>GetBatchResultAsync&lt;VideoProcessingResult&gt;</code>).
           </p>
           <p>
             This is the spine of the recording-completion pipeline. Video processing,
             transcription, thumbnail generation, sprite-sheet generation, and{' '}
-            speaker-attribution all run in parallel; <code>VideoCleanupJob</code> only fires
+            speaker-attribution all run in parallel; <code>VideoCleanupJob</code>{' '}only fires
             after every one finishes, with access to all their typed outputs. The trade-off
             is real &mdash; we own the failure surface. The two risks are double-decrement
-            on retry (mitigated by the atomic <code>WHERE remaining_slots &gt; 0</code> guard
+            on retry (mitigated by the atomic <code>WHERE remaining_slots &gt; 0</code>{' '}guard
             so the same retry can&rsquo;t take the counter below zero) and batches stuck above
             zero if a child job is permanently dropped (handled by Hangfire&rsquo;s standard
             failure callbacks). Worth knowing if you ever go this route: $500/mo of Hangfire
@@ -356,17 +356,17 @@ RETURNING remaining_slots`}
           <p>
             Stripe webhooks arrive unauthenticated. But everything downstream &mdash; EF
             tenant-stamping (which reads <code>organization_id</code> from{' '}
-            <code>HttpContext.User</code> claims), audit logging, subscription update logic
+            <code>HttpContext.User</code>{' '}claims), audit logging, subscription update logic
             &mdash; assumes an authenticated user is in scope.
           </p>
           <p>
-            <code>BillingController</code> bridges the gap. The handler validates the Stripe
-            signature, checks idempotency against a <code>StripeWebhookEvent</code> table
+            <code>BillingController</code>{' '}bridges the gap. The handler validates the Stripe
+            signature, checks idempotency against a <code>StripeWebhookEvent</code>{' '}table
             with a unique constraint on the event id, resolves the org from the event payload
             (which lives in different fields per event type), then{' '}
-            <strong>mounts a synthetic <code>ClaimsPrincipal</code> with the resolved
+            <strong>mounts a synthetic <code>ClaimsPrincipal</code>{' '}with the resolved
             organization id onto <code>HttpContext.User</code></strong>. Now the existing
-            tenant-stamping handler in <code>SaveChangesAsync</code> works as if a real user
+            tenant-stamping handler in <code>SaveChangesAsync</code>{' '}works as if a real user
             had made the request.
           </p>
           <p>
@@ -377,7 +377,7 @@ RETURNING remaining_slots`}
             <code>PaymentModeUpgradeStrategy</code>, <code>ZeroCostUpgradeStrategy</code>,{' '}
             <code>SetupPaymentMethodStrategy</code>) based on the diff between current and
             target subscription state; the result reconciles to a{' '}
-            <code>SubscriptionStateHash</code> on the org so the SPA can detect drift and
+            <code>SubscriptionStateHash</code>{' '}on the org so the SPA can detect drift and
             force a token refresh.
           </p>
           <p>
@@ -398,14 +398,14 @@ RETURNING remaining_slots`}
             words per long recording &mdash; don&rsquo;t compete with the metadata DB for
             connections, locks, or vacuum. Migrations are split too:{' '}
             <code>--context TranscriptDbContext</code> for one,{' '}
-            <code>ApplicationDbContext</code> for the other. Costs slightly more in operational
+            <code>ApplicationDbContext</code>{' '}for the other. Costs slightly more in operational
             complexity (two backups, two connection strings), pays for itself when transcript
             volume grows.
           </p>
 
           <h3>OpenAI-hosted vector store, no self-hosted RAG</h3>
           <p>
-            The assistant uses OpenAI&rsquo;s <code>file_search</code> tool against two
+            The assistant uses OpenAI&rsquo;s <code>file_search</code>{' '}tool against two
             vector store IDs &mdash; one general knowledge base, one app-specific. The
             citations the system returns are not free-form text references: they&rsquo;re a
             strict-typed JSON schema with seven discriminated action types (
@@ -424,7 +424,7 @@ RETURNING remaining_slots`}
 
           <h3>MediatR pre-save events for quota enforcement</h3>
           <p>
-            <code>ApplicationDbContext.DispatchBeforeSaveEventsAsync</code> publishes
+            <code>ApplicationDbContext.DispatchBeforeSaveEventsAsync</code>{' '}publishes
             domain notifications (<code>MeetingRecordingBeforeSaveEvent</code>,{' '}
             <code>PromptBeforeSaveEvent</code>, <code>RecordingDurationBeforeSaveEvent</code>)
             before the EF transaction commits. A subscription-quota handler can throw and
@@ -444,22 +444,22 @@ RETURNING remaining_slots`}
           </p>
           <p>
             The fix is a second LLM call. After the first response, a{' '}
-            <code>LanguageAlignmentPrompt</code> runs that detects the actual language of
+            <code>LanguageAlignmentPrompt</code>{' '}runs that detects the actual language of
             the question and the actual language of the response, and re-translates if they
             don&rsquo;t match. Costs an extra call. Eliminates an entire class of
             &ldquo;answered in the wrong language&rdquo; bugs. The model&rsquo;s
             self-declared <code>detected_question_language</code> and{' '}
-            <code>detected_response_language</code> are part of the strict response schema,
+            <code>detected_response_language</code>{' '}are part of the strict response schema,
             so they&rsquo;re queryable as telemetry.
           </p>
 
           <h3>JWT-baked subscription permissions</h3>
           <p>
-            Around 80 base permissions of form <code>Resource.Action.Entity</code> plus 7
-            space-scoped variants <code>Spaces.{'{spaceId}'}.Action.Entity</code> &mdash; ~87
+            Around 80 base permissions of form <code>Resource.Action.Entity</code>{' '}plus 7
+            space-scoped variants <code>Spaces.{'{spaceId}'}.Action.Entity</code>{' '}&mdash; ~87
             total across plans and roles. The authorisation check is a JWT claim lookup. When
             a webhook updates a subscription, the auth refresh recomputes permissions and a{' '}
-            <code>SubscriptionStateHash</code> on the org gets bumped; the SPA compares the
+            <code>SubscriptionStateHash</code>{' '}on the org gets bumped; the SPA compares the
             hash returned in API response headers against the one in its current token and
             triggers a silent re-auth on drift. Saves real Stripe API calls and real latency
             on the hot path.
@@ -478,17 +478,17 @@ RETURNING remaining_slots`}
           <h3>Strict schemas + structured outputs everywhere</h3>
           <p>
             All gpt-5-mini calls in the post-meeting analysis use{' '}
-            <code>useStructuredOutputs: true</code> with the OpenAI Responses API&rsquo;s
+            <code>useStructuredOutputs: true</code>{' '}with the OpenAI Responses API&rsquo;s
             strict-mode JSON schema. The conversation controller fails fast on parse errors
             when structured outputs are on, rather than swallowing a malformed response.
-            The non-GPT-5 fallback path uses loose <code>json_object</code> mode for
+            The non-GPT-5 fallback path uses loose <code>json_object</code>{' '}mode for
             backward compatibility. The README claims this combination cut JSON parsing
             errors by 75%.
           </p>
 
           <h2>What I&rsquo;d do differently</h2>
           <p>
-            <strong>Live transcription.</strong> Today, Deepgram is called post-call with
+            <strong>Live transcription.</strong>{' '}Today, Deepgram is called post-call with
             the full recording. Live captions exist (Google Meet only, scraped by the
             extension) but feed only speaker attribution &mdash; not the displayed
             transcript. A WebSocket Deepgram stream during the meeting is the obvious
@@ -496,7 +496,7 @@ RETURNING remaining_slots`}
             collaboration. I deferred it because post-call simplifies the failure model.
           </p>
           <p>
-            <strong>Multi-provider for real.</strong> The Strategy is in place for
+            <strong>Multi-provider for real.</strong>{' '}The Strategy is in place for
             Anthropic and Gemini. The plumbing isn&rsquo;t. Adding Claude as a fallback
             (when OpenAI rate-limits) and Gemini for cheap classification work would cut
             costs and improve resilience. Cost-benefit hasn&rsquo;t hit the threshold yet.
@@ -509,14 +509,14 @@ RETURNING remaining_slots`}
             place; the implementation isn&rsquo;t.
           </p>
           <p>
-            <strong>Observability.</strong> Serilog to Postgres + Slack works. For a SaaS at
+            <strong>Observability.</strong>{' '}Serilog to Postgres + Slack works. For a SaaS at
             scale I&rsquo;d want OpenTelemetry traces flowing into Honeycomb or Tempo so the
             multi-service spans (extension → API → LLM service → Deepgram → Hangfire jobs →
             Stripe webhook → SPA) can be inspected end-to-end without correlating log lines
             by hand.
           </p>
           <p>
-            <strong>Staging.</strong> Currently disabled to save costs. The right move is to
+            <strong>Staging.</strong>{' '}Currently disabled to save costs. The right move is to
             spin it up only on PR merges, not 24/7.
           </p>
 
@@ -534,21 +534,21 @@ RETURNING remaining_slots`}
               for backups
             </li>
             <li>
-              <strong>Eight production services</strong> orchestrated under one Docker
+              <strong>Eight production services</strong>{' '}orchestrated under one Docker
               Compose plus Traefik 2.5 with Let&rsquo;s Encrypt (twelve in the monorepo
               total, including the standalone Chrome extension and Slack-Huddle bot)
             </li>
             <li>
-              <strong>Custom Hangfire fan-out/fan-in primitive</strong> that gives us
+              <strong>Custom Hangfire fan-out/fan-in primitive</strong>{' '}that gives us
               Batches without paying for Hangfire Pro
             </li>
             <li>
               <strong>Six LLM call types per meeting</strong> across two parallel{' '}
-              <code>Task.WhenAll</code> waves, with strict JSON schemas and graceful
+              <code>Task.WhenAll</code>{' '}waves, with strict JSON schemas and graceful
               degradation
             </li>
             <li>
-              <strong>End-to-end Playwright suite</strong> running against simulated meetings
+              <strong>End-to-end Playwright suite</strong>{' '}running against simulated meetings
               with real Deepgram callbacks
             </li>
           </ul>
@@ -556,27 +556,27 @@ RETURNING remaining_slots`}
           <h2>What this is not</h2>
           <ul>
             <li>
-              <strong>Not real-time transcription via WebSocket.</strong> Deepgram is
+              <strong>Not real-time transcription via WebSocket.</strong>{' '}Deepgram is
               post-call. The &ldquo;live&rdquo; experience for users is status updates over
               SignalR plus extension-scraped Google Meet captions for speaker attribution.
             </li>
             <li>
-              <strong>Not multi-provider LLM yet.</strong> The Strategy and enum scaffold
+              <strong>Not multi-provider LLM yet.</strong>{' '}The Strategy and enum scaffold
               for Anthropic exist; the wiring doesn&rsquo;t. Today, every call is to OpenAI.
             </li>
             <li>
-              <strong>Not self-hosted RAG.</strong> Vector storage is OpenAI-hosted via
+              <strong>Not self-hosted RAG.</strong>{' '}Vector storage is OpenAI-hosted via
               <code>file_search</code>. Right call for now; will need to reconsider if cost
               or quality changes.
             </li>
             <li>
-              <strong>Not solo across the whole company.</strong> Insight Draft is
+              <strong>Not solo across the whole company.</strong>{' '}Insight Draft is
               co-founded. I owned the architecture and the systems described in this case
               study; my co-founder Francesco contributed engineering on the CMS and analytics
               paths in addition to product and business.
             </li>
             <li>
-              <strong>Not a finished product.</strong> Active development, real bug backlog,
+              <strong>Not a finished product.</strong>{' '}Active development, real bug backlog,
               real shipping cadence. The Chrome extension is the oldest piece (two years on
               the Web Store); the rest of the platform is roughly eighteen months of focused
               work on top of it.
@@ -602,22 +602,22 @@ RETURNING remaining_slots`}
           </p>
           <ul>
             <li>
-              <strong>Weeks 1&ndash;2</strong> &mdash; I trace your existing
+              <strong>Weeks 1&ndash;2</strong>{' '}&mdash; I trace your existing
               capture/transcribe/summarise path end-to-end, identify the three most-likely
               failure modes under load, and write up the architecture recommendations
             </li>
             <li>
-              <strong>Weeks 3&ndash;6</strong> &mdash; spike the most-uncertain piece
+              <strong>Weeks 3&ndash;6</strong>{' '}&mdash; spike the most-uncertain piece
               (extension capture, LLM orchestration, RAG pipeline, payments lifecycle)
               end-to-end against your real stack
             </li>
             <li>
-              <strong>Weeks 7&ndash;10</strong> &mdash; production hardening, observability,
+              <strong>Weeks 7&ndash;10</strong>{' '}&mdash; production hardening, observability,
               CI/CD, threat model. Pair with one or two of your senior engineers throughout
               so the codebase transfers
             </li>
             <li>
-              <strong>Week 11+</strong> &mdash; handoff with documented runbooks; optional
+              <strong>Week 11+</strong>{' '}&mdash; handoff with documented runbooks; optional
               retainer for follow-up questions
             </li>
           </ul>

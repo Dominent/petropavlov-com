@@ -104,7 +104,7 @@ export function GramotaCaseStudyContent() {
             The European Digital Identity Wallet has a deadline. By December 2026, every EU
             member state must offer one. By December 2027, banks, telcos, healthcare, fintech,
             mobility, and gatekeeper platforms have to accept it. That&rsquo;s a hard regulatory
-            clock &mdash; <a href="https://eur-lex.europa.eu/eli/reg/2024/1183/oj" target="_blank" rel="noreferrer">Regulation (EU) 2024/1183</a> &mdash;
+            clock &mdash; <a href="https://eur-lex.europa.eu/eli/reg/2024/1183/oj" target="_blank" rel="noreferrer">Regulation (EU) 2024/1183</a>{' '}&mdash;
             for what is, today, still a moving target.
           </p>
           <p>
@@ -115,7 +115,7 @@ export function GramotaCaseStudyContent() {
             a form a Node/TypeScript backend team can adopt in an afternoon.
           </p>
           <p>
-            So I built one. <strong>Gramota</strong> is an Apache-2.0 TypeScript SDK plus a
+            So I built one. <strong>Gramota</strong>{' '}is an Apache-2.0 TypeScript SDK plus a
             hosted SaaS for verifiers and issuers. 15 published npm packages with Sigstore
             provenance, around 580 mock plus 31 live conformance tests, and end-to-end
             roundtrips against the EU Commission&rsquo;s reference wallet on Android with our dev
@@ -171,10 +171,10 @@ export function GramotaCaseStudyContent() {
               <strong><code>gramota-identity</code></strong> &mdash; <code>auth.gramota.eu</code>. ASP.NET Core 10 + Duende IdentityServer + Angular 21. Custom multi-tenancy, super-admin impersonation with audit logs, PAT auth alongside cookies and JWTs.
             </li>
             <li>
-              <strong><code>gramota-demo-store</code></strong> &mdash; Solnce, a fictional storefront. React + Vite. Live mode hits the API, mock mode runs offline. Drives the marketing demo.
+              <strong><code>gramota-demo-store</code></strong>{' '}&mdash; Solnce, a fictional storefront. React + Vite. Live mode hits the API, mock mode runs offline. Drives the marketing demo.
             </li>
             <li>
-              <strong><code>gramota-site</code></strong> &mdash; <code>gramota.eu</code>. Analog.js with build-time SSG. Pulls API docs from each <code>@gramota/*</code> package&rsquo;s TypeDoc output.
+              <strong><code>gramota-site</code></strong> &mdash; <code>gramota.eu</code>. Analog.js with build-time SSG. Pulls API docs from each <code>@gramota/*</code>{' '}package&rsquo;s TypeDoc output.
             </li>
           </ul>
           <p>
@@ -186,7 +186,7 @@ export function GramotaCaseStudyContent() {
             <code>Signer</code> (default <code>JwkSigner</code>, swap for HSM/KMS/WebAuthn),{' '}
             <code>TrustResolver</code>, <code>StatusResolver</code>,{' '}
             <code>CredentialStore</code>, plus a Registry for{' '}
-            <code>CredentialFormatHandler</code> so new formats (mdoc next) plug in without
+            <code>CredentialFormatHandler</code>{' '}so new formats (mdoc next) plug in without
             changing core. MANIFEST principle 4 sets &ldquo;Stripe-grade DX&rdquo; as the
             explicit target.
           </p>
@@ -194,27 +194,27 @@ export function GramotaCaseStudyContent() {
             The 15 packages: <code>@gramota/sdk</code> (top-level facade), <code>verifier</code>,{' '}
             <code>issuer</code>, <code>holder</code> (the three domains), <code>oid4vp</code> and{' '}
             <code>oid4vci</code> (the wire protocols), <code>dcql</code> and{' '}
-            <code>presentation-exchange</code> (the two query languages &mdash; DCQL is the new
+            <code>presentation-exchange</code>{' '}(the two query languages &mdash; DCQL is the new
             one, PE the legacy), <code>qr</code> (deep-link rendering), <code>jose</code>{' '}
             (JWS / x5c / JWK), <code>sd-jwt</code> (the credential format with KB-JWT),{' '}
             <code>credential-format</code> (registry for new formats), <code>trust</code>{' '}
             (issuer trust resolution), <code>status-list</code> (IETF revocation), and{' '}
-            <code>core</code> (shared primitives).
+            <code>core</code>{' '}(shared primitives).
           </p>
 
           <h2>The hardest engineering parts</h2>
 
           <h3>1. The 12-check verifier pipeline</h3>
           <p>
-            Every inbound <code>vp_token</code> goes through twelve checks: structure parse → trust
+            Every inbound <code>vp_token</code>{' '}goes through twelve checks: structure parse → trust
             resolution → issuer signature → hash binding (with disclosure forgery detection) →
             KB-JWT presence → cnf-binding → KB signature → audience → nonce → time → transcript
-            → optional status check. Each one records into a <code>SecurityCheck[]</code> audit
+            → optional status check. Each one records into a <code>SecurityCheck[]</code>{' '}audit
             trail that ships back with the verification response.
           </p>
           <p>
-            The subtle bit is rule classification. <code>verifyKeyBinding</code> throws a single
-            <code>Error</code>. The verifier&rsquo;s <code>classifyKbFailure</code> helper maps that one
+            The subtle bit is rule classification. <code>verifyKeyBinding</code>{' '}throws a single
+            <code>Error</code>. The verifier&rsquo;s <code>classifyKbFailure</code>{' '}helper maps that one
             throw to one of seven specific check names by error message regex &mdash; so the audit
             trail says &ldquo;KB-JWT signature failed&rdquo; or &ldquo;KB nonce mismatch&rdquo;
             instead of &ldquo;key binding error.&rdquo; That&rsquo;s the difference between a
@@ -234,17 +234,17 @@ export function GramotaCaseStudyContent() {
             (<code>proof.jwt</code>, <code>format</code>, <code>vct</code>). Both shapes are
             valid in production &mdash; Drafts 14 and 15 share a wire shape with one extra field,
             so the normalizer is two branches, not three. It collapses both into a single{' '}
-            <code>ParsedCredentialRequest</code> so downstream code never sees the draft version.
+            <code>ParsedCredentialRequest</code>{' '}so downstream code never sees the draft version.
           </p>
           <p>
             DPoP enforcement (<a href="https://www.rfc-editor.org/rfc/rfc9449.html" target="_blank" rel="noreferrer">RFC 9449</a>) sits next door, and it&rsquo;s
             surprisingly easy to get wrong. The verifier checks <code>htm</code> and <code>htu</code>{' '}
-            (with query and fragment stripped per &sect;4.2), enforces an <code>iat</code> skew
-            window, replays via injectable <code>hasSeenJti</code>/<code>recordJti</code> (so you
-            can swap in Redis), optionally verifies <code>ath = base64url(sha256(token))</code> for
+            (with query and fragment stripped per &sect;4.2), enforces an <code>iat</code>{' '}skew
+            window, replays via injectable <code>hasSeenJti</code>/<code>recordJti</code>{' '}(so you
+            can swap in Redis), optionally verifies <code>ath = base64url(sha256(token))</code>{' '}for
             token-bound proofs, optionally accepts a server-provided <code>nonce</code>, and
             returns the <code>jkt</code> thumbprint for token binding. The crucial detail:{' '}
-            <code>recordJti</code> only fires <em>after</em> every other check passes &mdash;
+            <code>recordJti</code> only fires <em>after</em>{' '}every other check passes &mdash;
             otherwise a malformed or unsigned proof can poison the replay store.
           </p>
           <p>
@@ -254,8 +254,8 @@ export function GramotaCaseStudyContent() {
             between &ldquo;DPoP supported&rdquo; and &ldquo;DPoP enforced.&rdquo;
           </p>
           <p>
-            There&rsquo;s also a <code>postWithDpopRetry</code> helper that handles the
-            server-issued <code>use_dpop_nonce</code> retry dance transparently &mdash; first
+            There&rsquo;s also a <code>postWithDpopRetry</code>{' '}helper that handles the
+            server-issued <code>use_dpop_nonce</code>{' '}retry dance transparently &mdash; first
             request gets a 401 with a server nonce, you re-sign with the nonce included, second
             request succeeds. The retry helper sits in <code>@gramota/oid4vci</code>; the
             holder, issuer, and verifier all import it, so the nonce dance lives in exactly one
@@ -268,14 +268,14 @@ export function GramotaCaseStudyContent() {
             signed JWS, or a JWS signed by a self-signed leaf cert with the cert embedded in the{' '}
             <code>x5c</code> header &mdash; the <code>x509_san_dns</code> client identifier scheme
             (called <code>client_id_scheme</code> in OID4VP Final 1.0, renamed to{' '}
-            <code>client_id_prefix</code> in 2.0). The EU reference wallet only accepts the
-            third. So <code>@gramota/oid4vp</code> generates an ES256 keypair plus a self-signed
-            leaf via <code>@peculiar/x509</code> with: SAN-DNS for the verifier hostname (plus
-            extras for wildcard tenants), <code>serverAuth + clientAuth</code> Extended Key Usage
+            <code>client_id_prefix</code>{' '}in 2.0). The EU reference wallet only accepts the
+            third. So <code>@gramota/oid4vp</code>{' '}generates an ES256 keypair plus a self-signed
+            leaf via <code>@peculiar/x509</code>{' '}with: SAN-DNS for the verifier hostname (plus
+            extras for wildcard tenants), <code>serverAuth + clientAuth</code>{' '}Extended Key Usage
             flags, <code>digitalSignature + keyEncipherment</code> Key Usage,{' '}
             <code>BasicConstraints CA:false</code>, and a 20-byte serial. Then the JAR signer
-            wraps the request as a compact JWS with <code>typ: oauth-authz-req+jwt</code> and
-            embeds the cert in the <code>x5c</code> header.
+            wraps the request as a compact JWS with <code>typ: oauth-authz-req+jwt</code>{' '}and
+            embeds the cert in the <code>x5c</code>{' '}header.
           </p>
           <p>
             The reference wallet&rsquo;s request authenticator is strict, based on what it accepts
@@ -284,7 +284,7 @@ export function GramotaCaseStudyContent() {
             cert&rsquo;s SAN-DNS and refuses to proceed if the request&rsquo;s host doesn&rsquo;t
             match. So the SaaS persists the cert to disk between dev restarts (so the
             wallet&rsquo;s bundled trust list keeps trusting it) and embeds wildcard{' '}
-            <code>*.&lt;base&gt;</code> SAN so one cert covers every per-tenant subdomain.
+            <code>*.&lt;base&gt;</code>{' '}SAN so one cert covers every per-tenant subdomain.
           </p>
 
           <h3>4. DCQL matching against SD-JWT-VC disclosures</h3>
@@ -295,7 +295,7 @@ export function GramotaCaseStudyContent() {
             selectively-disclosable claim (single segment, look up by name in the parsed
             disclosures) or a directly-included claim (multi-segment JSONPath-ish), enforces
             optional <code>meta.vct_values</code> and <code>claim.values</code> constraints, and
-            returns the <em>minimal</em> <code>disclose: string[]</code> set &mdash; so the wallet
+            returns the <em>minimal</em> <code>disclose: string[]</code>{' '}set &mdash; so the wallet
             sends only what was asked for, not the whole credential.
           </p>
           <p>
@@ -308,7 +308,7 @@ export function GramotaCaseStudyContent() {
           <h3>5. KB-JWT 9-rule verifier</h3>
           <p>
             Key binding is the part of SD-JWT VC that prevents a stolen credential from being
-            replayed by anyone but the legitimate holder. <code>@gramota/sd-jwt</code> implements
+            replayed by anyone but the legitimate holder. <code>@gramota/sd-jwt</code>{' '}implements
             all nine rules from the IETF SD-JWT VC spec.
           </p>
           <p>
@@ -331,7 +331,7 @@ export function GramotaCaseStudyContent() {
 
           <h3>Surface consistency over feature creep</h3>
           <p>
-            Earlier versions of <code>@gramota/verifier</code> exposed both flat methods
+            Earlier versions of <code>@gramota/verifier</code>{' '}exposed both flat methods
             (<code>verify</code>, <code>response</code>, <code>request</code>) and namespaced
             ones. In 0.5.0 the flat methods were removed outright. <code>@gramota/issuer</code>{' '}
             still exposes both shapes (both call into the same impl) so callers can migrate at
@@ -341,11 +341,11 @@ export function GramotaCaseStudyContent() {
 
           <h3>Multi-tenant via subdomain in the SaaS</h3>
           <p>
-            Each org gets <code>&lt;slug&gt;.gramota.eu</code>. The <code>slug</code> is validated
+            Each org gets <code>&lt;slug&gt;.gramota.eu</code>. The <code>slug</code>{' '}is validated
             as an <a href="https://www.rfc-editor.org/rfc/rfc1035" target="_blank" rel="noreferrer">RFC 1035</a>{' '}
             DNS label. Well-known endpoints mount at the standard{' '}
-            <a href="https://www.rfc-editor.org/rfc/rfc8414" target="_blank" rel="noreferrer">RFC 8414</a> paths
-            (no path prefix), so the metadata fetch URL byte-equals the <code>iss</code> claim
+            <a href="https://www.rfc-editor.org/rfc/rfc8414" target="_blank" rel="noreferrer">RFC 8414</a>{' '}paths
+            (no path prefix), so the metadata fetch URL byte-equals the <code>iss</code>{' '}claim
             &mdash; a requirement that&rsquo;s easy to violate when you &ldquo;namespace&rdquo;
             issuers behind path prefixes.
           </p>
@@ -355,11 +355,11 @@ export function GramotaCaseStudyContent() {
             In the identity service: <code>HostBasedTenantResolver</code> →{' '}
             <code>ClaimBasedTenantResolver</code> → <code>HeaderBasedTenantResolver</code>, run
             in priority order, first non-null wins. The host-based one peels the leftmost DNS
-            label off the Host header, validates against an <code>apexDomain</code> (
-            <code>gramota.eu</code>) plus a <code>reservedHosts</code> list of full hostnames (
+            label off the Host header, validates against an <code>apexDomain</code>{' '}(
+            <code>gramota.eu</code>) plus a <code>reservedHosts</code>{' '}list of full hostnames (
             <code>auth.gramota.eu</code>, <code>app.gramota.eu</code>, <code>api.gramota.eu</code>,
             etc.), and looks up by <code>Tenant.Slug</code>. The combination of an apex-suffix
-            check (so <code>evil.com</code> can&rsquo;t claim a tenant) and a no-multi-label check
+            check (so <code>evil.com</code>{' '}can&rsquo;t claim a tenant) and a no-multi-label check
             (so <code>evil.com.gramota.eu</code> doesn&rsquo;t get sliced into a label{' '}
             <code>evil.com</code>) prevents host-spoofing tenant hijack.
           </p>
@@ -383,7 +383,7 @@ export function GramotaCaseStudyContent() {
             with <code>tenant_id</code> claim resolving the org. Integrator API key prefix{' '}
             <code>gk_*</code> → API key path, SHA-256 hash lookup with{' '}
             <code>timingSafeEqual</code>. Route handlers don&rsquo;t know which scheme
-            authenticated &mdash; <code>req.organization</code> is identical either way. Recently
+            authenticated &mdash; <code>req.organization</code>{' '}is identical either way. Recently
             extended to multi-issuer JWT trust, so you can hang multiple identity servers off
             the same SaaS.
           </p>
@@ -395,42 +395,42 @@ export function GramotaCaseStudyContent() {
             <code>EUDI_LIVE=1</code>, run nightly and pre-release. Live tests hit{' '}
             <code>dev.{'{issuer-backend, authenticate, verifier-backend}'}.eudiw.dev</code> and{' '}
             <code>issuer.eudiw.dev</code>. The MANIFEST principle reads: &ldquo;we&rsquo;ve already
-            caught the DCQL migration, the <code>dc+sd-jwt</code> format switch, and the
+            caught the DCQL migration, the <code>dc+sd-jwt</code>{' '}format switch, and the
             PAR-required-per-client policy this way.&rdquo;
           </p>
           <p>
             One specific test is worth calling out: it issues a synthetic PID-shaped SD-JWT VC
             and submits it against the live EU verifier&rsquo;s DCQL query. The synthetic
             credential won&rsquo;t verify against an EU trust anchor &mdash; that&rsquo;s not the
-            point. The point is to prove that <em>our</em> DCQL matcher accepts the same shapes
+            point. The point is to prove that <em>our</em>{' '}DCQL matcher accepts the same shapes
             the EU verifier accepts, independent of trust. <strong>Our query engine is
-            independently verified against the EU&rsquo;s own.</strong> If a credential we
+            independently verified against the EU&rsquo;s own.</strong>{' '}If a credential we
             construct passes our matcher and the EU&rsquo;s, we&rsquo;re structurally aligned.
           </p>
 
           <h2>What I&rsquo;d do differently</h2>
 
           <p>
-            <strong>The OID4VCI draft churn.</strong> Building a normalizer for Drafts 13 / 14 / 15
+            <strong>The OID4VCI draft churn.</strong>{' '}Building a normalizer for Drafts 13 / 14 / 15
             was the right move, but I&rsquo;d start with the canonical Draft 15 shape internally
             and treat older drafts as adapters rather than first-class branches. Same outcome,
             less branching in hot paths.
           </p>
           <p>
-            <strong>Cert lifecycle.</strong> The current SaaS persists the dev cert to disk so
+            <strong>Cert lifecycle.</strong>{' '}The current SaaS persists the dev cert to disk so
             wallet restart doesn&rsquo;t break trust. For production, this needs to graduate to a
             proper key vault (HSM / KMS / Vault) with rotation. The Strategy pattern is in place
-            &mdash; <code>Signer</code> is pluggable &mdash; but the production-ready signer
+            &mdash; <code>Signer</code>{' '}is pluggable &mdash; but the production-ready signer
             implementation is the next chunk of work.
           </p>
           <p>
             <strong>Observability.</strong> The DB-backed <code>ILogger</code> with bounded{' '}
-            <code>Channel</code> and drainer <code>HostedService</code> works, indexes are in
+            <code>Channel</code> and drainer <code>HostedService</code>{' '}works, indexes are in
             place. But for a SaaS at scale I&rsquo;d want OpenTelemetry traces flowing into
             something like Honeycomb or Tempo, not just structured logs. That&rsquo;s day-2.
           </p>
           <p>
-            <strong>Single-format SDK.</strong> Today the SDK handles SD-JWT VC. ISO mdoc (mDL)
+            <strong>Single-format SDK.</strong>{' '}Today the SDK handles SD-JWT VC. ISO mdoc (mDL)
             is the other major credential format and is mandatory for some EUDIW use cases
             (mobile driving licence, anything ICAO-aligned). The <code>CredentialFormatHandler</code>{' '}
             registry is built for this &mdash; adding mdoc is a plug-in not a fork &mdash; but
@@ -441,14 +441,14 @@ export function GramotaCaseStudyContent() {
           <h2>What&rsquo;s live</h2>
           <ul>
             <li>
-              <strong>15 npm packages</strong> published with Sigstore provenance attestations
+              <strong>15 npm packages</strong>{' '}published with Sigstore provenance attestations
             </li>
             <li>
-              <strong>~580 mock + conformance tests + 31 live tests</strong> against EU
+              <strong>~580 mock + conformance tests + 31 live tests</strong>{' '}against EU
               reference infrastructure
             </li>
             <li>
-              <strong>End-to-end roundtrip</strong> against the EU reference Android wallet,
+              <strong>End-to-end roundtrip</strong>{' '}against the EU reference Android wallet,
               with our dev verifier cert added to its bundled trust list (issue → store →
               present → verify)
             </li>
@@ -457,7 +457,7 @@ export function GramotaCaseStudyContent() {
               <code>auth.gramota.eu</code>, marketing + docs at <code>gramota.eu</code>
             </li>
             <li>
-              <strong>Demo store</strong> &mdash; Solnce, fictional storefront with age,
+              <strong>Demo store</strong>{' '}&mdash; Solnce, fictional storefront with age,
               residency, and identity verification
             </li>
             <li>All source code on GitHub under <code>gramota-org</code>, Apache 2.0</li>
@@ -466,32 +466,32 @@ export function GramotaCaseStudyContent() {
           <h2>What this is not</h2>
           <ul>
             <li>
-              <strong>Not a wallet.</strong> Gramota is verifier-side and issuer-side. If you
+              <strong>Not a wallet.</strong>{' '}Gramota is verifier-side and issuer-side. If you
               need to ship a wallet, you want the EU reference apps as a starting point, not
               this.
             </li>
             <li>
-              <strong>Not a Trust Service Provider.</strong> Gramota doesn&rsquo;t notarize, doesn&rsquo;t
+              <strong>Not a Trust Service Provider.</strong>{' '}Gramota doesn&rsquo;t notarize, doesn&rsquo;t
               run a trust anchor, doesn&rsquo;t qualify for the EU Trusted List.
             </li>
             <li>
-              <strong>Not certified by any conformance scheme yet.</strong> No certification
+              <strong>Not certified by any conformance scheme yet.</strong>{' '}No certification
               scheme exists yet. When one does, certifying against it is on the roadmap.
             </li>
             <li>
-              <strong>Not yet running in production for a paying buyer.</strong> The SaaS
+              <strong>Not yet running in production for a paying buyer.</strong>{' '}The SaaS
               exists, the SDK is published, the EU reference wallet roundtrip works, but the
               first paid integration is still ahead. If that&rsquo;s a dealbreaker for you, hire
               a vendor with SLA and indemnity. If you can pilot, this is the deepest
               TypeScript-native EUDIW expertise you&rsquo;ll find from one person.
             </li>
             <li>
-              <strong>Not multi-format yet.</strong> SD-JWT VC today, ISO mdoc on the roadmap.
-              The <code>CredentialFormatHandler</code> registry is built for this &mdash; mdoc is
+              <strong>Not multi-format yet.</strong>{' '}SD-JWT VC today, ISO mdoc on the roadmap.
+              The <code>CredentialFormatHandler</code>{' '}registry is built for this &mdash; mdoc is
               a plug-in, not a fork &mdash; but it&rsquo;s still a chunk of work.
             </li>
             <li>
-              <strong>Not a one-person dependency forever.</strong> Apache 2.0, full source on
+              <strong>Not a one-person dependency forever.</strong>{' '}Apache 2.0, full source on
               GitHub, every architectural decision documented in MANIFEST.md and inline. If
               I&rsquo;m unavailable, your team can take over without losing a week.
             </li>
@@ -507,19 +507,19 @@ export function GramotaCaseStudyContent() {
           </p>
           <ul>
             <li>
-              <strong>Weeks 1&ndash;2</strong> &mdash; audit your existing identity stack against
+              <strong>Weeks 1&ndash;2</strong>{' '}&mdash; audit your existing identity stack against
               EUDIW requirements, written architecture document, scope of integration work
             </li>
             <li>
-              <strong>Weeks 3&ndash;5</strong> &mdash; spike one credential type end-to-end (PID
+              <strong>Weeks 3&ndash;5</strong>{' '}&mdash; spike one credential type end-to-end (PID
               for KYC is the most common), live against EU reference infra
             </li>
             <li>
-              <strong>Weeks 6&ndash;8</strong> &mdash; production hardening: HSM/KMS-backed
+              <strong>Weeks 6&ndash;8</strong>{' '}&mdash; production hardening: HSM/KMS-backed
               signer, observability, threat model review, runbooks
             </li>
             <li>
-              <strong>Week 9+</strong> &mdash; handoff with documented playbooks; optional
+              <strong>Week 9+</strong>{' '}&mdash; handoff with documented playbooks; optional
               retainer for follow-up questions
             </li>
           </ul>

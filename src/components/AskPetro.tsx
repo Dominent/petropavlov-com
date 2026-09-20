@@ -116,7 +116,7 @@ export function AskPetro() {
         <div className="min-h-72 space-y-4 p-6">
           {messages.length === 0 && (
             <div className="rounded-lg bg-surface/40 px-4 py-3 text-sm text-dim">
-              <span className="font-mono text-accent">petro:</span> Hi.
+              <span className="font-mono text-accent">petro:</span>{' '}Hi.
               I&rsquo;m Petro&rsquo;s AI assistant, grounded in his CV,
               projects, and recent work. Ask me anything &mdash; I&rsquo;ll
               answer with what I actually know and tell you when I don&rsquo;t.

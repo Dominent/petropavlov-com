@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { InsightDraftCaseStudyContent } from './content'
 
 const TITLE = 'Building an AI meeting SaaS end-to-end while bots get banned'
 const DESCRIPTION =
-  'Insight Draft case study — Chrome extension recording without bots, 6+ parallel LLM calls per meeting, custom Hangfire fan-out/fan-in, statistical-voting speaker mapping. What was hard, what shipped, what I would do differently.'
+  'Building an AI meeting SaaS: a Chrome extension that records Meet, Teams and Zoom without bots, 6+ parallel LLM calls per meeting, and what I would do differently.'
 const URL = 'https://petropavlov.dev/case-studies/insight-draft'
 const PUBLISHED = '2026-05-10'
 
@@ -85,12 +84,12 @@ const BREADCRUMB_LD = {
 export default function InsightDraftCaseStudyPage() {
   return (
     <>
-      <Script
+      <script
         id="ld-article-insight-draft"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
       />
-      <Script
+      <script
         id="ld-breadcrumb-insight-draft"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_LD) }}

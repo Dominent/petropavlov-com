@@ -1,7 +1,6 @@
 import { BlogPostFrame } from '../_components/BlogPostFrame'
 import { Mermaid } from '../../../src/components/Mermaid'
 import { Code } from '../../../src/components/Code'
-import Script from 'next/script'
 
 export const ARCH_DIAGRAM = `flowchart TB
     SHELL["Switchboard shell<br/>Electron · tab bar · split view"]
@@ -140,12 +139,12 @@ export const BREADCRUMB_LD = {
   ],
 }
 
-<Script
+<script
   id="ld-article-switchboard"
   type="application/ld+json"
   dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
 />
-<Script
+<script
   id="ld-breadcrumb-switchboard"
   type="application/ld+json"
   dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_LD) }}

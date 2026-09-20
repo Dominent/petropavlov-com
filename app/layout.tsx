@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import Script from 'next/script'
 
 // Self-hosted fonts via Fontsource.
 // Variable fonts for Inter + JetBrains Mono, static 400 + italic for
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://petropavlov.dev'),
   title: 'Petro Pavlov · Senior Full-Stack & AI Engineer · Consulting & Project Work',
   description:
-    'Petro Pavlov — senior full-stack and AI engineer with 10+ years shipping production software at VMware, CData Virtuality (AI research team), TestGorilla, Walltopia, and Octopus Energy. Builds AI products end-to-end — RAG, fine-tuning, NL→SQL, LLM orchestration. Available for consulting and project work — primarily US (NYC, SF, Boston), Canada (Toronto, Montreal, Vancouver), and Israel (Tel Aviv); also open to EU/UK clients. Tel Aviv shares my timezone; North-American East-Coast mornings overlap with Sofia afternoons. Invoiced in USD, CAD, or EUR.',
+    'Senior full-stack and AI engineer — 10+ years in production at VMware, CData Virtuality and TestGorilla. Builds AI products end-to-end. Available for consulting.',
   keywords: [
     'Petro Pavlov',
     'Petromil Pavlov',
@@ -296,17 +295,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             document handler — auto-installs for any future CV link
             without per-callsite changes. Shows once per session. */}
         <CvFollowupDialog />
-        <Script
+        <script
           id="ld-website"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }}
         />
-        <Script
+        <script
           id="ld-person"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
         />
-        <Script
+        <script
           id="ld-service"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}

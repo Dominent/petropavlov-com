@@ -8,7 +8,7 @@ export function SelectedWork() {
       <SectionLabel
         num="01"
         title="Selected Work"
-        caption="Two products I've shipped — both live in production, both still being built on."
+        caption="A production AI SaaS, an open-source desktop tool, and an Angular reference build — all shipped, all still being built on."
       />
       <div className="space-y-8">
         {projects.map((project, i) => (

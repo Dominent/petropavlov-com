@@ -150,7 +150,6 @@ function renderPage(m: ViewModel): string {
       <a href="/admin/analytics?range=${esc(m.rangeParam)}" class="active">Analytics</a>
       <a href="/admin/speed">Speed</a>
       <a href="/admin/events">Events</a>
-      <a href="/admin/experiments">Experiments</a>
       <a href="/admin/marketing">Marketing</a>
     </nav>
     <div class="range">

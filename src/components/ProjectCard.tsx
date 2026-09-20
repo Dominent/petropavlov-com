@@ -51,9 +51,18 @@ export function ProjectCard({ project, index }: Props) {
             ))}
           </h3>
 
-          <p className="mb-6 max-w-2xl text-base leading-relaxed text-dim">
+          <p className="mb-5 max-w-2xl text-base leading-relaxed text-dim">
             {project.description}
           </p>
+
+          <ul className="mb-6 max-w-2xl space-y-2 text-sm leading-relaxed text-dim">
+            {project.highlights.map((h) => (
+              <li key={h} className="flex gap-3">
+                <span className="mt-[0.6em] h-px w-3 shrink-0 bg-accent/60" />
+                <span>{h}</span>
+              </li>
+            ))}
+          </ul>
 
           {project.caseStudyUrl && (
             <Link
@@ -66,7 +75,7 @@ export function ProjectCard({ project, index }: Props) {
               }
               className="group/cta mb-8 inline-flex items-center gap-2 rounded-full border border-accent-soft/40 bg-accent-soft/5 px-4 py-2 text-sm font-medium text-accent-bright transition-colors hover:border-accent-soft/70 hover:bg-accent-soft/10 hover:text-foreground"
             >
-              Read the case study
+              {project.caseStudyLabel ?? 'Read the case study'}
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/cta:translate-x-0.5" />
             </Link>
           )}
@@ -99,7 +108,18 @@ export function ProjectCard({ project, index }: Props) {
           </div>
         </div>
 
-        <div className="lg:w-72">
+        <div className="space-y-4 lg:w-72">
+          {project.image && (
+            <img
+              src={project.image.src}
+              alt={project.image.alt}
+              width={project.image.width}
+              height={project.image.height}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full rounded-xl border border-border"
+            />
+          )}
           <ArchDiagram projectId={project.id} />
         </div>
       </div>

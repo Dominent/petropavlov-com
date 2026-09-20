@@ -49,3 +49,12 @@ CREATE TABLE IF NOT EXISTS analytics_vitals (
 CREATE INDEX IF NOT EXISTS idx_vitals_ts          ON analytics_vitals (ts DESC);
 CREATE INDEX IF NOT EXISTS idx_vitals_metric_ts   ON analytics_vitals (metric, ts DESC);
 CREATE INDEX IF NOT EXISTS idx_vitals_page_metric ON analytics_vitals (page, metric);
+
+-- Ask Petro rate limiting (app/api/chat/route.ts). The route also creates
+-- this lazily, so applying it by hand is optional. `key` is a salted hash
+-- of the caller's IP that rotates daily — never the IP itself.
+CREATE TABLE IF NOT EXISTS chat_rate_limits (
+  key          TEXT PRIMARY KEY,
+  window_start TIMESTAMPTZ NOT NULL DEFAULT now(),
+  count        INTEGER NOT NULL DEFAULT 1
+);

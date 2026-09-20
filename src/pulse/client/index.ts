@@ -33,7 +33,6 @@ import { initSections } from './sections'
 import { initErrors } from './errors'
 import { initDwell } from './dwell'
 import { initClicks } from './clicks'
-import { initExperiments } from './experiments'
 
 export type {
   EventPayload,
@@ -52,12 +51,6 @@ export { initSections } from './sections'
 export { initErrors } from './errors'
 export { initDwell } from './dwell'
 export { initClicks } from './clicks'
-export {
-  initExperiments,
-  getVariant,
-  getAllAssignments,
-  useExperiment,
-} from './experiments'
 export { getVisitorId, clearVisitorId } from './visitor-id'
 
 /**
@@ -90,13 +83,6 @@ export function init(config: PulseConfig = {}): void {
   setConfig(resolved)
 
   if (!resolved.autoTrack) return
-
-  // Kick off the experiments fetch first — it's a single small JSON
-  // GET and the result feeds every downstream track() call. Fire and
-  // forget; the result lands asynchronously and silently fails if the
-  // endpoint is unreachable (no experiments → all consumers see
-  // their control branch).
-  void initExperiments()
 
   // ── Critical (eager) ───────────────────────────────────────────
   // These must fire before first paint to catch FCP/LCP/the initial

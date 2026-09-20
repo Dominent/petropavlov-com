@@ -18,11 +18,6 @@ const DESCRIPTION =
 const TWITTER_DESCRIPTION =
   'Notes on building production AI products end-to-end — RAG, LLM orchestration, self-hosted analytics, and the engineering behind petropavlov.dev.'
 
-// ISR — regenerate every 60s so the inlined experiments JSON (in
-// app/layout) refreshes between deploys. The post listing itself
-// changes rarely; the 60s cost is for experiments freshness.
-export const revalidate = 60
-
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,

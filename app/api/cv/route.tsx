@@ -276,7 +276,7 @@ const ProjectEntry = ({
 const ProjectsSection = () => (
   <View style={styles.section}>
     <Text style={styles.h2}>Selected Projects</Text>
-    {projects.map((p) => (
+    {projects.filter((p) => p.featured).map((p) => (
       <ProjectEntry key={p.id} project={p} />
     ))}
   </View>

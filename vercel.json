@@ -13,7 +13,6 @@
     { "source": "/admin/analytics", "destination": "/api/admin/analytics" },
     { "source": "/admin/speed", "destination": "/api/admin/speed" },
     { "source": "/admin/events", "destination": "/api/admin/events" },
-    { "source": "/admin/experiments", "destination": "/api/admin/experiments" },
     { "source": "/admin/marketing", "destination": "/api/admin/marketing" },
     { "source": "/cv", "destination": "/api/cv" }
   ],
@@ -24,7 +23,8 @@
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'" }
       ]
     },
     {

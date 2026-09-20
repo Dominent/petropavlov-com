@@ -20,7 +20,7 @@ export type Package = {
   includes: string[]
   /** CTA button label. All CTAs open the Cal.com intro booking. */
   cta: string
-  /** Anchor tier — rendered with accent border + "Most popular" badge. */
+  /** Anchor tier — rendered with accent border + "Recommended" badge. */
   featured?: boolean
   /** Top tier — "contact us" styling, anchored by a floor price. */
   contact?: boolean

@@ -45,8 +45,8 @@ export const aiSystems: AISystem[] = [
     id: 'insight-draft-ai',
     title: 'Insight Draft',
     oneLiner:
-      'Multi-provider production AI: GPT-5-mini + Claude 3.5 + Deepgram. RAG Q&A with citations, AI summaries with topic chapters, conversation analytics, AI quick actions, and real-time speaker-attributed captions. Custom prompt framework runs background via Hangfire jobs.',
-    tags: ['Deepgram', 'OpenAI', 'Claude', 'RAG', 'vector stores', 'analytics'],
+      'Production AI on OpenAI models + Deepgram, behind a provider-agnostic LLM service. RAG Q&A with citations, AI summaries with topic chapters, conversation analytics, AI quick actions, and real-time speaker-attributed captions. Custom prompt framework runs background via Hangfire jobs.',
+    tags: ['Deepgram', 'OpenAI', 'RAG', 'vector stores', 'structured outputs', 'analytics'],
     status: 'production',
   },
   {

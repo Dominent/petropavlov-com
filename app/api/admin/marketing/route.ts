@@ -403,7 +403,6 @@ function renderTopbar(): string {
       <a href="/admin/analytics">Analytics</a>
       <a href="/admin/speed">Speed</a>
       <a href="/admin/events">Events</a>
-      <a href="/admin/experiments">Experiments</a>
       <a href="/admin/marketing" class="active">Marketing</a>
     </nav>
   </header>`

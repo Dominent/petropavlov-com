@@ -19,7 +19,7 @@ export function About() {
           >
             I&rsquo;ve been a senior engineer for{' '}
             <span className="text-accent">10+ years</span> &mdash; deepest
-            on the frontend (Angular 8&ndash;18, TypeScript, RxJS, NGRX),
+            on the frontend (Angular 8&ndash;21, TypeScript, RxJS, NGRX),
             always paired with the backend (C#/.NET and Node.js). At VMware I
             built Workspace ONE features from scratch; at TestGorilla I
             designed the micro-frontend architecture; at Octopus Energy

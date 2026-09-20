@@ -1,9 +1,7 @@
 'use client'
 
-// Hero variant A — the control. Full version with dense meta-paragraph,
-// 5 CTAs, geography line. This is the original hero that's been live
-// since launch. The A/B test against HeroB (sibling file) measures
-// whether the dense paragraph is the cause of the 77% hero drop-off.
+// The hero. Full version with the meta-paragraph, 5 CTAs, and the
+// geography line.
 
 import { motion } from 'framer-motion'
 import { ArrowDownRight, Calendar, Download, Mail, MapPin } from 'lucide-react'

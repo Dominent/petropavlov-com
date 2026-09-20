@@ -30,3 +30,6 @@ dist-ssr
 !.env.example
 .env*.local
 .next/
+
+# TypeScript incremental build cache
+*.tsbuildinfo

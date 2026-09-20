@@ -46,7 +46,6 @@ system prompt — so they can't disagree:
 - `src/data/work.ts` — projects, roles, skills. `featured` projects also
   appear on the CV.
 - `src/data/ai.ts` — AI stack and shipped AI systems.
-- `src/data/packages.ts` — the "Work with me" packages.
 - `app/api/chat/system-prompt.ts` — renders the assistant's prompt from
   the three files above.
 
@@ -69,7 +68,7 @@ app/               # routes: home, blog, case studies, api/*, sitemap, robots
 public/            # static assets (icons, og.png, portrait, llms.txt)
 src/
   components/      # Hero (A/B), SelectedWork, AIEngineering, Experience,
-                   # About, AskPetro, Testimonials, Packages, Contact, ...
-  data/            # work.ts, ai.ts, packages.ts, testimonials.ts
+                   # About, AskPetro, Testimonials, Contact, ...
+  data/            # work.ts, ai.ts, testimonials.ts
   pulse/           # analytics: client SDK, server handlers, SQL schema
 ```

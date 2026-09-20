@@ -79,29 +79,6 @@ export const projects: Project[] = [
     caseStudyUrl: '/blog/hosting-another-apps-window-inside-yours',
     caseStudyLabel: 'Read the write-up',
   },
-  {
-    id: 'beacon',
-    title: 'Beacon',
-    tagline: 'Angular 21 + Nx reference architecture',
-    description:
-      'Beacon is a small, deliberately built issue tracker that shows modern Angular — version 21, zoneless, signals — inside a scalable Nx 23 monorepo. The surface is modest on purpose, so that every architectural decision is explainable.',
-    highlights: [
-      'Domain × layer libraries with lint-enforced boundaries — a ui library physically cannot import a store, and CI fails if it tries',
-      'NgRx SignalStore where a store earns its keep, plain-signal services where it would be ceremony, RxJS only for typeahead and the SSE feed',
-      'Local Nx plugin — generator, executor, and task inference — plus SSR with incremental hydration and @defer-loaded charts',
-    ],
-    metrics: [
-      { value: 'Zoneless', label: 'no zone.js — change detection driven by signal reads and events' },
-      { value: 'Enforced', label: 'module boundaries across feature · ui · data-access · util, checked by lint in CI' },
-      { value: 'CLS 0', label: 'by construction — every deferred view has a sized placeholder' },
-    ],
-    tech: ['Angular 21', 'Nx 23', 'NgRx SignalStore', 'Signals', 'RxJS', 'Angular CDK', 'SSR', 'Vitest', 'Playwright'],
-    links: [
-      { label: 'Live demo', url: 'https://beacon-petromilpavlovs-projects.vercel.app' },
-      { label: 'GitHub', url: 'https://github.com/Dominent/beacon' },
-    ],
-    github: 'https://github.com/Dominent/beacon',
-  },
 ]
 
 export type Job = {

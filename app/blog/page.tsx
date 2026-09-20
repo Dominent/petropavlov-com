@@ -27,15 +27,14 @@ export const metadata: Metadata = {
   // engineering. These match the actual post topics.
   keywords: [
     'AI engineering blog',
-    'self-hosted analytics',
+    'desktop engineering',
+    'Electron',
+    'Win32',
+    'macOS Accessibility API',
     'RAG',
     'LLM orchestration',
-    'A/B testing',
-    'feature flags',
-    'web analytics',
-    'Next.js',
     'TypeScript',
-    'Postgres',
+    'Next.js',
   ],
   openGraph: {
     type: 'website',

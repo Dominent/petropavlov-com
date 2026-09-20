@@ -1,7 +1,6 @@
 'use client'
 
-// The hero. Full version with the meta-paragraph, 5 CTAs, and the
-// geography line.
+// The hero.
 
 import { motion } from 'framer-motion'
 import { ArrowDownRight, Calendar, Download, Mail, MapPin } from 'lucide-react'
@@ -22,7 +21,7 @@ const fadeUp = {
   }),
 }
 
-export function HeroA() {
+export function Hero() {
   return (
     <section
       id="hero"

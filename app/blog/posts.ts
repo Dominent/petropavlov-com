@@ -34,16 +34,6 @@ const POSTS: PostMeta[] = [
     readMinutes: 6,
     published: true,
   },
-  {
-    slug: 'ab-testing-a-portfolio-that-gets-20-visits-a-day',
-    title: 'A/B testing a portfolio that gets 20 visits a day',
-    description:
-      "I built feature flags + significance testing into my portfolio. Then I did the math and realised I shouldn't run it yet. Here's the framework anyway — and the spreadsheet that tells you when you actually should.",
-    date: '2026-05-16',
-    modified: '2026-09-20',
-    readMinutes: 9,
-    published: true,
-  },
 ]
 
 export function listPosts(): PostMeta[] {

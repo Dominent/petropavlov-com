@@ -9,6 +9,13 @@
       "schedule": "0 7 * * *"
     }
   ],
+  "redirects": [
+    {
+      "source": "/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day",
+      "destination": "/blog",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/admin/analytics", "destination": "/api/admin/analytics" },
     { "source": "/admin/speed", "destination": "/api/admin/speed" },

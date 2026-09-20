@@ -1,1 +1,1 @@
-export { HeroA as Hero } from './HeroA'
+export { Hero } from './Hero'

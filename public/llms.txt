@@ -20,7 +20,6 @@
 ## Blog
 
 - [Hosting another app's window inside yours](https://petropavlov.dev/blog/hosting-another-apps-window-inside-yours): How Switchboard embeds the Claude desktop app's window. Why reparenting a Chromium window as a WS_CHILD drops every key press, why an owned window works, what macOS allows instead, koffi FFI without a native module, and routing a claude:// sign-in link on Windows when an MSIX package owns the scheme.
-- [A/B testing a portfolio that gets 20 visits a day](https://petropavlov.dev/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day): Built a self-hosted analytics + A/B framework into the portfolio. Did the math on whether to run it at low traffic. Honest take on sample-size thresholds, proxy-metric risk, and when A/B testing is the wrong tool. The framework has since been removed from the site; the post stays as written.
 - [Blog index](https://petropavlov.dev/blog)
 
 ## Optional — what to expect

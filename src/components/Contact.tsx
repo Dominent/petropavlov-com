@@ -94,7 +94,7 @@ export function Contact() {
             Engagement length
           </div>
           <div className="text-sm leading-relaxed text-muted">
-            <span className="font-medium text-foreground">Open-ended</span> &mdash;
+            <span className="font-medium text-foreground">Open-ended</span>{' '}&mdash;
             single review sessions, scoped projects, multi-month builds,
             or long-running retainers / fractional roles. Whatever the
             work needs.
@@ -105,7 +105,7 @@ export function Contact() {
             Time to start
           </div>
           <div className="text-sm leading-relaxed text-muted">
-            <span className="font-medium text-foreground">Right away</span> or
+            <span className="font-medium text-foreground">Right away</span>{' '}or
             within a few days &mdash; drop a line and we&rsquo;ll sync this week.
           </div>
         </div>

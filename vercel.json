@@ -14,6 +14,12 @@
       "source": "/blog/ab-testing-a-portfolio-that-gets-20-visits-a-day",
       "destination": "/blog",
       "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.petropavlov.dev" }],
+      "destination": "https://petropavlov.dev/:path*",
+      "permanent": true
     }
   ],
   "rewrites": [

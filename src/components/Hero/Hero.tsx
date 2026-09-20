@@ -67,27 +67,35 @@ export function Hero() {
           Hey, I&rsquo;m
         </motion.p>
 
-        <motion.h1
-          custom={2}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          className="mb-6 text-6xl font-medium tracking-tight text-foreground md:text-7xl lg:text-8xl"
-        >
-          Petro<span className="text-accent">.</span>
-        </motion.h1>
+        {/* The name and the role line are one h1. Both were already
+            visible and adjacent; the split left the page's only h1 as
+            "Petro.", which tells a crawler — and a screen reader jumping
+            by heading — nothing about what this page is. Sizes, colours
+            and the stagger are unchanged: each line keeps its own
+            motion span. */}
+        <h1 className="mb-2">
+          <motion.span
+            custom={2}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="mb-6 block text-6xl font-medium tracking-tight text-foreground md:text-7xl lg:text-8xl"
+          >
+            Petro<span className="text-accent">.</span>
+          </motion.span>
 
-        <motion.p
-          custom={3}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          className="mb-2 text-2xl text-muted md:text-3xl"
-        >
-          Senior Full-Stack Engineer
-          <span className="text-faint"> · </span>
-          <span className="font-serif italic text-accent-bright/90">ships AI products end-to-end</span>
-        </motion.p>
+          <motion.span
+            custom={3}
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            className="block text-2xl font-normal text-muted md:text-3xl"
+          >
+            Senior Full-Stack Engineer
+            <span className="text-faint"> · </span>
+            <span className="font-serif italic text-accent-bright/90">ships AI products end-to-end</span>
+          </motion.span>
+        </h1>
 
         <motion.p
           custom={4}
@@ -105,7 +113,7 @@ export function Hero() {
           shipping{' '}
           <span className="text-accent">RAG</span>,{' '}
           <span className="text-accent">NL&rarr;SQL</span>, and a{' '}
-          <span className="text-accent">Cursor-style SQL copilot</span> into
+          <span className="text-accent">Cursor-style SQL copilot</span>{' '}into
           the platform. Daily Claude Code &amp; Cursor user.
         </motion.p>
 
@@ -175,13 +183,13 @@ export function Hero() {
           remote-first
           <span className="text-ghost">·</span>
           <span className="text-muted">
-            <span className="not-uppercase">🇺🇸</span> US
+            <span className="not-uppercase">🇺🇸</span>{' '}US
             <span className="mx-1.5 text-ghost">·</span>
-            <span className="not-uppercase">🇨🇦</span> Canada
+            <span className="not-uppercase">🇨🇦</span>{' '}Canada
             <span className="mx-1.5 text-ghost">·</span>
-            <span className="not-uppercase">🇮🇱</span> Israel
+            <span className="not-uppercase">🇮🇱</span>{' '}Israel
             <span className="mx-1.5 text-ghost">·</span>
-            <span className="not-uppercase">🇪🇺</span> EU/UK
+            <span className="not-uppercase">🇪🇺</span>{' '}EU/UK
           </span>
         </motion.div>
         </div>

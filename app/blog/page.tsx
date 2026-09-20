@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Script from 'next/script'
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react'
 import { listPosts } from './posts'
 
@@ -89,12 +88,12 @@ export default function BlogIndexPage() {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
-      <Script
+      <script
         id="ld-blog-breadcrumb"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
-      <Script
+      <script
         id="ld-blog-itemlist"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }}

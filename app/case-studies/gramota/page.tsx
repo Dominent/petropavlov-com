@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { GramotaCaseStudyContent } from './content'
 
 const TITLE = 'Building a TypeScript SDK for the EU Digital Identity Wallet'
 const DESCRIPTION =
-  '15 published npm packages, 579 mock + 31 live conformance tests against EU reference infrastructure, end-to-end roundtrips with the patched EU Android wallet. The Gramota case study — what was hard, what I shipped, and what I would do differently.'
+  'Building a TypeScript SDK for the EU Digital Identity Wallet: 15 npm packages, 610 conformance tests against EU reference infrastructure, and what I would change.'
 const URL = 'https://petropavlov.dev/case-studies/gramota'
 const PUBLISHED = '2026-05-10'
 
@@ -87,12 +86,12 @@ const BREADCRUMB_LD = {
 export default function GramotaCaseStudyPage() {
   return (
     <>
-      <Script
+      <script
         id="ld-article-gramota"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_SCHEMA) }}
       />
-      <Script
+      <script
         id="ld-breadcrumb-gramota"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(BREADCRUMB_LD) }}

@@ -16,9 +16,15 @@
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [{ "type": "host", "value": "www.petropavlov.dev" }],
-      "destination": "https://petropavlov.dev/:path*",
+      "destination": "https://petropavlov.dev/",
+      "permanent": true
+    },
+    {
+      "source": "/:path+",
+      "has": [{ "type": "host", "value": "www.petropavlov.dev" }],
+      "destination": "https://petropavlov.dev/:path+",
       "permanent": true
     }
   ],
